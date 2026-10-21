@@ -50,10 +50,16 @@ export const SPELLING_CONFUSIONS: SpellingConfusion[] = [
     replaceWith: 'll',
   },
   {
+    // English often doubles L after a vowel for the same sound (last / ballast),
+    // so English speakers write "abuello" or "pastell". Only flag L after a
+    // vowel, before another vowel or at the end of the word: the places
+    // English would double it. Word-initial L or L next to a consonant
+    // (plaza, alto) isn't this mistake.
     id: 'll-for-l',
     label: 'l / ll',
-    explain: 'This word has a single L, not LL.',
-    site: /(?<!l)l(?!l)/g,
+    explain:
+      "Unlike English (last, ballast), Spanish doesn't double L for the L sound. LL is a different sound, so this word has a single L.",
+    site: /(?<=[aeiouáéíóúü])l(?![l])(?=[aeiouáéíóú]|$)/g,
     replaceWith: 'll',
   },
   {
