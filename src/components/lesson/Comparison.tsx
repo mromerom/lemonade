@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { gradeAnswer, normalize, stripAccents, VERDICT_LABEL, type Verdict } from '../../lib/grade';
+import { gradeAnswer, isSlip, normalize, stripAccents, VERDICT_LABEL, type Verdict } from '../../lib/grade';
 import { tokenize } from '../../lib/tokenize';
 import { useLearner } from '../../store/learnerStore';
 import type { ComprehensionQuestion, LessonProgress, Text } from '../../types';
@@ -13,6 +13,7 @@ interface Props {
 
 const VERDICT_EXPLAIN: Record<Exclude<Verdict, 'correct'>, string> = {
   accent: 'You remembered the right word — just the accent marks are off.',
+  spelling: 'You remembered the right word — the spelling tripped you up.',
   typo: 'You remembered the right word, but it looks mistyped.',
   incorrect: "This one didn't stick yet.",
 };
@@ -25,15 +26,19 @@ export default function Comparison({ text, lesson }: Props) {
     const guess = q.options.find((o) => o.id === lesson.preAnswers[q.id]);
     const guessedRight = lesson.preAnswers[q.id] === q.correctOptionId;
     const typed = lesson.postAnswers[q.id]?.trim() ?? '';
-    const verdict = typed ? gradeAnswer(typed, q.keywordSets) : 'incorrect';
+    const grade = typed ? gradeAnswer(typed, q.keywordSets) : null;
+    const verdict: Verdict = grade?.verdict ?? 'incorrect';
+    // One explanation per kind of mix-up, even if it happened twice.
+    const confusions = [...new Map((grade?.confusions ?? []).map((c) => [c.id, c])).values()];
     const correction = lesson.corrections[q.id] ?? '';
-    const corrected = verdict === 'correct' || gradeAnswer(correction, q.keywordSets) === 'correct';
-    return { q, guess, guessedRight, typed, verdict, correction, corrected };
+    const corrected =
+      verdict === 'correct' || gradeAnswer(correction, q.keywordSets).verdict === 'correct';
+    return { q, guess, guessedRight, typed, verdict, confusions, correction, corrected };
   });
 
   const before = rows.filter((r) => r.guessedRight).length;
   const after = rows.filter((r) => r.verdict === 'correct').length;
-  const slips = rows.filter((r) => r.verdict === 'accent' || r.verdict === 'typo').length;
+  const slips = rows.filter((r) => isSlip(r.verdict)).length;
   const pending = rows.filter((r) => !r.corrected).length;
 
   function finish() {
@@ -107,7 +112,7 @@ export default function Comparison({ text, lesson }: Props) {
               <div>
                 <dt>From memory</dt>
                 <dd>
-                  <Mark ok={r.verdict === 'correct'} partial={r.verdict === 'accent' || r.verdict === 'typo'} />
+                  <Mark ok={r.verdict === 'correct'} partial={isSlip(r.verdict)} />
                   <span lang="es">{r.typed || <em className={styles.blank}>left blank</em>}</span>
                 </dd>
               </div>
@@ -117,6 +122,16 @@ export default function Comparison({ text, lesson }: Props) {
               {VERDICT_LABEL[r.verdict]}
               {r.verdict !== 'correct' && <span> — {VERDICT_EXPLAIN[r.verdict]}</span>}
             </p>
+            {r.confusions.length > 0 && (
+              <ul className={styles.confusions}>
+                {r.confusions.map((c) => (
+                  <li key={c.id}>
+                    <span className={styles.confusionTag}>{c.label}</span>
+                    {c.explain}
+                  </li>
+                ))}
+              </ul>
+            )}
 
             {r.verdict !== 'correct' && (
               <>
