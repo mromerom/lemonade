@@ -1,0 +1,58 @@
+.steps {
+  display: flex;
+  gap: 0.25rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.step {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-top: 0.6rem;
+  border-top: 3px solid var(--border);
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+
+.dot {
+  display: inline-grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  background: var(--surface-2);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.done {
+  border-top-color: var(--accent);
+}
+.done .dot {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.current {
+  border-top-color: var(--accent);
+  color: var(--text);
+  font-weight: 600;
+}
+.current .dot {
+  background: var(--text);
+  color: var(--bg);
+}
+
+@media (max-width: 480px) {
+  .label {
+    font-size: 0.75rem;
+  }
+  .step {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+}

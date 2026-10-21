@@ -1,0 +1,101 @@
+.note {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.9rem 1rem;
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: 0.95rem;
+}
+.note p {
+  margin: 0;
+}
+.noteTitle {
+  font-weight: 700;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.875rem;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.questions {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.question {
+  padding: 1.1rem 1.25rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.prompt {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-read);
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+.promptEn {
+  margin: 0.15rem 0 0;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.number {
+  color: var(--muted);
+  margin-right: 0.4rem;
+  font-weight: 400;
+}
+
+.input {
+  width: 100%;
+  margin-top: 0.75rem;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-family: var(--font-read);
+  font-size: 1.05rem;
+}
+.input:focus {
+  outline: 2px solid var(--focus);
+  outline-offset: 0;
+  border-color: transparent;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+.hint {
+  color: var(--muted);
+  font-size: 0.875rem;
+  margin-right: auto;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}

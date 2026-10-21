@@ -1,0 +1,35 @@
+.fieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+
+.options {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0.5rem;
+  margin-top: 0.85rem;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: var(--font-read);
+}
+.option:hover {
+  background: var(--surface-2);
+}
+.option:has(input:checked) {
+  border-color: var(--text);
+  background: var(--surface-2);
+}
+.option input {
+  accent-color: var(--text);
+  margin: 0;
+}

@@ -1,0 +1,98 @@
+.intro {
+  max-width: 640px;
+  margin-bottom: 2rem;
+}
+.intro h1 {
+  font-family: var(--font-read);
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+.intro p {
+  color: var(--muted);
+  margin: 0;
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 1.25rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.placeholder {
+  justify-content: center;
+  align-items: center;
+  color: var(--muted);
+  border-style: dashed;
+  background: transparent;
+  min-height: 180px;
+}
+
+.meta {
+  display: flex;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.level {
+  padding: 0.1rem 0.5rem;
+  border-radius: 4px;
+  background: var(--surface-2);
+}
+.stage {
+  padding: 0.1rem 0.5rem;
+  border-radius: 4px;
+  background: var(--learning);
+  color: var(--learning-ink);
+}
+
+.title {
+  font-family: var(--font-read);
+  font-size: 1.35rem;
+}
+.summary {
+  margin: 0;
+  color: var(--muted);
+}
+
+.counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+}
+.counts span {
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+}
+.countNew {
+  background: var(--new);
+  color: var(--new-ink);
+}
+.countLearning {
+  background: var(--learning);
+  color: var(--learning-ink);
+}
+.countKnown {
+  background: var(--surface-2);
+  color: var(--muted);
+}
+
+.cta {
+  margin-top: auto;
+  align-self: flex-start;
+}

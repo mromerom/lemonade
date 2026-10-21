@@ -1,0 +1,244 @@
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 2.5rem;
+  align-items: start;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 680px;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+}
+.legend span:not(.legendHint) {
+  padding: 0.05rem 0.45rem;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+}
+.statusNew {
+  background: var(--new);
+  color: var(--new-ink);
+  border-color: transparent !important;
+}
+.statusLearning {
+  background: var(--learning);
+  color: var(--learning-ink);
+  border-color: transparent !important;
+}
+.legendHint {
+  color: var(--muted);
+  margin-left: 0.25rem;
+}
+
+.text {
+  font-family: var(--font-read);
+  font-size: 1.3rem;
+  line-height: 1.9;
+}
+
+.paragraph {
+  margin-bottom: 1.4rem;
+}
+.paragraph p {
+  margin: 0;
+}
+
+.word {
+  display: inline;
+  padding: 0.05em 0.12em;
+  margin: 0 -0.12em;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  font: inherit;
+  line-height: inherit;
+  color: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.word:hover {
+  box-shadow: inset 0 -2px 0 var(--muted);
+}
+.new {
+  background: var(--new);
+  color: var(--new-ink);
+}
+.learning {
+  background: var(--learning);
+  color: var(--learning-ink);
+}
+.selected {
+  outline: 2px solid var(--text);
+  outline-offset: 1px;
+}
+
+.translateBtn {
+  margin-top: 0.35rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: var(--font-ui);
+  font-size: 0.8rem;
+  color: var(--muted);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.translation {
+  margin-top: 0.4rem !important;
+  padding-left: 0.8rem;
+  border-left: 3px solid var(--border);
+  font-family: var(--font-ui);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.doneHint {
+  margin: -0.75rem 0 0;
+  text-align: right;
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+
+/* Word panel: sticky sidebar on desktop, bottom sheet on phones */
+.panel {
+  position: sticky;
+  top: 5rem;
+}
+
+.card,
+.empty {
+  padding: 1.1rem 1.2rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.empty {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+  border-style: dashed;
+  background: transparent;
+}
+
+.cardHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+.cardWord {
+  margin: 0;
+  font-family: var(--font-read);
+  font-size: 1.6rem;
+  font-weight: 600;
+}
+.close {
+  border: 0;
+  background: none;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 0.1rem 0.3rem;
+}
+.lemma {
+  margin: 0.1rem 0 0;
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+.lemma span {
+  font-family: var(--font-read);
+  font-style: italic;
+}
+.gloss {
+  margin: 0.6rem 0 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+.noteText {
+  margin: 0.35rem 0 0;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.statusRow {
+  display: flex;
+  gap: 0.4rem;
+  margin-top: 1rem;
+}
+.statusBtn {
+  flex: 1;
+  padding: 0.45rem 0.6rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: transparent;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.statusBtn:hover {
+  background: var(--surface-2);
+}
+.pick_learning {
+  background: var(--learning) !important;
+  color: var(--learning-ink);
+  border-color: transparent;
+}
+.pick_known {
+  background: var(--surface-2) !important;
+  border-color: var(--text);
+}
+
+@media (max-width: 860px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+  .text {
+    font-size: 1.2rem;
+  }
+  .panel {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: auto;
+    z-index: 20;
+    padding: 0 0.75rem 0.75rem;
+    transform: translateY(110%);
+    transition: transform 0.2s ease;
+  }
+  .panelOpen {
+    transform: translateY(0);
+  }
+  .card {
+    box-shadow: 0 -6px 24px rgb(0 0 0 / 0.15);
+  }
+  .empty {
+    display: none;
+  }
+  /* Leave room so the sheet doesn't cover the last lines */
+  .column {
+    padding-bottom: 12rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel {
+    transition: none;
+  }
+}
+
+.run {
+  white-space: nowrap;
+}
