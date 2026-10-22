@@ -15,6 +15,8 @@ All learner data stays in `localStorage`. **Reset demo** in the header restores 
 
 ## Development
 
+Requires Node 24 LTS, 24.22.1 or later (see `.nvmrc`; run `nvm use`).
+
 ```bash
 npm install
 npm run dev      # local dev server
