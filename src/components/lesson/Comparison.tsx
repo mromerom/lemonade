@@ -1,6 +1,13 @@
 import { Link } from 'react-router-dom';
 import { isSlip, VERDICT_LABEL, type Verdict } from '../../lib/grade';
-import { gradeTarget, targetAnswer, targetLabel, type TargetGrade } from '../../lib/gradeTarget';
+import {
+  distractorNote,
+  gradeTarget,
+  optionsLang,
+  targetAnswer,
+  targetLabel,
+  type TargetGrade,
+} from '../../lib/gradeTarget';
 import { findEvidence } from '../../lib/textWords';
 import { tokenize } from '../../lib/tokenize';
 import { useLearner } from '../../store/learnerStore';
@@ -46,7 +53,8 @@ export default function Comparison({ text, lesson }: Props) {
     const confusions = [...new Map(grade.confusions.map((c) => [c.id, c])).values()];
     const correction = lesson.corrections[t.id] ?? '';
     const corrected = grade.verdict === 'correct' || gradeTarget(t, correction).verdict === 'correct';
-    return { t, guess, guessedRight, typed, grade, confusions, correction, corrected };
+    const guessNote = distractorNote(t, guess);
+    return { t, guess, guessedRight, guessNote, typed, grade, confusions, correction, corrected };
   });
 
   const before = rows.filter((r) => r.guessedRight).length;
@@ -112,7 +120,7 @@ export default function Comparison({ text, lesson }: Props) {
                 <dt>Your guess</dt>
                 <dd>
                   <Mark ok={r.guessedRight} />
-                  <span lang={r.t.kind === 'meaning' ? 'en' : 'es'}>{r.guess?.text ?? '—'}</span>
+                  <span lang={optionsLang(r.t)}>{r.guess?.text ?? '—'}</span>
                 </dd>
               </div>
               <div>
@@ -123,6 +131,13 @@ export default function Comparison({ text, lesson }: Props) {
                 </dd>
               </div>
             </dl>
+
+            {r.guessNote && (
+              <p className={styles.guessNote}>
+                <span className={styles.guessNoteLabel}>About your guess</span>
+                {r.guessNote}
+              </p>
+            )}
 
             <p className={`${styles.verdict} ${styles[verdictClass(r.grade.verdict)]}`}>
               {VERDICT_LABEL[r.grade.verdict]}

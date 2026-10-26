@@ -26,6 +26,11 @@ export interface QAItem {
 export interface QuestionOption {
   id: string;
   text: string;
+  /**
+   * Why this distractor is wrong, shown after reading if the learner picked it.
+   * Verb-form options that match another person's form get a note automatically.
+   */
+  note?: string;
 }
 
 /** Subject labels for verb forms, in display order. */
@@ -36,6 +41,8 @@ interface TargetBase {
   /** Before reading: multiple choice, no feedback */
   pre: {
     prompt: string;
+    /** Language of the options; defaults to English for meaning targets, Spanish for verb forms */
+    optionsLang?: 'es' | 'en';
     /** English help for the prompt, shown on request */
     promptEn?: string;
     options: QuestionOption[];

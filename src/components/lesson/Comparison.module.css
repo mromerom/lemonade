@@ -248,3 +248,19 @@
     gap: 0;
   }
 }
+
+.guessNote {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.6rem;
+  margin: 0.75rem 0 0;
+  font-size: 0.9rem;
+}
+.guessNoteLabel {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+}

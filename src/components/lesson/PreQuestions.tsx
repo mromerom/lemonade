@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useLearner } from '../../store/learnerStore';
 import type { LessonProgress, Text } from '../../types';
+import { optionsLang } from '../../lib/gradeTarget';
 import TargetPrompt from './TargetPrompt';
 import shared from './shared.module.css';
 import styles from './PreQuestions.module.css';
@@ -63,7 +64,7 @@ export default function PreQuestions({ text, lesson, onDone }: Props) {
                         dispatch({ type: 'setPreAnswer', textId: text.id, targetId: t.id, optionId: o.id })
                       }
                     />
-                    <span lang={t.kind === 'meaning' ? 'en' : 'es'}>{o.text}</span>
+                    <span lang={optionsLang(t)}>{o.text}</span>
                   </label>
                 ))}
               </div>

@@ -118,7 +118,7 @@ export const mercado: Text = {
     baratas: { gloss: 'cheap', lemma: 'barato', note: 'feminine plural' },
     brilla: { gloss: 'shines', lemma: 'brillar', note: 'él/ella, present' },
     bufanda: { gloss: 'scarf' },
-    caras: { gloss: 'expensive', lemma: 'caro', note: 'feminine plural' },
+    caras: { gloss: 'expensive', lemma: 'caro', note: 'feminine plural. As a noun, caras also means "faces" (una cara).' },
     casa: { gloss: 'house; home', note: '"volver a casa" = to go back home' },
     cerca: { gloss: 'near', note: '"cerca de" = near' },
     compramos: { gloss: 'we buy', lemma: 'comprar', note: 'nosotros, present' },
@@ -175,7 +175,7 @@ export const mercado: Text = {
     primer: { gloss: 'first', lemma: 'primero', note: 'shortened before a masculine noun' },
     primero: { gloss: 'first; at first' },
     puesto: { gloss: 'stall; stand (at a market)' },
-    puestos: { gloss: 'stalls; stands', lemma: 'puesto' },
+    puestos: { gloss: 'stalls; stands', lemma: 'puesto', note: 'Puesto can also mean a job or position.' },
     quiere: { gloss: 'wants', lemma: 'querer', note: 'él/ella, present (e → ie)' },
     regala: { gloss: 'gives (as a gift)', lemma: 'regalar', note: 'él/ella, present' },
     roja: { gloss: 'red', lemma: 'rojo', note: 'feminine' },
@@ -207,6 +207,14 @@ export const mercado: Text = {
   },
 
   // ---------- What this reading teaches ----------
+  //
+  // Writing the before-reading options:
+  // - A meaning asked about in a sentence offers the word's other real meanings
+  //   (caras: expensive / faces / dear), so context decides.
+  // - "How do you say X?" offers real Spanish look-alikes (bufanda / bufón / bufete).
+  // - Verb forms offer other persons of the same verb, plus look-alike verbs
+  //   (vamos / vemos, compramos / comparamos).
+  // - Give each trap a note: it's shown after reading if the learner picked it.
   targets: [
     {
       id: 'bufanda',
@@ -214,13 +222,14 @@ export const mercado: Text = {
       word: 'bufanda',
       gloss: 'scarf',
       pre: {
-        prompt: '¿Qué significa «bufanda»?',
-        promptEn: 'What does “bufanda” mean?',
+        prompt: '¿Cómo se dice «scarf» en español?',
+        promptEn: 'How do you say “scarf” in Spanish?',
+        optionsLang: 'es',
         options: [
-          { id: 'a', text: 'hat' },
-          { id: 'b', text: 'scarf' },
-          { id: 'c', text: 'glove' },
-          { id: 'd', text: 'coat' },
+          { id: 'a', text: 'bufón', note: 'Bufón means “jester” or “clown”.' },
+          { id: 'b', text: 'bufanda' },
+          { id: 'c', text: 'bufete', note: 'Bufete is a lawyer’s office.' },
+          { id: 'd', text: 'bufido', note: 'Bufido is a snort, like an angry animal makes.' },
         ],
         correctOptionId: 'b',
       },
@@ -243,7 +252,7 @@ export const mercado: Text = {
         promptEn: 'Every Saturday, I go to the market. (ir = to go)',
         options: [
           { id: 'a', text: 'va' },
-          { id: 'b', text: 'vas' },
+          { id: 'b', text: 'doy', note: 'Doy is from dar: “I give”. It rhymes with voy.' },
           { id: 'c', text: 'voy' },
           { id: 'd', text: 'van' },
         ],
@@ -259,23 +268,27 @@ export const mercado: Text = {
     {
       id: 'puesto',
       kind: 'meaning',
-      word: 'puesto',
-      gloss: 'stall (at a market)',
+      word: 'puestos',
+      gloss: 'stalls (at a market)',
       pre: {
-        prompt: '¿Qué significa «puesto»?',
-        promptEn: 'What does “puesto” mean?',
+        prompt: '«Hay muchos puestos de frutas.» ¿Qué significa «puestos»?',
+        promptEn: '“There are many puestos of fruit.” What does “puestos” mean?',
         options: [
-          { id: 'a', text: 'street' },
-          { id: 'b', text: 'basket' },
-          { id: 'c', text: 'price' },
-          { id: 'd', text: 'stall (at a market)' },
+          {
+            id: 'a',
+            text: 'jobs',
+            note: 'Puesto can mean a job or position (“un puesto de trabajo”), but puestos de frutas at a market are stalls.',
+          },
+          { id: 'b', text: 'stalls' },
+          { id: 'c', text: 'ports', note: 'Ports are puertos, with an r. Puestos has an s.' },
+          { id: 'd', text: 'baskets', note: 'Baskets are cestas.' },
         ],
-        correctOptionId: 'd',
+        correctOptionId: 'b',
       },
       post: {
         prompt: '¿Cómo se dice «stall» (at a market) en español?',
         promptEn: 'How do you say “stall” (at a market) in Spanish?',
-        accept: ['puesto'],
+        accept: ['puesto', 'puestos'],
       },
       match: ['puesto', 'puestos'],
     },
@@ -313,12 +326,20 @@ export const mercado: Text = {
         prompt: '«Las naranjas son caras.» ¿Qué significa «caras»?',
         promptEn: '“The oranges are caras.” What does “caras” mean?',
         options: [
-          { id: 'a', text: 'cheap' },
-          { id: 'b', text: 'ripe' },
-          { id: 'c', text: 'expensive' },
-          { id: 'd', text: 'fresh' },
+          {
+            id: 'a',
+            text: 'faces',
+            note: 'Caras can also be a noun meaning “faces” (una cara = a face). Here it describes the oranges, so it’s the adjective caro.',
+          },
+          { id: 'b', text: 'expensive' },
+          {
+            id: 'c',
+            text: 'dear (beloved)',
+            note: 'Caro can mean “dear”, as in “caro amigo”. Oranges aren’t dear in that sense, though.',
+          },
+          { id: 'd', text: 'cheap', note: 'That’s the opposite: cheap is barato (baratas).' },
         ],
-        correctOptionId: 'c',
+        correctOptionId: 'b',
       },
       post: {
         prompt: '¿Cómo se dice «expensive» en español?',
@@ -339,11 +360,11 @@ export const mercado: Text = {
         promptEn: 'My grandfather and I go to the second stall. (ir = to go)',
         options: [
           { id: 'a', text: 'van' },
-          { id: 'b', text: 'vamos' },
-          { id: 'c', text: 'voy' },
-          { id: 'd', text: 'va' },
+          { id: 'b', text: 'vemos', note: 'Vemos is from ver: “we see”. One letter away from vamos.' },
+          { id: 'c', text: 'vamos' },
+          { id: 'd', text: 'voy' },
         ],
-        correctOptionId: 'b',
+        correctOptionId: 'c',
       },
       post: {
         prompt: 'Mi abuelo y yo ___ al segundo puesto. (ir)',
@@ -358,13 +379,14 @@ export const mercado: Text = {
       word: 'después',
       gloss: 'afterward; after',
       pre: {
-        prompt: '¿Qué significa «después»?',
-        promptEn: 'What does “después” mean?',
+        prompt: '¿Cómo se dice «afterward» en español?',
+        promptEn: 'How do you say “afterward” in Spanish?',
+        optionsLang: 'es',
         options: [
-          { id: 'a', text: 'before' },
-          { id: 'b', text: 'afterward' },
-          { id: 'c', text: 'always' },
-          { id: 'd', text: 'because' },
+          { id: 'a', text: 'despacio', note: 'Despacio means “slowly”.' },
+          { id: 'b', text: 'después' },
+          { id: 'c', text: 'despierto', note: 'Despierto means “awake”.' },
+          { id: 'd', text: 'antes', note: 'Antes is the opposite: “before”.' },
         ],
         correctOptionId: 'b',
       },
@@ -387,8 +409,12 @@ export const mercado: Text = {
         promptEn: 'Afterward, we buy bread and flowers. (comprar = to buy)',
         options: [
           { id: 'a', text: 'compran' },
-          { id: 'b', text: 'compro' },
-          { id: 'c', text: 'compra' },
+          {
+            id: 'b',
+            text: 'comparamos',
+            note: 'Comparamos is from comparar: “we compare”. Look closely: compr-, not compar-.',
+          },
+          { id: 'c', text: 'compraron', note: 'Compraron is past tense: “they bought”.' },
           { id: 'd', text: 'compramos' },
         ],
         correctOptionId: 'd',

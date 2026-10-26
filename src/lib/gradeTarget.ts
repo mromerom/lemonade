@@ -1,4 +1,4 @@
-import type { Person, Target } from '../types';
+import type { Person, QuestionOption, Target } from '../types';
 import { gradeAnswer, normalize, stripAccents, type Grade } from './grade';
 
 export interface TargetGrade extends Grade {
@@ -41,4 +41,25 @@ export function targetLabel(target: Target): string {
 /** The answer to show as correct. */
 export function targetAnswer(target: Target): string {
   return target.post.accept[0];
+}
+
+/** Language the before-reading options are written in. */
+export function optionsLang(target: Target): 'es' | 'en' {
+  return target.pre.optionsLang ?? (target.kind === 'meaning' ? 'en' : 'es');
+}
+
+/**
+ * Why a picked distractor is wrong: the option's own note, or for verb forms,
+ * which person the picked form belongs to.
+ */
+export function distractorNote(target: Target, option: QuestionOption | undefined): string | null {
+  if (!option || option.id === target.pre.correctOptionId) return null;
+  if (option.note) return option.note;
+  if (target.kind === 'form') {
+    const match = (Object.entries(target.forms) as [Person, string][]).find(
+      ([, form]) => normalize(form) === normalize(option.text),
+    );
+    if (match) return `«${option.text}» is the ${match[0]} form. With ${target.person}, it's «${targetAnswer(target)}».`;
+  }
+  return null;
 }
