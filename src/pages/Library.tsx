@@ -21,9 +21,10 @@ export default function Library() {
       <section className={styles.intro}>
         <h1>Library</h1>
         <p>
-          Each reading has four short steps: <strong>guess</strong> the answers before you read,{' '}
-          <strong>read</strong> with tap-to-translate, <strong>recall</strong> the answers from
-          memory, then <strong>compare</strong> what changed.
+          Each reading teaches a handful of new words and verb forms in four steps:{' '}
+          <strong>guess</strong> them before you read, <strong>read</strong> the story with
+          tap-to-translate, <strong>recall</strong> them from memory, then <strong>compare</strong>{' '}
+          what changed.
         </p>
       </section>
 

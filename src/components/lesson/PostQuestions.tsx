@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useLearner } from '../../store/learnerStore';
 import type { LessonProgress, Text } from '../../types';
+import TargetPrompt from './TargetPrompt';
 import shared from './shared.module.css';
 
 interface Props {
@@ -10,13 +11,13 @@ interface Props {
 }
 
 /**
- * Recall: the same questions, typed from memory with the text hidden.
- * Producing an answer is harder than recognizing one, which is the point.
+ * Recall: the same words and verb forms, typed from memory with the text hidden.
+ * Typing a word is harder than picking it from a list, which is the point.
  */
 export default function PostQuestions({ text, lesson, onDone }: Props) {
   const { dispatch } = useLearner();
   const [showEnglish, setShowEnglish] = useState(false);
-  const blank = text.questions.filter((q) => !lesson.postAnswers[q.id]?.trim()).length;
+  const blank = text.targets.filter((t) => !lesson.postAnswers[t.id]?.trim()).length;
 
   return (
     <section className={shared.stack} aria-labelledby="post-heading">
@@ -25,48 +26,38 @@ export default function PostQuestions({ text, lesson, onDone }: Props) {
       </h2>
       <div className={shared.note}>
         <div>
-          <p className={shared.noteTitle}>Now answer from memory.</p>
+          <p className={shared.noteTitle}>Now type them from memory.</p>
           <p>
-            The text is hidden on purpose — pulling an answer out of memory makes it stick. Short
-            answers in Spanish are fine. If you can't remember, leave it blank.
+            The text is hidden on purpose: pulling a word out of memory makes it stick. Type the
+            Spanish word, or the verb form that fills the blank. If you can't remember, leave it blank.
           </p>
         </div>
       </div>
 
       <div className={shared.toolbar}>
         <label className={shared.toggle}>
-          <input
-            type="checkbox"
-            checked={showEnglish}
-            onChange={(e) => setShowEnglish(e.target.checked)}
-          />
-          Show questions in English
+          <input type="checkbox" checked={showEnglish} onChange={(e) => setShowEnglish(e.target.checked)} />
+          Show English help
         </label>
       </div>
 
       <ol className={shared.questions}>
-        {text.questions.map((q, i) => (
-          <li key={q.id} className={shared.question}>
-            <label htmlFor={`post-${q.id}`} className={shared.prompt} lang="es">
-              <span className={shared.number}>{i + 1}.</span>
-              {q.prompt}
+        {text.targets.map((t, i) => (
+          <li key={t.id} className={shared.question}>
+            <label htmlFor={`post-${t.id}`}>
+              <TargetPrompt target={t} prompt={t.post.prompt} index={i} />
             </label>
-            {showEnglish && <p className={shared.promptEn}>{q.promptEn}</p>}
+            {showEnglish && t.post.promptEn && <p className={shared.promptEn}>{t.post.promptEn}</p>}
             <input
-              id={`post-${q.id}`}
+              id={`post-${t.id}`}
               className={shared.input}
               lang="es"
               autoComplete="off"
-              autoCapitalize="sentences"
+              autoCapitalize="none"
               spellCheck={false}
-              value={lesson.postAnswers[q.id] ?? ''}
+              value={lesson.postAnswers[t.id] ?? ''}
               onChange={(e) =>
-                dispatch({
-                  type: 'setPostAnswer',
-                  textId: text.id,
-                  questionId: q.id,
-                  answer: e.target.value,
-                })
+                dispatch({ type: 'setPostAnswer', textId: text.id, targetId: t.id, answer: e.target.value })
               }
             />
           </li>
@@ -74,9 +65,7 @@ export default function PostQuestions({ text, lesson, onDone }: Props) {
       </ol>
 
       <div className={shared.actions}>
-        <span className={shared.hint}>
-          {blank > 0 ? `${blank} left blank` : 'All answered'}
-        </span>
+        <span className={shared.hint}>{blank > 0 ? `${blank} left blank` : 'All answered'}</span>
         <button type="button" className="btn btn-primary" onClick={onDone}>
           See how I did →
         </button>

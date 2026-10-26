@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useReducer, type ReactNode } from 'react';
 import type { LearnerState, LessonProgress, LessonStage, ReviewItem, WordStatus } from '../types';
 
-const STORAGE_KEY = 'lemonade:learner:v1';
+const STORAGE_KEY = 'lemonade:learner:v2';
 const DAY = 24 * 60 * 60 * 1000;
 
 /** Words the demo learner already knows, so the reader looks like a real A1–A2 profile. */
@@ -14,7 +14,7 @@ const DEMO_KNOWN = [
 function createDemoState(): LearnerState {
   const now = Date.now();
   return {
-    version: 1,
+    version: 2,
     profile: { name: 'Demo learner' },
     words: Object.fromEntries(
       DEMO_KNOWN.map((w) => [w, { status: 'known' as const, lookups: 0, updatedAt: now }]),
@@ -29,7 +29,7 @@ function load(): LearnerState {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw) as LearnerState;
-      if (parsed.version === 1) return parsed;
+      if (parsed.version === 2) return parsed;
     }
   } catch {
     // Storage blocked or corrupt: fall through to a fresh demo profile.
@@ -51,10 +51,10 @@ type Action =
   | { type: 'markKnown'; keys: string[] }
   | { type: 'startLesson'; textId: string }
   | { type: 'setStage'; textId: string; stage: LessonStage }
-  | { type: 'setPreAnswer'; textId: string; questionId: string; optionId: string }
-  | { type: 'setPostAnswer'; textId: string; questionId: string; answer: string }
-  | { type: 'setCorrection'; textId: string; questionId: string; text: string }
-  | { type: 'completeLesson'; textId: string; missedQuestionIds: string[] }
+  | { type: 'setPreAnswer'; textId: string; targetId: string; optionId: string }
+  | { type: 'setPostAnswer'; textId: string; targetId: string; answer: string }
+  | { type: 'setCorrection'; textId: string; targetId: string; text: string }
+  | { type: 'completeLesson'; textId: string; missedTargetIds: string[] }
   | { type: 'restartLesson'; textId: string }
   | { type: 'resetAll' };
 
@@ -110,23 +110,23 @@ function reducer(state: LearnerState, action: Action): LearnerState {
     case 'setPreAnswer':
       return updateLesson(state, action.textId, (l) => ({
         ...l,
-        preAnswers: { ...l.preAnswers, [action.questionId]: action.optionId },
+        preAnswers: { ...l.preAnswers, [action.targetId]: action.optionId },
       }));
     case 'setPostAnswer':
       return updateLesson(state, action.textId, (l) => ({
         ...l,
-        postAnswers: { ...l.postAnswers, [action.questionId]: action.answer },
+        postAnswers: { ...l.postAnswers, [action.targetId]: action.answer },
       }));
     case 'setCorrection':
       return updateLesson(state, action.textId, (l) => ({
         ...l,
-        corrections: { ...l.corrections, [action.questionId]: action.text },
+        corrections: { ...l.corrections, [action.targetId]: action.text },
       }));
     case 'completeLesson': {
-      const fresh: ReviewItem[] = action.missedQuestionIds.map((questionId) => ({
-        id: `${action.textId}:${questionId}`,
+      const fresh: ReviewItem[] = action.missedTargetIds.map((targetId) => ({
+        id: `${action.textId}:${targetId}`,
         textId: action.textId,
-        questionId,
+        targetId,
         createdAt: now,
         dueAt: now + 2 * DAY,
       }));

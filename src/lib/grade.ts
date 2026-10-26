@@ -9,9 +9,10 @@ import { findConfusions, type SpellingConfusion } from './spellingConfusions';
  *   accent    – right word, missing or wrong accent marks
  *   spelling  – right word, with a common Spanish spelling confusion (b/v, ll/y, …)
  *   typo      – right word, off by one letter
+ *   form      – a real form of the verb, but for the wrong subject (set by gradeTarget)
  *   incorrect – the keyword isn't there
  */
-export type Verdict = 'correct' | 'accent' | 'spelling' | 'typo' | 'incorrect';
+export type Verdict = 'correct' | 'accent' | 'spelling' | 'typo' | 'form' | 'incorrect';
 
 export interface Grade {
   verdict: Verdict;
@@ -19,7 +20,7 @@ export interface Grade {
   confusions: SpellingConfusion[];
 }
 
-const RANK: Record<Verdict, number> = { correct: 4, accent: 3, spelling: 2, typo: 1, incorrect: 0 };
+const RANK: Record<Verdict, number> = { correct: 5, accent: 4, spelling: 3, typo: 2, form: 1, incorrect: 0 };
 
 export function isSlip(v: Verdict): boolean {
   return v === 'accent' || v === 'spelling' || v === 'typo';
@@ -111,5 +112,6 @@ export const VERDICT_LABEL: Record<Verdict, string> = {
   accent: 'Check the accents',
   spelling: 'Common spelling mix-up',
   typo: 'Looks like a typo',
+  form: 'Wrong verb form',
   incorrect: 'Not quite',
 };

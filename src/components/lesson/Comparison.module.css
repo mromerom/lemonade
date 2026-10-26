@@ -206,3 +206,45 @@
   font-weight: 600;
   font-size: 0.85rem;
 }
+
+.evidenceHead {
+  margin: 0 0 0.35rem;
+  font-family: var(--font-ui);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.evidenceHead span {
+  font-family: var(--font-read);
+}
+.evidenceSentence {
+  margin: 0;
+}
+.evidencePair {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0;
+}
+.evidencePair div {
+  display: grid;
+  grid-template-columns: 7.5rem 1fr;
+  gap: 0.6rem;
+  align-items: baseline;
+}
+.evidencePair dt {
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+.evidencePair dd {
+  margin: 0;
+  min-width: 0;
+}
+@media (max-width: 520px) {
+  .evidencePair div {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}

@@ -1,8 +1,11 @@
 import { Link } from 'react-router-dom';
-import { gradeAnswer, isSlip, normalize, stripAccents, VERDICT_LABEL, type Verdict } from '../../lib/grade';
+import { isSlip, VERDICT_LABEL, type Verdict } from '../../lib/grade';
+import { gradeTarget, targetAnswer, targetLabel, type TargetGrade } from '../../lib/gradeTarget';
+import { findEvidence } from '../../lib/textWords';
 import { tokenize } from '../../lib/tokenize';
 import { useLearner } from '../../store/learnerStore';
-import type { ComprehensionQuestion, LessonProgress, Text } from '../../types';
+import type { LessonProgress, Target, Text } from '../../types';
+import TargetPrompt from './TargetPrompt';
 import shared from './shared.module.css';
 import styles from './Comparison.module.css';
 
@@ -11,41 +14,51 @@ interface Props {
   lesson: LessonProgress;
 }
 
-const VERDICT_EXPLAIN: Record<Exclude<Verdict, 'correct'>, string> = {
-  accent: 'You remembered the right word — just the accent marks are off.',
-  spelling: 'You remembered the right word — the spelling tripped you up.',
-  typo: 'You remembered the right word, but it looks mistyped.',
-  incorrect: "This one didn't stick yet.",
-};
+function explain(target: Target, grade: TargetGrade, typed: string): string {
+  switch (grade.verdict) {
+    case 'correct':
+      return '';
+    case 'accent':
+      return 'You remembered the right word. Just the accent marks are off.';
+    case 'spelling':
+      return 'You remembered the right word. The spelling tripped you up.';
+    case 'typo':
+      return 'You remembered the right word, but it looks mistyped.';
+    case 'form':
+      return target.kind === 'form' && grade.usedPerson
+        ? `«${typed}» is the ${grade.usedPerson} form. With ${target.person}, it's «${targetAnswer(target)}».`
+        : 'Right verb, wrong form.';
+    case 'incorrect':
+      return typed ? "This one didn't stick yet." : 'No answer yet. Have another look at it below.';
+  }
+}
 
 export default function Comparison({ text, lesson }: Props) {
   const { dispatch } = useLearner();
   const finished = lesson.stage === 'done';
 
-  const rows = text.questions.map((q) => {
-    const guess = q.options.find((o) => o.id === lesson.preAnswers[q.id]);
-    const guessedRight = lesson.preAnswers[q.id] === q.correctOptionId;
-    const typed = lesson.postAnswers[q.id]?.trim() ?? '';
-    const grade = typed ? gradeAnswer(typed, q.keywordSets) : null;
-    const verdict: Verdict = grade?.verdict ?? 'incorrect';
+  const rows = text.targets.map((t) => {
+    const guess = t.pre.options.find((o) => o.id === lesson.preAnswers[t.id]);
+    const guessedRight = lesson.preAnswers[t.id] === t.pre.correctOptionId;
+    const typed = lesson.postAnswers[t.id]?.trim() ?? '';
+    const grade = gradeTarget(t, typed);
     // One explanation per kind of mix-up, even if it happened twice.
-    const confusions = [...new Map((grade?.confusions ?? []).map((c) => [c.id, c])).values()];
-    const correction = lesson.corrections[q.id] ?? '';
-    const corrected =
-      verdict === 'correct' || gradeAnswer(correction, q.keywordSets).verdict === 'correct';
-    return { q, guess, guessedRight, typed, verdict, confusions, correction, corrected };
+    const confusions = [...new Map(grade.confusions.map((c) => [c.id, c])).values()];
+    const correction = lesson.corrections[t.id] ?? '';
+    const corrected = grade.verdict === 'correct' || gradeTarget(t, correction).verdict === 'correct';
+    return { t, guess, guessedRight, typed, grade, confusions, correction, corrected };
   });
 
   const before = rows.filter((r) => r.guessedRight).length;
-  const after = rows.filter((r) => r.verdict === 'correct').length;
-  const slips = rows.filter((r) => isSlip(r.verdict)).length;
+  const after = rows.filter((r) => r.grade.verdict === 'correct').length;
+  const slips = rows.filter((r) => isSlip(r.grade.verdict)).length;
   const pending = rows.filter((r) => !r.corrected).length;
 
   function finish() {
     dispatch({
       type: 'completeLesson',
       textId: text.id,
-      missedQuestionIds: rows.filter((r) => r.verdict !== 'correct').map((r) => r.q.id),
+      missedTargetIds: rows.filter((r) => r.grade.verdict !== 'correct').map((r) => r.t.id),
     });
   }
 
@@ -67,16 +80,12 @@ export default function Comparison({ text, lesson }: Props) {
           →
         </span>
         <div className={styles.score}>
-          <span className={styles.scoreLabel}>Recalled after reading</span>
+          <span className={styles.scoreLabel}>Typed after reading</span>
           <span className={styles.scoreValue}>
             {after}
             <small>/{rows.length}</small>
           </span>
-          {slips > 0 && (
-            <span className={styles.scoreNote}>
-              +{slips} with a small slip
-            </span>
-          )}
+          {slips > 0 && <span className={styles.scoreNote}>+{slips} with a small slip</span>}
         </div>
       </div>
 
@@ -85,8 +94,8 @@ export default function Comparison({ text, lesson }: Props) {
           <div>
             <p className={shared.noteTitle}>Type out each correct answer.</p>
             <p>
-              Writing the correction yourself, with the passage in front of you, does more than
-              just reading it. Missed questions will come back in a few days.
+              Writing the correction yourself, with the example in front of you, does more than just
+              reading it. Words and forms you missed will come back in a few days.
             </p>
           </div>
         </div>
@@ -94,33 +103,30 @@ export default function Comparison({ text, lesson }: Props) {
 
       <ol className={shared.questions}>
         {rows.map((r, i) => (
-          <li key={r.q.id} className={shared.question}>
-            <p className={shared.prompt} lang="es">
-              <span className={shared.number}>{i + 1}.</span>
-              {r.q.prompt}
-            </p>
-            <p className={shared.promptEn}>{r.q.promptEn}</p>
+          <li key={r.t.id} className={shared.question}>
+            <TargetPrompt target={r.t} prompt={r.t.post.prompt} index={i} />
+            {r.t.post.promptEn && <p className={shared.promptEn}>{r.t.post.promptEn}</p>}
 
             <dl className={styles.answers}>
               <div>
                 <dt>Your guess</dt>
                 <dd>
                   <Mark ok={r.guessedRight} />
-                  <span lang="es">{r.guess?.text ?? '—'}</span>
+                  <span lang={r.t.kind === 'meaning' ? 'en' : 'es'}>{r.guess?.text ?? '—'}</span>
                 </dd>
               </div>
               <div>
                 <dt>From memory</dt>
                 <dd>
-                  <Mark ok={r.verdict === 'correct'} partial={isSlip(r.verdict)} />
+                  <Mark ok={r.grade.verdict === 'correct'} partial={isSlip(r.grade.verdict)} />
                   <span lang="es">{r.typed || <em className={styles.blank}>left blank</em>}</span>
                 </dd>
               </div>
             </dl>
 
-            <p className={`${styles.verdict} ${styles[r.verdict]}`}>
-              {VERDICT_LABEL[r.verdict]}
-              {r.verdict !== 'correct' && <span> — {VERDICT_EXPLAIN[r.verdict]}</span>}
+            <p className={`${styles.verdict} ${styles[verdictClass(r.grade.verdict)]}`}>
+              {VERDICT_LABEL[r.grade.verdict]}
+              {r.grade.verdict !== 'correct' && <span>. {explain(r.t, r.grade, r.typed)}</span>}
             </p>
             {r.confusions.length > 0 && (
               <ul className={styles.confusions}>
@@ -133,37 +139,28 @@ export default function Comparison({ text, lesson }: Props) {
               </ul>
             )}
 
-            {r.verdict !== 'correct' && (
+            {r.grade.verdict !== 'correct' && (
               <>
-                <blockquote className={styles.evidence} lang="es">
-                  <Evidence text={text} question={r.q} />
-                </blockquote>
-                <p className={styles.model}>
-                  Answer: <strong lang="es">{r.q.answer}</strong>
-                </p>
-                <label className={styles.correctionLabel} htmlFor={`fix-${r.q.id}`}>
-                  Type the correct answer
+                <EvidenceBlock text={text} target={r.t} />
+                <label className={styles.correctionLabel} htmlFor={`fix-${r.t.id}`}>
+                  Type «{targetAnswer(r.t)}»
                 </label>
                 <div className={styles.correctionRow}>
                   <input
-                    id={`fix-${r.q.id}`}
+                    id={`fix-${r.t.id}`}
                     className={`${shared.input} ${styles.correctionInput}`}
                     lang="es"
                     autoComplete="off"
+                    autoCapitalize="none"
                     spellCheck={false}
                     disabled={finished}
                     value={r.correction}
                     onChange={(e) =>
-                      dispatch({
-                        type: 'setCorrection',
-                        textId: text.id,
-                        questionId: r.q.id,
-                        text: e.target.value,
-                      })
+                      dispatch({ type: 'setCorrection', textId: text.id, targetId: r.t.id, text: e.target.value })
                     }
                   />
                   {r.corrected && (
-                    <span className={styles.fixed} role="status">
+                    <span className={styles.fixed} role="status" aria-label="Corrected">
                       ✓
                     </span>
                   )}
@@ -203,6 +200,10 @@ export default function Comparison({ text, lesson }: Props) {
   );
 }
 
+function verdictClass(v: Verdict): string {
+  return v === 'form' ? 'incorrect' : v;
+}
+
 function Mark({ ok, partial }: { ok: boolean; partial?: boolean }) {
   const kind = ok ? 'ok' : partial ? 'partial' : 'miss';
   const label = ok ? 'correct' : partial ? 'almost' : 'incorrect';
@@ -213,20 +214,48 @@ function Mark({ ok, partial }: { ok: boolean; partial?: boolean }) {
   );
 }
 
-/** The paragraph holding the answer, with the answer's keywords highlighted. */
-function Evidence({ text, question }: { text: Text; question: ComprehensionQuestion }) {
-  const targets = new Set(
-    question.keywordSets.flat().flatMap((k) => normalize(k).split(' ').map(stripAccents)),
+/** Where the target appears in the reading. Verb forms show the story next to the retelling. */
+function EvidenceBlock({ text, target }: { text: Text; target: Target }) {
+  const evidence = findEvidence(text, target.match);
+  if (!evidence) return null;
+  const forms = new Set(target.match.map((m) => m.toLocaleLowerCase('es')));
+  const narrator = text.retelling.narrator;
+
+  return (
+    <div className={styles.evidence}>
+      <p className={styles.evidenceHead}>
+        <span lang="es">{targetLabel(target)}</span>
+        {target.kind === 'meaning' ? ` = ${target.gloss}` : ` (${target.tense})`}
+      </p>
+      {target.kind === 'form' && evidence.retelling ? (
+        <dl className={styles.evidencePair}>
+          <div>
+            <dt>Story</dt>
+            <dd lang="es">
+              <Highlight sentence={evidence.story} forms={forms} />
+            </dd>
+          </div>
+          <div>
+            <dt>{narrator} tells it</dt>
+            <dd lang="es">
+              <Highlight sentence={evidence.retelling} forms={forms} />
+            </dd>
+          </div>
+        </dl>
+      ) : (
+        <p className={styles.evidenceSentence} lang="es">
+          <Highlight sentence={evidence.story} forms={forms} />
+        </p>
+      )}
+    </div>
   );
-  const tokens = tokenize(text.paragraphs[question.evidenceParagraph].es);
+}
+
+function Highlight({ sentence, forms }: { sentence: string; forms: Set<string> }) {
   return (
     <>
-      {tokens.map((t, i) =>
-        t.kind === 'word' && targets.has(stripAccents(t.key)) ? (
-          <mark key={i}>{t.text}</mark>
-        ) : (
-          <span key={i}>{t.text}</span>
-        ),
+      {tokenize(sentence).map((t, i) =>
+        t.kind === 'word' && forms.has(t.key) ? <mark key={i}>{t.text}</mark> : <span key={i}>{t.text}</span>,
       )}
     </>
   );

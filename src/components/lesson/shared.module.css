@@ -99,3 +99,24 @@
   flex-direction: column;
   gap: 1.25rem;
 }
+
+.kind {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+.prompt {
+  display: block;
+}
+.blank {
+  display: inline-block;
+  min-width: 3.5em;
+  margin: 0 0.15em;
+  border-bottom: 2px solid var(--text);
+  color: transparent;
+  line-height: 1.1;
+}
