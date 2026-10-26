@@ -1,0 +1,349 @@
+# Lemonade lexicon: every word and phrase the readings use, shared by all texts.
+#
+# Format
+#   term                      a word or a phrase, lowercase, at the start of the line
+#     gloss: ...              the main meaning (sense "default")
+#     lemma: ...              dictionary form, if different
+#     note: ...               short grammar or usage note
+#     name: yes               proper noun: never highlighted or tracked
+#     words: a, b, c:sense    phrases only: which sense each word has inside the phrase
+#     sense ID: gloss         another meaning; use it in a text as [term:ID]
+#       lemma: / note: ...    indented under a sense, they belong to that sense
+#
+# In a story, [le gusta] marks a phrase and [mañana:morning] picks a sense.
+# Lines starting with # are comments.
+
+# ---------- Phrases ----------
+
+todos los sábados
+  gloss: every Saturday
+  words: todos, los, sábados
+
+hace frío
+  gloss: it's cold (weather)
+  note: Spanish says "it makes cold": hacer + frío
+  words: hace, frío
+
+cerca del
+  gloss: near the
+  note: cerca de + el
+  words: cerca, del
+
+por eso
+  gloss: that's why; so
+  words: por, eso
+
+más tarde
+  gloss: later
+  words: más, tarde
+
+le gusta
+  gloss: she likes; he likes
+  lemma: gustar
+  note: Literally "it pleases her". The thing liked is the subject: "a Lucía le gusta el mercado".
+  words: le, gusta
+
+me gusta
+  gloss: I like
+  lemma: gustar
+  note: Literally "it pleases me".
+  words: me, gusta
+
+# ---------- Words ----------
+
+a
+  gloss: to; at
+  note: "va a preparar" = is going to make. "A Lucía le gusta" marks who likes it.
+abuelo
+  gloss: grandfather
+además
+  gloss: also; on top of that
+al
+  gloss: to the
+  note: a + el
+allí
+  gloss: there
+amarillas
+  gloss: yellow
+  lemma: amarillo
+  note: feminine plural
+antes
+  gloss: before
+  note: "antes de" + infinitive = before ...ing
+baratas
+  gloss: cheap
+  lemma: barato
+  note: feminine plural
+brilla
+  gloss: shines
+  lemma: brillar
+  note: él/ella, present
+bufanda
+  gloss: scarf
+caras
+  gloss: expensive
+  lemma: caro
+  note: adjective, feminine plural
+  sense faces: faces
+    lemma: cara
+    note: noun, plural: "una cara" = a face
+casa
+  gloss: house; home
+  note: "volver a casa" = to go back home
+cerca
+  gloss: near
+  note: "cerca de" = near
+compramos
+  gloss: we buy
+  lemma: comprar
+  note: nosotros, present
+compran
+  gloss: they buy
+  lemma: comprar
+  note: ellos/ellas, present
+comprar
+  gloss: to buy
+con
+  gloss: with
+contenta
+  gloss: happy; pleased
+  lemma: contento
+  note: feminine
+cuestan
+  gloss: cost
+  lemma: costar
+  note: ellos/ellas, present (o → ue)
+de
+  gloss: of; from
+del
+  gloss: of the
+  note: de + el
+después
+  gloss: afterward; after
+  note: "después de" + infinitive = after ...ing
+dos
+  gloss: two
+el
+  gloss: the
+  note: masculine singular
+en
+  gloss: in; at; on
+eso
+  gloss: that
+estoy
+  gloss: I am (state)
+  lemma: estar
+  note: yo, present
+está
+  gloss: is (location or state)
+  lemma: estar
+  note: él/ella, present
+euros
+  gloss: euros
+  lemma: euro
+flores
+  gloss: flowers
+  lemma: flor
+frutas
+  gloss: fruits
+  lemma: fruta
+frío
+  gloss: cold
+gusta
+  gloss: pleases
+  lemma: gustar
+  note: él/ella, present. Used for "like": "me gusta" = I like it.
+hace
+  gloss: makes; does
+  lemma: hacer
+  note: él/ella, present. Also used for weather.
+hay
+  gloss: there is; there are
+  lemma: haber
+hoy
+  gloss: today
+kilo
+  gloss: kilo
+kilos
+  gloss: kilos
+  lemma: kilo
+la
+  gloss: the
+  note: feminine singular
+las
+  gloss: the
+  note: feminine plural
+le
+  gloss: to him; to her
+  note: indirect object pronoun
+limón
+  gloss: lemon
+lleva
+  gloss: is wearing; carries
+  lemma: llevar
+  note: él/ella, present
+llevo
+  gloss: I'm wearing; I carry
+  lemma: llevar
+  note: yo, present
+los
+  gloss: the
+  note: masculine plural
+lucía
+  gloss: Lucía
+  name: yes
+madre
+  gloss: mother
+mañana
+  gloss: tomorrow
+  sense morning: morning
+    note: "la mañana" = the morning. "mañana por la mañana" = tomorrow morning.
+me
+  gloss: me; to me
+  note: object pronoun
+mercado
+  gloss: market
+mi
+  gloss: my
+mucho
+  gloss: a lot; very much
+muchos
+  gloss: many
+  lemma: mucho
+  note: masculine plural
+más
+  gloss: more
+naranja
+  gloss: orange
+naranjas
+  gloss: oranges
+  lemma: naranja
+no
+  gloss: no; not
+  note: goes before the verb: "no va" = doesn't go
+pan
+  gloss: bread
+para
+  gloss: for
+pastel
+  gloss: cake
+pequeña
+  gloss: small
+  lemma: pequeño
+  note: feminine
+pero
+  gloss: but
+plaza
+  gloss: town square
+por
+  gloss: for; by; through
+  note: "por la mañana" = in the morning
+porque
+  gloss: because
+preparar
+  gloss: to prepare; to make
+primer
+  gloss: first
+  lemma: primero
+  note: shortened before a masculine noun
+primero
+  gloss: first; at first
+puesto
+  gloss: stall; stand (at a market)
+  sense job: job; position
+    note: "un puesto de trabajo" = a job
+puestos
+  gloss: stalls; stands
+  lemma: puesto
+  sense jobs: jobs; positions
+    lemma: puesto
+quiere
+  gloss: wants
+  lemma: querer
+  note: él/ella, present (e → ie)
+regala
+  gloss: gives (as a gift)
+  lemma: regalar
+  note: él/ella, present
+roja
+  gloss: red
+  lemma: rojo
+  note: feminine
+río
+  gloss: river
+segundo
+  gloss: second
+sol
+  gloss: sun
+son
+  gloss: are
+  lemma: ser
+  note: ellos/ellas, present
+su
+  gloss: his; her; their
+sábados
+  gloss: Saturdays
+  lemma: sábado
+sí
+  gloss: yes
+tarde
+  gloss: late
+  sense afternoon: afternoon
+    note: "la tarde" = the afternoon
+tercer
+  gloss: third
+  lemma: tercero
+  note: shortened before a masculine noun
+todos
+  gloss: all; every
+  lemma: todo
+tres
+  gloss: three
+un
+  gloss: a; an
+  note: masculine
+una
+  gloss: a; an
+  note: feminine
+unas
+  gloss: some
+  note: feminine plural
+va
+  gloss: goes
+  lemma: ir
+  note: él/ella, present
+vamos
+  gloss: we go
+  lemma: ir
+  note: nosotros, present
+van
+  gloss: they go
+  lemma: ir
+  note: ellos/ellas, present
+vecina
+  gloss: neighbor
+  lemma: vecino
+  note: feminine
+vendedora
+  gloss: seller; vendor
+  lemma: vendedor
+  note: feminine
+verduras
+  gloss: vegetables
+  lemma: verdura
+volvemos
+  gloss: we go back
+  lemma: volver
+  note: nosotros, present
+voy
+  gloss: I go
+  lemma: ir
+  note: yo, present
+vuelven
+  gloss: they go back
+  lemma: volver
+  note: ellos/ellas, present (o → ue)
+y
+  gloss: and
+yo
+  gloss: I

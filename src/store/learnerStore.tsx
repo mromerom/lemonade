@@ -46,7 +46,7 @@ function save(state: LearnerState) {
 }
 
 type Action =
-  | { type: 'lookupWord'; key: string }
+  | { type: 'lookupWord'; key: string; sense?: string }
   | { type: 'setWordStatus'; key: string; status: WordStatus }
   | { type: 'markKnown'; keys: string[] }
   | { type: 'startLesson'; textId: string }
@@ -76,13 +76,15 @@ function reducer(state: LearnerState, action: Action): LearnerState {
   switch (action.type) {
     case 'lookupWord': {
       const prev = state.words[action.key];
-      // Looking up a new word starts learning it (LingQ-style).
+      // Looking up a new term starts learning it (LingQ-style).
       const status: WordStatus = !prev || prev.status === 'new' ? 'learning' : prev.status;
+      const sense = action.sense ?? 'default';
+      const senses = prev?.senses?.includes(sense) ? prev.senses : [...(prev?.senses ?? []), sense];
       return {
         ...state,
         words: {
           ...state.words,
-          [action.key]: { status, lookups: (prev?.lookups ?? 0) + 1, updatedAt: now },
+          [action.key]: { status, senses, lookups: (prev?.lookups ?? 0) + 1, updatedAt: now },
         },
       };
     }
@@ -92,14 +94,14 @@ function reducer(state: LearnerState, action: Action): LearnerState {
         ...state,
         words: {
           ...state.words,
-          [action.key]: { status: action.status, lookups: prev?.lookups ?? 0, updatedAt: now },
+          [action.key]: { ...prev, status: action.status, lookups: prev?.lookups ?? 0, updatedAt: now },
         },
       };
     }
     case 'markKnown': {
       const words = { ...state.words };
       for (const key of action.keys) {
-        words[key] = { status: 'known', lookups: words[key]?.lookups ?? 0, updatedAt: now };
+        words[key] = { ...words[key], status: 'known', lookups: words[key]?.lookups ?? 0, updatedAt: now };
       }
       return { ...state, words };
     }

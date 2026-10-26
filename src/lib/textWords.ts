@@ -1,7 +1,9 @@
+import { lookupTerm } from '../content';
 import type { LearnerState, Text, WordStatus } from '../types';
+import { parseMarkup, plainText } from './markup';
 import { tokenize } from './tokenize';
 
-/** Every Spanish string in a text: story, retelling, and Q&A. */
+/** Every Spanish string in a text (with markup): story, retelling, and Q&A. */
 export function spanishStrings(text: Text): string[] {
   return [
     ...text.story.map((p) => p.es),
@@ -10,12 +12,12 @@ export function spanishStrings(text: Text): string[] {
   ];
 }
 
-/** Unique trackable word keys in a text (proper nouns excluded). */
+/** Unique trackable terms in a text: words and bracketed phrases, proper nouns excluded. */
 export function textWordKeys(text: Text): string[] {
   const keys = new Set<string>();
   for (const s of spanishStrings(text)) {
-    for (const t of tokenize(s)) {
-      if (t.kind === 'word' && !text.glossary[t.key]?.name) keys.add(t.key);
+    for (const seg of parseMarkup(s)) {
+      if (seg.kind === 'term' && !lookupTerm(seg.key)?.name) keys.add(seg.key);
     }
   }
   return [...keys];
@@ -31,9 +33,9 @@ export function wordStatus(state: LearnerState, key: string): WordStatus {
   return state.words[key]?.status ?? 'new';
 }
 
-/** Split a paragraph into sentences, keeping punctuation. */
+/** Split a paragraph into sentences (markup removed), keeping punctuation. */
 export function sentences(es: string): string[] {
-  return es.split(/(?<=[.!?])\s+/).filter(Boolean);
+  return plainText(es).split(/(?<=[.!?])\s+/).filter(Boolean);
 }
 
 export interface Evidence {

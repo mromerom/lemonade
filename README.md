@@ -18,7 +18,26 @@ Each reading teaches a small set of **targets**: new words and verb forms.
 
 All learner data stays in `localStorage`. **Reset demo** in the header restores the demo learner profile.
 
-Reading content lives in `src/data/texts/`. Spelling mix-up rules and their explanations are in `src/lib/spellingConfusions.ts`.
+## Writing a reading
+
+Each reading has three parts:
+
+| File | What goes in it |
+|---|---|
+| `src/content/texts/<name>.txt` | The story, retelling and Q&A, with translations. The format is described at the top of `mercado.txt`. |
+| `src/content/lexicon.txt` | Every word and phrase, shared by all readings, with senses. The format is described at the top of the file. |
+| `src/data/texts/<name>.ts` | The questions (targets), with options and trap notes. Register it in `src/data/texts/index.ts`. |
+
+Markup in the story text:
+
+- `[le gusta]` groups words into one term. The reader highlights and tracks it as a unit, and its card lists each word's meaning.
+- `[mañana:morning]` uses a specific sense. Without it, a word uses its first (`gloss:`) meaning.
+
+Which terms a learner already knows is worked out at runtime from their saved words. You don't list it per story.
+
+`npm run check:content` checks everything and prints each reading's phrases and senses. It runs before every build and fails on unknown words, missing senses, a retelling that doesn't line up with the story, or a question about a word that isn't in the text.
+
+Spelling mix-up rules and their explanations are in `src/lib/spellingConfusions.ts`.
 
 ## Development
 
@@ -37,7 +56,8 @@ Stack: Vite, React, TypeScript, CSS Modules, React Router. Deployed on Vercel. `
 
 ```
 src/
-  data/texts/       reading content: paragraphs, glossary, questions
+  content/          story text files, shared lexicon, parser
+  data/texts/       questions for each reading
   lib/              tokenizer, answer grading, word stats
   store/            learner state (reducer + localStorage)
   pages/            Library, Lesson

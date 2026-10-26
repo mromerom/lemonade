@@ -325,3 +325,85 @@
 .qa .translateBtn {
   align-self: flex-start;
 }
+
+/* A bracketed phrase reads as one unit: one highlight, joined by an underline. */
+.phrase {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-decoration-color: color-mix(in srgb, currentColor 45%, transparent);
+  text-underline-offset: 0.22em;
+}
+
+.cardSection {
+  margin-top: 0.9rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border);
+}
+.cardLabel {
+  margin: 0 0 0.35rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+.parts {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.2rem;
+  font-size: 0.95rem;
+}
+.parts li {
+  display: grid;
+  grid-template-columns: minmax(4.5rem, auto) 1fr;
+  gap: 0.75rem;
+}
+.parts li span:first-child {
+  font-family: var(--font-read);
+  font-weight: 600;
+}
+.senses {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.45rem;
+  font-size: 0.95rem;
+}
+.senseGloss {
+  font-weight: 600;
+}
+.senseMeta {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+.senseMeta span {
+  font-family: var(--font-read);
+  font-style: italic;
+}
+.senseNote {
+  display: block;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+.moreBtn {
+  margin-top: 0.75rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+@media (max-width: 860px) {
+  .card {
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+}

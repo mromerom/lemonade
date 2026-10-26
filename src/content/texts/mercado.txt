@@ -1,0 +1,97 @@
+---
+id: un-sabado-en-el-mercado
+title: Un sábado en el mercado
+titleEn: A Saturday at the market
+level: A2
+summary: Lucía and her grandfather go shopping for oranges.
+narrator: Lucía
+example: Lucía va => voy
+---
+
+# How to write a story
+#
+# Three parts, in this order: "## Historia", "## Retelling", "## Preguntas".
+# Paragraphs are separated by a blank line. Spanish first, then its
+# translation on lines starting with ">".
+#
+# [le gusta]        groups words into one term (it must be in lexicon.txt)
+# [mañana:morning]  uses a specific sense of a word or phrase
+#
+# The retelling must line up with the story: same paragraphs, same
+# number of sentences in each, so sentences can be shown side by side.
+#
+# In Preguntas, each item is three lines, S: statement, Q: question,
+# A: answer, each followed by its "> " translation. Separate items with a
+# blank line. Lines starting with # are comments.
+
+## Historia
+
+[Todos los sábados], Lucía va al mercado con su abuelo. El mercado está en una plaza pequeña, [cerca del] río. Hay muchos puestos de frutas, verduras, pan y flores.
+> Every Saturday, Lucía goes to the market with her grandfather. The market is in a small square, near the river. There are many stalls of fruit, vegetables, bread and flowers.
+
+Hoy [hace frío], pero el sol brilla. Lucía lleva una bufanda roja. Su abuelo quiere comprar naranjas, porque mañana por la [mañana:morning] va a preparar un pastel para su vecina.
+> Today it's cold, but the sun is shining. Lucía is wearing a red scarf. Her grandfather wants to buy oranges, because tomorrow morning he is going to make a cake for his neighbor.
+
+En el primer puesto, las naranjas son caras. Cuestan tres euros el kilo. [Por eso], Lucía y su abuelo van al segundo puesto. Allí, las naranjas cuestan dos euros el kilo. Compran dos kilos. Además, la vendedora le regala un limón a Lucía.
+> At the first stall, the oranges are expensive. They cost three euros a kilo. That's why Lucía and her grandfather go to the second stall. There, the oranges cost two euros a kilo. They buy two kilos. On top of that, the seller gives Lucía a lemon.
+
+Después, compran pan y unas flores amarillas. [Más tarde], vuelven a casa. Lucía está contenta. A Lucía [le gusta] mucho el mercado.
+> Afterward, they buy bread and some yellow flowers. Later, they go back home. Lucía is happy. Lucía really likes the market.
+
+## Retelling
+
+[Todos los sábados], voy al mercado con mi abuelo. El mercado está en una plaza pequeña, [cerca del] río. Hay muchos puestos de frutas, verduras, pan y flores.
+> Every Saturday, I go to the market with my grandfather. The market is in a small square, near the river. There are many stalls of fruit, vegetables, bread and flowers.
+
+Hoy [hace frío], pero el sol brilla. Llevo una bufanda roja. Mi abuelo quiere comprar naranjas, porque mañana por la [mañana:morning] va a preparar un pastel para su vecina.
+> Today it's cold, but the sun is shining. I'm wearing a red scarf. My grandfather wants to buy oranges, because tomorrow morning he is going to make a cake for his neighbor.
+
+En el primer puesto, las naranjas son caras. Cuestan tres euros el kilo. [Por eso], mi abuelo y yo vamos al segundo puesto. Allí, las naranjas cuestan dos euros el kilo. Compramos dos kilos. Además, la vendedora me regala un limón.
+> At the first stall, the oranges are expensive. They cost three euros a kilo. That's why my grandfather and I go to the second stall. There, the oranges cost two euros a kilo. We buy two kilos. On top of that, the seller gives me a lemon.
+
+Después, compramos pan y unas flores amarillas. [Más tarde], volvemos a casa. Estoy contenta. [Me gusta] mucho el mercado.
+> Afterward, we buy bread and some yellow flowers. Later, we go back home. I'm happy. I really like the market.
+
+## Preguntas
+
+S: Lucía va al mercado con su abuelo.
+> Lucía goes to the market with her grandfather.
+Q: ¿Lucía va al mercado con su madre?
+> Does Lucía go to the market with her mother?
+A: No, Lucía no va al mercado con su madre. Va con su abuelo.
+> No, Lucía doesn't go to the market with her mother. She goes with her grandfather.
+
+S: Hoy [hace frío]. Lucía lleva una bufanda roja.
+> Today it's cold. Lucía is wearing a red scarf.
+Q: ¿Lucía lleva una bufanda roja?
+> Is Lucía wearing a red scarf?
+A: Sí, Lucía lleva una bufanda roja, porque [hace frío].
+> Yes, Lucía is wearing a red scarf, because it's cold.
+
+S: En el primer puesto, las naranjas son caras.
+> At the first stall, the oranges are expensive.
+Q: ¿Las naranjas son baratas en el primer puesto?
+> Are the oranges cheap at the first stall?
+A: No, las naranjas no son baratas en el primer puesto. Son caras: cuestan tres euros el kilo.
+> No, the oranges aren't cheap at the first stall. They're expensive: they cost three euros a kilo.
+
+S: Lucía y su abuelo van al segundo puesto.
+> Lucía and her grandfather go to the second stall.
+Q: ¿Lucía y su abuelo van al tercer puesto?
+> Do Lucía and her grandfather go to the third stall?
+A: No, no van al tercer puesto. Van al segundo puesto.
+> No, they don't go to the third stall. They go to the second stall.
+
+S: La vendedora le regala un limón a Lucía.
+> The seller gives Lucía a lemon.
+Q: ¿La vendedora le regala una naranja a Lucía?
+> Does the seller give Lucía an orange?
+A: No, la vendedora no le regala una naranja. Le regala un limón.
+> No, the seller doesn't give her an orange. She gives her a lemon.
+
+S: Primero compran naranjas. Después, compran pan y flores.
+> First they buy oranges. Afterward, they buy bread and flowers.
+Q: ¿Compran pan antes de comprar naranjas?
+> Do they buy bread before buying oranges?
+A: No, no compran pan antes. Compran pan después de comprar naranjas.
+> No, they don't buy bread before. They buy bread after buying oranges.

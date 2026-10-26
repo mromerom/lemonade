@@ -1,16 +1,29 @@
 // ---------- Content ----------
 
-export interface GlossEntry {
-  /** English meaning in this context */
+/** One meaning of a word or phrase. The first sense of an entry has id "default". */
+export interface Sense {
+  id: string;
   gloss: string;
   /** Dictionary form, when it differs from the surface form */
   lemma?: string;
-  /** Short grammar note, e.g. "yo, present" */
+  /** Short grammar or usage note */
   note?: string;
-  /** Proper nouns are not highlighted or tracked */
-  name?: boolean;
 }
 
+/** A word or phrase in the shared lexicon (src/content/lexicon.txt). */
+export interface LexiconEntry {
+  /** Lowercase surface form, e.g. "caras" or "le gusta" */
+  term: string;
+  senses: Sense[];
+  /** Proper nouns are not highlighted or tracked */
+  name?: boolean;
+  /** Phrases: the sense each word has inside the phrase */
+  words?: { word: string; sense?: string }[];
+}
+
+export type Lexicon = Record<string, LexiconEntry>;
+
+/** Spanish text may contain markup: [le gusta] groups words, [mañana:morning] picks a sense. */
 export interface Paragraph {
   es: string;
   en: string;
@@ -80,6 +93,8 @@ export type Target = MeaningTarget | FormTarget;
 
 export interface Text {
   id: string;
+  /** Source file, relative to src/content */
+  source: string;
   title: string;
   titleEn: string;
   level: string;
@@ -95,7 +110,6 @@ export interface Text {
   };
   /** Part 3: statements, questions and answers */
   qa: QAItem[];
-  glossary: Record<string, GlossEntry>;
   targets: Target[];
 }
 
@@ -105,6 +119,8 @@ export type WordStatus = 'new' | 'learning' | 'known';
 
 export interface WordRecord {
   status: WordStatus;
+  /** Senses of this term the learner has looked up, across all readings */
+  senses?: string[];
   lookups: number;
   updatedAt: number;
 }
@@ -135,7 +151,7 @@ export interface ReviewItem {
 export interface LearnerState {
   version: 2;
   profile: { name: string };
-  /** keyed by lowercase surface form */
+  /** keyed by lexicon term: a lowercase word or phrase */
   words: Record<string, WordRecord>;
   lessons: Record<string, LessonProgress>;
   reviewQueue: ReviewItem[];

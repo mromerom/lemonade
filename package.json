@@ -5,10 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "npm run check:content && tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "build:preview": "tsc -b && vite build --base ./ --outDir dist-preview"
+    "build:preview": "npm run check:content && tsc -b && vite build --base ./ --outDir dist-preview",
+    "check:content": "tsx --import ./scripts/register-raw.mjs scripts/check-content.ts"
   },
   "dependencies": {
     "react": "^19.3.1",
@@ -21,6 +22,7 @@
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.2",
     "oxlint": "^1.88.0",
+    "tsx": "^4.23.15",
     "typescript": "~6.0.3",
     "vite": "^8.3.4"
   },

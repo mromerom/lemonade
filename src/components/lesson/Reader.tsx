@@ -1,8 +1,10 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import { toRuns, tokenize } from '../../lib/tokenize';
+import { lookupTerm } from '../../content';
+import { parseMarkup, toSegmentRuns } from '../../lib/markup';
 import { textWordKeys, wordStatus } from '../../lib/textWords';
 import { useLearner } from '../../store/learnerStore';
-import type { Paragraph, Text, WordStatus } from '../../types';
+import type { Paragraph, Text } from '../../types';
+import WordCard from './WordCard';
 import shared from './shared.module.css';
 import styles from './Reader.module.css';
 
@@ -10,12 +12,6 @@ interface Props {
   text: Text;
   onDone: () => void;
 }
-
-const STATUS_LABEL: Record<WordStatus, string> = {
-  new: 'New',
-  learning: 'Learning',
-  known: 'Known',
-};
 
 function Part({ n, title, hint, children }: { n: number; title: string; hint: string; children: ReactNode }) {
   return (
@@ -34,7 +30,7 @@ function Part({ n, title, hint, children }: { n: number; title: string; hint: st
 
 export default function Reader({ text, onDone }: Props) {
   const { state, dispatch } = useLearner();
-  const [selected, setSelected] = useState<string | null>(null);
+  const [selected, setSelected] = useState<{ key: string; sense?: string } | null>(null);
   const [translated, setTranslated] = useState<Set<string>>(new Set());
   const [revealed, setRevealed] = useState<Set<number>>(new Set());
 
@@ -46,9 +42,9 @@ export default function Reader({ text, onDone }: Props) {
     return () => window.removeEventListener('keydown', onKey);
   }, []);
 
-  function select(key: string) {
-    setSelected(key);
-    dispatch({ type: 'lookupWord', key });
+  function select(key: string, sense?: string) {
+    setSelected({ key, sense });
+    dispatch({ type: 'lookupWord', key, sense });
   }
 
   const toggle = <T,>(set: Set<T>, value: T) => {
@@ -58,26 +54,32 @@ export default function Reader({ text, onDone }: Props) {
     return next;
   };
 
-  /** Spanish text where every word is a button. */
+  /** Spanish text where every term (word or bracketed phrase) is a button. */
   function tappable(es: string) {
     return (
       <>
-        {toRuns(tokenize(es)).map((run, r) =>
+        {toSegmentRuns(parseMarkup(es)).map((run, r) =>
           run.kind === 'space' ? (
             <span key={r}>{run.text}</span>
           ) : (
             <span key={r} className={styles.run}>
-              {run.tokens.map((t, j) => {
-                if (t.kind === 'other') return <span key={j}>{t.text}</span>;
-                const status = text.glossary[t.key]?.name ? 'known' : wordStatus(state, t.key);
+              {run.segments.map((seg, j) => {
+                if (seg.kind === 'other') return <span key={j}>{seg.text}</span>;
+                const status = lookupTerm(seg.key)?.name ? 'known' : wordStatus(state, seg.key);
+                const isSelected = selected?.key === seg.key && selected.sense === seg.sense;
                 return (
                   <button
                     key={j}
                     type="button"
-                    className={[styles.word, styles[status], selected === t.key ? styles.selected : ''].join(' ')}
-                    onClick={() => select(t.key)}
+                    className={[
+                      styles.word,
+                      styles[status],
+                      seg.phrase ? styles.phrase : '',
+                      isSelected ? styles.selected : '',
+                    ].join(' ')}
+                    onClick={() => select(seg.key, seg.sense)}
                   >
-                    {t.text}
+                    {seg.text}
                   </button>
                 );
               })}
@@ -125,8 +127,6 @@ export default function Reader({ text, onDone }: Props) {
   }
 
 
-  const entry = selected ? text.glossary[selected] : undefined;
-  const selectedStatus = selected ? wordStatus(state, selected) : 'new';
   const narrator = text.retelling.narrator;
 
   return (
@@ -213,38 +213,12 @@ export default function Reader({ text, onDone }: Props) {
         aria-label="Word details"
       >
         {selected ? (
-          <div className={styles.card}>
-            <div className={styles.cardHead}>
-              <p className={styles.cardWord} lang="es">
-                {selected}
-              </p>
-              <button type="button" className={styles.close} aria-label="Close" onClick={() => setSelected(null)}>
-                ×
-              </button>
-            </div>
-            {entry?.lemma && (
-              <p className={styles.lemma}>
-                from <span lang="es">{entry.lemma}</span>
-              </p>
-            )}
-            <p className={styles.gloss}>{entry?.gloss ?? 'No translation yet.'}</p>
-            {entry?.note && <p className={styles.noteText}>{entry.note}</p>}
-            {!entry?.name && (
-              <div className={styles.statusRow} role="group" aria-label="Word status">
-                {(['learning', 'known'] as const).map((s) => (
-                  <button
-                    key={s}
-                    type="button"
-                    aria-pressed={selectedStatus === s}
-                    className={`${styles.statusBtn} ${selectedStatus === s ? styles[`pick_${s}`] : ''}`}
-                    onClick={() => dispatch({ type: 'setWordStatus', key: selected, status: s })}
-                  >
-                    {STATUS_LABEL[s]}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+          <WordCard
+            key={`${selected.key}:${selected.sense ?? ''}`}
+            termKey={selected.key}
+            senseId={selected.sense}
+            onClose={() => setSelected(null)}
+          />
         ) : (
           <p className={styles.empty}>Tap a word to see what it means.</p>
         )}
