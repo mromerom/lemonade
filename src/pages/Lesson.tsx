@@ -16,9 +16,12 @@ export default function Lesson() {
   const { state, dispatch } = useLearner();
   const lesson = state.lessons[textId];
 
+  // Start the lesson when the page opens (a no-op if it's already in progress).
+  // Keyed on the text only, so a reset doesn't immediately re-create it.
+  const knownText = Boolean(text);
   useEffect(() => {
-    if (text && !lesson) dispatch({ type: 'startLesson', textId: text.id });
-  }, [text, lesson, dispatch]);
+    if (knownText) dispatch({ type: 'startLesson', textId });
+  }, [knownText, textId, dispatch]);
 
   // Each stage starts at the top of the page.
   const stage = lesson?.stage;

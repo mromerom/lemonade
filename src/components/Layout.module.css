@@ -6,7 +6,7 @@
 
 .header {
   position: sticky;
-  top: 0;
+  top: env(safe-area-inset-top, 0px);
   z-index: 10;
   display: flex;
   align-items: center;
@@ -66,4 +66,24 @@
   .main {
     padding: 1.25rem 1rem 3rem;
   }
+}
+
+.confirm {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.confirmText {
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+.danger {
+  padding: 0.35rem 0.9rem;
+  background: var(--bad-bg);
+  border-color: var(--bad);
+  color: var(--bad);
+}
+.danger:hover {
+  background: var(--bad-bg) !important;
+  filter: brightness(0.96);
 }

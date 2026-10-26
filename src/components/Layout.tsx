@@ -1,14 +1,17 @@
-import { Link, Outlet } from 'react-router-dom';
+import { useState } from 'react';
+import { Link, Outlet, useNavigate } from 'react-router-dom';
 import { useLearner } from '../store/learnerStore';
 import styles from './Layout.module.css';
 
 export default function Layout() {
   const { state, dispatch } = useLearner();
+  const navigate = useNavigate();
+  const [confirming, setConfirming] = useState(false);
 
   function reset() {
-    if (window.confirm('Reset the demo? This clears all progress and word statuses on this device.')) {
-      dispatch({ type: 'resetAll' });
-    }
+    dispatch({ type: 'resetAll' });
+    setConfirming(false);
+    navigate('/');
   }
 
   return (
@@ -19,10 +22,24 @@ export default function Layout() {
           Lemonade
         </Link>
         <div className={styles.right}>
-          <span className={styles.profile}>{state.profile.name}</span>
-          <button type="button" className="btn btn-quiet" onClick={reset}>
-            Reset demo
-          </button>
+          {confirming ? (
+            <div className={styles.confirm} role="group" aria-label="Confirm reset">
+              <span className={styles.confirmText}>Clear all progress?</span>
+              <button type="button" className={`btn ${styles.danger}`} onClick={reset}>
+                Reset
+              </button>
+              <button type="button" className="btn btn-quiet" onClick={() => setConfirming(false)}>
+                Cancel
+              </button>
+            </div>
+          ) : (
+            <>
+              <span className={styles.profile}>{state.profile.name}</span>
+              <button type="button" className="btn btn-quiet" onClick={() => setConfirming(true)}>
+                Reset demo
+              </button>
+            </>
+          )}
         </div>
       </header>
       <main className={styles.main}>
