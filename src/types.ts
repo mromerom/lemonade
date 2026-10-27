@@ -67,6 +67,11 @@ interface TargetBase {
     promptEn?: string;
     /** Accepted answers, written with accents */
     accept: string[];
+    /**
+     * Wrong answers worth explaining when typed, mapped to the explanation,
+     * e.g. a false friend: { excitante: 'Excitante is a false friend…' }
+     */
+    traps?: Record<string, string>;
   };
   /** Surface forms to find in the reading for evidence (lowercase) */
   match: string[];
@@ -87,6 +92,11 @@ export interface FormTarget extends TargetBase {
   tense: string;
   /** All forms of this verb in this tense, used to name a wrong-person answer */
   forms: Partial<Record<Person, string>>;
+  /**
+   * Same-person forms in the wrong tense or mood, mapped to a label, so a
+   * typed "emociona" for "emocione" is named as "present indicative", not a typo.
+   */
+  wrongForms?: Record<string, string>;
 }
 
 export type Target = MeaningTarget | FormTarget;

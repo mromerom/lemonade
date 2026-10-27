@@ -4,6 +4,17 @@ import { gradeAnswer, normalize, stripAccents, type Grade } from './grade';
 export interface TargetGrade extends Grade {
   /** For verb-form targets: the person whose form the learner typed instead */
   usedPerson?: Person;
+  /** For verb-form targets: the tense or mood of a wrong form the learner typed */
+  usedTense?: string;
+  /** Explanation for a typed trap answer (a false friend, a look-alike) */
+  trapNote?: string;
+}
+
+/** True when the normalized phrase appears in the answer as whole words. */
+function containsPhrase(answerNorm: string, phrase: string, bare = false): boolean {
+  const a = bare ? stripAccents(answerNorm) : answerNorm;
+  const p = bare ? stripAccents(normalize(phrase)) : normalize(phrase);
+  return ` ${a} `.includes(` ${p} `);
 }
 
 /**
@@ -16,17 +27,21 @@ export function gradeTarget(target: Target, answer: string): TargetGrade {
   const typed = answer.trim();
   if (!typed) return { verdict: 'incorrect', confusions: [] };
 
-  const tokens = normalize(typed).split(' ');
-  const accepted = target.post.accept.map((a) => normalize(a));
-  if (accepted.some((a) => tokens.includes(a))) return { verdict: 'correct', confusions: [] };
+  const norm = normalize(typed);
+  // Accepted answers may be several words ("he decidido", "lanzarse a la piscina").
+  if (target.post.accept.some((a) => containsPhrase(norm, a))) return { verdict: 'correct', confusions: [] };
+
+  for (const [trap, note] of Object.entries(target.post.traps ?? {})) {
+    if (containsPhrase(norm, trap, true)) return { verdict: 'incorrect', confusions: [], trapNote: note };
+  }
 
   if (target.kind === 'form') {
-    const bareTokens = tokens.map(stripAccents);
     for (const [person, form] of Object.entries(target.forms) as [Person, string][]) {
-      if (person === target.person) continue;
-      if (bareTokens.includes(stripAccents(normalize(form)))) {
-        return { verdict: 'form', confusions: [], usedPerson: person };
-      }
+      if (person === target.person || normalize(form) === normalize(targetAnswer(target))) continue;
+      if (containsPhrase(norm, form, true)) return { verdict: 'form', confusions: [], usedPerson: person };
+    }
+    for (const [form, tense] of Object.entries(target.wrongForms ?? {})) {
+      if (containsPhrase(norm, form, true)) return { verdict: 'form', confusions: [], usedTense: tense };
     }
   }
 
@@ -60,6 +75,8 @@ export function distractorNote(target: Target, option: QuestionOption | undefine
       ([, form]) => normalize(form) === normalize(option.text),
     );
     if (match) return `«${option.text}» is the ${match[0]} form. With ${target.person}, it's «${targetAnswer(target)}».`;
+    const tense = target.wrongForms?.[normalize(option.text)];
+    if (tense) return `«${option.text}» is the ${tense}. Here it's «${targetAnswer(target)}».`;
   }
   return null;
 }

@@ -407,3 +407,10 @@
     overflow-y: auto;
   }
 }
+
+/* While the word sheet is open on phones, leave room so it never covers the last lines or buttons. */
+@media (max-width: 860px) {
+  .layout:has(.panelOpen) .column {
+    padding-bottom: calc(60vh + 2rem);
+  }
+}

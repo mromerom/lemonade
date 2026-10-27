@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { isSlip, VERDICT_LABEL, type Verdict } from '../../lib/grade';
+import { isSlip, normalize, VERDICT_LABEL, type Verdict } from '../../lib/grade';
 import {
   distractorNote,
   gradeTarget,
@@ -32,10 +32,13 @@ function explain(target: Target, grade: TargetGrade, typed: string): string {
     case 'typo':
       return 'You remembered the right word, but it looks mistyped.';
     case 'form':
-      return target.kind === 'form' && grade.usedPerson
-        ? `«${typed}» is the ${grade.usedPerson} form. With ${target.person}, it's «${targetAnswer(target)}».`
-        : 'Right verb, wrong form.';
+      if (target.kind === 'form' && grade.usedPerson) {
+        return `«${typed}» is the ${grade.usedPerson} form. With ${target.person}, it's «${targetAnswer(target)}».`;
+      }
+      if (grade.usedTense) return `«${typed}» is the ${grade.usedTense}. Here it's «${targetAnswer(target)}».`;
+      return 'Right verb, wrong form.';
     case 'incorrect':
+      if (grade.trapNote) return grade.trapNote;
       return typed ? "This one didn't stick yet." : 'No answer yet. Have another look at it below.';
   }
 }
@@ -53,7 +56,9 @@ export default function Comparison({ text, lesson }: Props) {
     const confusions = [...new Map(grade.confusions.map((c) => [c.id, c])).values()];
     const correction = lesson.corrections[t.id] ?? '';
     const corrected = grade.verdict === 'correct' || gradeTarget(t, correction).verdict === 'correct';
-    const guessNote = distractorNote(t, guess);
+    // Skip the guess note when the typed answer repeats the same mistake: the verdict explains it.
+    const sameMistake = guess && normalize(guess.text) === normalize(typed) && grade.verdict !== 'correct';
+    const guessNote = sameMistake ? null : distractorNote(t, guess);
     return { t, guess, guessedRight, guessNote, typed, grade, confusions, correction, corrected };
   });
 

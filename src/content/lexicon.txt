@@ -49,6 +49,122 @@ me gusta
   note: Literally "it pleases me".
   words: me, gusta
 
+# ---------- Phrases: Andrés quiere emprender ----------
+
+no está mal
+  gloss: isn't bad; not bad
+  words: no, está, mal
+sin embargo
+  gloss: however
+  words: sin, embargo
+desde hace
+  gloss: for (a time that continues up to now)
+  note: "desde hace meses" = for months now. The verb stays in the present: "está harto desde hace meses".
+  words: desde, hace:ago
+harto de
+  gloss: fed up with
+  note: Agrees with the person: harto (m), harta (f).
+  words: harto, de
+todas las noches
+  gloss: every night
+  words: todas, las, noches
+echa un vistazo
+  gloss: has a look; takes a glance
+  lemma: echar un vistazo
+  words: echa, un, vistazo
+echo un vistazo
+  gloss: I have a look; I take a glance
+  lemma: echar un vistazo
+  words: echo, un, vistazo
+ofertas de empleo
+  gloss: job listings; job offers
+  words: ofertas, de, empleo
+le dice nada
+  gloss: (doesn't) speak to him; mean anything to him
+  note: "Ninguno le dice nada" = none of them speaks to him. Spanish stacks negatives: ninguno … nada.
+  words: le, dice, nada
+me dice nada
+  gloss: (doesn't) speak to me; mean anything to me
+  words: me, dice, nada
+le parecen
+  gloss: seem to him
+  lemma: parecer
+  note: Works like gustar: the things that seem are the subject.
+  words: le, parecen
+me parecen
+  gloss: seem to me
+  lemma: parecer
+  words: me, parecen
+más de lo mismo
+  gloss: more of the same
+  words: más, de, lo, mismo
+hace dos años
+  gloss: two years ago
+  note: A finished time, so the verb goes in the pretérito indefinido: "hace dos años montó".
+  words: hace:ago, dos, años
+al principio
+  gloss: at first; in the beginning
+  words: al, principio
+al final
+  gloss: in the end; finally
+  words: al, final
+le da miedo
+  gloss: he's scared; it scares him
+  note: Literally "it gives him fear".
+  words: le, da, miedo
+me da miedo
+  gloss: I'm scared; it scares me
+  words: me, da, miedo
+sale mal
+  gloss: goes wrong; turns out badly
+  lemma: salir mal
+  words: sale, mal
+saldrá bien
+  gloss: will go well; will work out
+  lemma: salir bien
+  note: Future of salir: saldré, saldrás, saldrá…
+  words: saldrá, bien
+le da vueltas
+  gloss: mulls it over; keeps thinking about it
+  lemma: darle vueltas a algo
+  note: Literally "gives it turns". "Le da vueltas a la idea" = he keeps turning the idea over.
+  words: le, da, vueltas
+le doy vueltas
+  gloss: I mull it over; I keep thinking about it
+  lemma: darle vueltas a algo
+  words: le, doy, vueltas
+se arma de valor
+  gloss: plucks up his courage
+  lemma: armarse de valor
+  note: Literally "arms himself with courage".
+  words: se, arma, de, valor
+me armo de valor
+  gloss: I pluck up my courage
+  lemma: armarse de valor
+  words: me, armo, de, valor
+lanzarse a la piscina
+  gloss: to take the plunge
+  note: Literally "to throw oneself into the pool". In Spain you'll also hear "tirarse a la piscina".
+  words: lanzarse, a, la, piscina
+lanzarme a la piscina
+  gloss: to take the plunge (myself)
+  lemma: lanzarse a la piscina
+  words: lanzarme, a, la, piscina
+de momento
+  gloss: for now; for the time being
+  words: de, momento
+por fin
+  gloss: at last; finally
+  words: por, fin
+de verdad
+  gloss: really; truly
+  words: de, verdad
+le gustan
+  gloss: he likes; she likes (more than one thing)
+  lemma: gustar
+  note: Plural because the things liked are plural: "le gustan las ofertas".
+  words: le, gustan
+
 # ---------- Words ----------
 
 a
@@ -157,6 +273,8 @@ hace
   gloss: makes; does
   lemma: hacer
   note: él/ella, present. Also used for weather.
+  sense ago: ago
+    note: hace + a length of time: "hace dos años" = two years ago
 hay
   gloss: there is; there are
   lemma: haber
@@ -347,3 +465,416 @@ y
   gloss: and
 yo
   gloss: I
+
+# ---------- Words: Andrés quiere emprender ----------
+
+algo
+  gloss: something
+amiga
+  gloss: friend
+  lemma: amigo
+  note: feminine
+andrés
+  gloss: Andrés
+  name: yes
+aplicación
+  gloss: app; application
+arma
+  gloss: arms
+  lemma: armar
+  note: él/ella, present. "Armarse de valor" = to pluck up courage.
+armo
+  gloss: I arm
+  lemma: armar
+  note: yo, present
+arriesgado
+  gloss: risky
+años
+  gloss: years
+  lemma: año
+ayudar
+  gloss: to help
+  note: "ayudar a alguien a + infinitive" = to help someone do something
+barrio
+  gloss: neighborhood
+bien
+  gloss: well; good
+café
+  gloss: coffee
+cenar
+  gloss: to have dinner
+  note: "después de cenar" = after dinner
+cientos
+  gloss: hundreds
+como
+  gloss: as; like
+compañeros
+  gloss: colleagues; coworkers
+  lemma: compañero
+cuenta
+  gloss: tells
+  lemma: contar
+  note: él/ella, present (o → ue)
+cuento
+  gloss: I tell
+  lemma: contar
+  note: yo, present (o → ue)
+curro
+  gloss: job; work
+  note: Spain, informal. From currar = to work.
+cómo
+  gloss: how
+da
+  gloss: gives
+  lemma: dar
+  note: él/ella, present
+decide
+  gloss: decides
+  lemma: decidir
+  note: él/ella, present
+decidido
+  gloss: decided
+  lemma: decidir
+  note: Participle. "Ha decidido" (pretérito perfecto): in Spain it's the usual past for today, as in "esta mañana ha decidido".
+dedicar
+  gloss: to devote; to spend (time)
+dedicará
+  gloss: will devote; will spend (time)
+  lemma: dedicar
+  note: él/ella, future
+dedicaré
+  gloss: I will devote; I will spend (time)
+  lemma: dedicar
+  note: yo, future
+deja
+  gloss: leaves; quits
+  lemma: dejar
+  note: "dejar el trabajo" = to quit your job
+desde
+  gloss: since; from
+dice
+  gloss: says; tells
+  lemma: decir
+  note: él/ella, present
+diseño
+  gloss: design
+domingo
+  gloss: Sunday
+doy
+  gloss: I give
+  lemma: dar
+  note: yo, present
+durante
+  gloss: during; for
+echa
+  gloss: throws; puts
+  lemma: echar
+  note: él/ella, present. "Echar un vistazo" = to have a look.
+echo
+  gloss: I throw; I put
+  lemma: echar
+  note: yo, present
+embargo
+  gloss: embargo
+  note: Only "sin embargo" (however) is common.
+emociona
+  gloss: excites; moves (emotionally)
+  lemma: emocionar
+  note: Present indicative. "Algo que le emociona": the thing exists, so the indicative. Compare "un trabajo que le emocione".
+emocionante
+  gloss: exciting
+  note: Watch out: "excitante" is a false friend. It means stimulating, or sexually arousing.
+emocione
+  gloss: excites
+  lemma: emocionar
+  note: Present subjunctive (él/ella). "Quiere un trabajo que le emocione": he hasn't found that job, so the subjunctive.
+empleo
+  gloss: employment; job
+emprendedora
+  gloss: entrepreneur
+  lemma: emprendedor
+  note: feminine
+emprendes
+  gloss: you start a business; you take on
+  lemma: emprender
+  note: tú, present
+empresa
+  gloss: company; business
+enseguida
+  gloss: right away; at once
+es
+  gloss: is
+  lemma: ser
+  note: él/ella, present
+esta
+  gloss: this
+  note: feminine. "Esta mañana" = this morning.
+fin
+  gloss: end
+final
+  gloss: end
+grande
+  gloss: big; large
+gustan
+  gloss: please
+  lemma: gustar
+  note: ellos/ellas, present. "Le gustan" = he likes them.
+ha
+  gloss: has
+  lemma: haber
+  note: Helper verb for the pretérito perfecto: "ha decidido" = has decided / decided (today).
+harto
+  gloss: fed up
+he
+  gloss: I have
+  lemma: haber
+  note: Helper verb: "he decidido" = I have decided / I decided (today).
+idea
+  gloss: idea
+iguales
+  gloss: the same; alike
+  lemma: igual
+ingeniero
+  gloss: engineer
+internet
+  gloss: internet
+  note: "por internet" / "en internet" = online
+intentas
+  gloss: you try
+  lemma: intentar
+  note: tú, present
+lanzarme
+  gloss: to throw myself
+  lemma: lanzarse
+lanzarse
+  gloss: to throw oneself; to launch oneself
+lo
+  gloss: it
+  note: object pronoun. "Lo mismo" = the same (thing).
+madrid
+  gloss: Madrid
+  name: yes
+majos
+  gloss: nice; friendly
+  lemma: majo
+  note: Spain, informal
+mal
+  gloss: bad; badly
+marta
+  gloss: Marta
+  name: yes
+meses
+  gloss: months
+  lemma: mes
+miedo
+  gloss: fear
+mientras
+  gloss: while
+mis
+  gloss: my
+  note: plural: "mis compañeros"
+mismo
+  gloss: same
+momento
+  gloss: moment
+montar
+  gloss: to ride; to get on
+  sense setup: to set up (a business)
+    note: "montar una empresa" = to set up a company
+montó
+  gloss: rode; got on
+  lemma: montar
+  sense setup: set up (a business)
+    lemma: montar
+    note: él/ella, pretérito indefinido. "Hace dos años" is a finished time, so the indefinido.
+muy
+  gloss: very
+nada
+  gloss: nothing; anything
+  note: After a negative, it means "anything": "ninguno le dice nada".
+noches
+  gloss: nights
+  lemma: noche
+ninguno
+  gloss: none; not one
+nunca
+  gloss: never
+ofertas
+  gloss: offers; listings
+  lemma: oferta
+pague
+  gloss: pays
+  lemma: pagar
+  note: Present subjunctive: "un trabajo que le pague más" (a job that would pay him more).
+pantallas
+  gloss: screens
+  lemma: pantalla
+parecen
+  gloss: seem
+  lemma: parecer
+  note: ellos/ellas, present
+piscina
+  gloss: swimming pool
+pregunta
+  gloss: asks
+  lemma: preguntar
+  note: él/ella, present
+principio
+  gloss: beginning
+profesor
+  gloss: teacher
+propia
+  gloss: own
+  lemma: propio
+  note: feminine. "Su propia empresa" = his own company.
+proyecto
+  gloss: project
+pyme
+  gloss: small or medium-sized business
+  note: Written in lowercase. An acronym for pequeña y mediana empresa.
+pymes
+  gloss: small and medium-sized businesses
+  lemma: pyme
+que
+  gloss: that; which; who
+quiero
+  gloss: I want
+  lemma: querer
+  note: yo, present (e → ie)
+qué
+  gloss: what
+  note: "¿Por qué?" = why?
+reuniones
+  gloss: meetings
+  lemma: reunión
+sabe
+  gloss: knows
+  lemma: saber
+  note: él/ella, present
+sabrás
+  gloss: you will know
+  lemma: saber
+  note: tú, future (irregular: sabr-)
+saldrá
+  gloss: will turn out; will go out
+  lemma: salir
+  note: él/ella, future (irregular: saldr-)
+sale
+  gloss: goes out; turns out
+  lemma: salir
+  note: él/ella, present
+se
+  gloss: himself; herself; oneself
+  note: Reflexive pronoun: "se siente" = he feels.
+seguiré
+  gloss: I will keep (doing)
+  lemma: seguir
+  note: yo, future. "Seguir + -ando/-iendo" = to keep doing.
+seguirá
+  gloss: will keep (doing)
+  lemma: seguir
+  note: él/ella, future. "Seguir + -ando/-iendo" = to keep doing.
+semanas
+  gloss: weeks
+  lemma: semana
+si
+  gloss: if
+  note: No accent. "Sí" with an accent means yes.
+siente
+  gloss: feels
+  lemma: sentir
+  note: él/ella, present (e → ie). "Se siente" = he feels.
+siento
+  gloss: I feel
+  lemma: sentir
+  note: yo, present (e → ie). "Me siento" = I feel.
+sin
+  gloss: without
+socias
+  gloss: partners (business)
+  lemma: socio
+  note: feminine plural
+software
+  gloss: software
+sueldo
+  gloss: salary; pay
+sus
+  gloss: his; her; their
+  note: plural: "sus compañeros"
+sé
+  gloss: I know
+  lemma: saber
+  note: yo, present (irregular)
+también
+  gloss: also; too
+tardes
+  gloss: afternoons; evenings
+  lemma: tarde
+  note: In Spain la tarde runs until about 8 or 9 p.m.
+tengo
+  gloss: I have
+  lemma: tener
+  note: yo, present. "Tengo treinta años" = I'm thirty.
+tiene
+  gloss: has
+  lemma: tener
+  note: él/ella, present. Age uses tener: "tiene treinta y dos años".
+toma
+  gloss: takes
+  lemma: tomar
+  note: él/ella, present
+  sense have: has (food or drink)
+    lemma: tomar
+    note: "tomar un café" = to have a coffee
+tomo
+  gloss: I take
+  lemma: tomar
+  note: yo, present
+  sense have: I have (food or drink)
+    lemma: tomar
+trabaja
+  gloss: works
+  lemma: trabajar
+  note: él/ella, present
+trabajando
+  gloss: working
+  lemma: trabajar
+  note: gerund
+trabajo
+  gloss: job; work
+  sense iwork: I work
+    lemma: trabajar
+    note: yo, present
+treinta
+  gloss: thirty
+tú
+  gloss: you
+  note: informal. "Tu" without an accent means "your".
+valor
+  gloss: courage; value
+vender
+  gloss: to sell
+verdad
+  gloss: truth
+ve
+  gloss: sees
+  lemma: ver
+  note: él/ella, present
+vistazo
+  gloss: glance; look
+vive
+  gloss: lives
+  lemma: vivir
+  note: él/ella, present
+vivo
+  gloss: I live
+  lemma: vivir
+  note: yo, present
+todas
+  gloss: all; every
+  lemma: todo
+  note: feminine plural. "Todas las noches" = every night.
+vueltas
+  gloss: turns; laps
+  lemma: vuelta
+  note: "Darle vueltas a algo" = to keep thinking something over.
