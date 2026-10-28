@@ -18,7 +18,6 @@ export default function Layout() {
     <div className={styles.shell}>
       <header className={styles.header}>
         <Link to="/" className={styles.brand}>
-          <span className={styles.lemon} aria-hidden="true" />
           Lemonade
         </Link>
         <div className={styles.right}>

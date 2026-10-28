@@ -1,4 +1,15 @@
+@font-face {
+  font-family: 'Reznor Broken';
+  src: url('./assets/fonts/reznor-broken.ttf') format('truetype');
+  font-display: swap;
+}
+
 :root {
+  /* Header bar: near-black in both themes */
+  --header-bg: #141310;
+  --header-fg: #ece8dc;
+  --header-muted: #a39e90;
+  --header-border: #2a2821;
   --bg: #fbfaf6;
   --surface: #ffffff;
   --surface-2: #f3f1ea;
