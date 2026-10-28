@@ -17,8 +17,9 @@ export default function Layout() {
   return (
     <div className={styles.shell}>
       <header className={styles.header}>
-        <Link to="/" className={styles.brand}>
-          Lemonade
+        <Link to="/" className={styles.brand} aria-label="Lemonade, home">
+          {/* Reznor Broken draws capital N as a mirrored lowercase n. */}
+          <span aria-hidden="true">lemoNade</span>
         </Link>
         <div className={styles.right}>
           {confirming ? (
