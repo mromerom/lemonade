@@ -24,11 +24,11 @@ Andrés tiene treinta y dos años y vive en Madrid. Trabaja como ingeniero de so
 Un domingo, mientras [toma:have] un café con su amiga Marta, Andrés le cuenta cómo se siente. Marta es emprendedora: [hace dos años] [montó:setup] una pyme de diseño con dos socias. —¿Y por qué no emprendes tú? —le pregunta—. Si no lo intentas, nunca lo sabrás.
 > One Sunday, while he's having a coffee with his friend Marta, Andrés tells her how he feels. Marta is an entrepreneur: two years ago she set up a small design company with two partners. "So why don't you start a business?" she asks him. "If you don't try, you'll never know."
 
-[Al principio], a Andrés [le da miedo]. ¿Y si [sale mal]? Pero [le da vueltas] a la idea durante semanas y, [al final], [se arma de valor]. Esta mañana ha decidido [lanzarse a la piscina]: va a [montar:setup] su propia empresa.
+[Al principio], a Andrés [le da miedo]. ¿Y si [sale mal]? Pero [le da vueltas] a la idea durante semanas y, [al final], [se arma de valor]. Esta mañana ha decidido [dar el paso] y [montar:setup] su propio negocio.
 > At first, Andrés is scared. What if it goes wrong? But he mulls over the idea for weeks and, in the end, he plucks up his courage. This morning he decided to take the plunge: he's going to set up his own company.
 
-Su idea es una aplicación para ayudar a las pymes del barrio a vender por internet. [De momento], seguirá trabajando en su empresa y dedicará las tardes a su proyecto. No sabe si [saldrá bien], pero [por fin] tiene algo que le emociona [de verdad]. Es arriesgado, pero también muy emocionante.
-> His idea is an app to help small businesses in the neighborhood sell online. For now, he'll keep working at his company and spend his evenings on his project. He doesn't know if it will work out, but at last he has something that really excites him. It's risky, but also very exciting.
+Su idea es una plataforma para ayudar a pymes en su ciudad a vender sus productos y servicios por internet. [Por ahora], seguirá trabajando en su empresa y dedicará las tardes a su proyecto. No sabe si [saldrá bien], pero [por fin] tiene algo que le emociona [de verdad]. [Tiene su riesgo], pero también es muy emocionante.
+> His idea is an app to help small businesses in his city sell their products and services online. For now, he'll keep working at his company and spend his evenings on his project. He doesn't know if it will work out, but at last he has something that really excites him. It's risky, but also very exciting.
 
 ## Retelling
 
