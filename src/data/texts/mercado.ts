@@ -19,6 +19,8 @@ export const mercado: Text = {
   // - Verb forms offer other persons of the same verb, plus look-alike verbs
   //   (vamos / vemos, compramos / comparamos).
   // - Give each trap a note: it's shown after reading if the learner picked it.
+  // - Give the correct option a note too: why it's right. It's shown for
+  //   every learner after reading, right or wrong.
   // - A variant that's also right (regional forms like decidí / he decidido,
   //   near-synonyms like empresario / emprendedor) isn't a trap: list it in
   //   pre.alsoCorrect and post.variants with a note. It's graded correct and
@@ -43,7 +45,10 @@ export const mercado: Text = {
         optionsLang: 'es',
         options: [
           { id: 'a', text: 'bufón', note: 'Bufón means “jester” or “clown”.' },
-          { id: 'b', text: 'bufanda' },
+          {
+            id: 'b', text: 'bufanda',
+            note: 'Bufanda is a scarf, like the red one Lucía wears because it’s cold.',
+          },
           { id: 'c', text: 'bufete', note: 'Bufete is a lawyer’s office.' },
           { id: 'd', text: 'bufido', note: 'Bufido is a snort, like an angry animal makes.' },
         ],
@@ -69,7 +74,10 @@ export const mercado: Text = {
         options: [
           { id: 'a', text: 'va' },
           { id: 'b', text: 'doy', note: 'Doy is from dar: “I give”. It rhymes with voy.' },
-          { id: 'c', text: 'voy' },
+          {
+            id: 'c', text: 'voy',
+            note: 'Voy is the yo form of ir (to go). Ir is irregular: voy, vas, va, vamos, van.',
+          },
           { id: 'd', text: 'van' },
         ],
         correctOptionId: 'c',
@@ -95,7 +103,10 @@ export const mercado: Text = {
             text: 'jobs',
             note: 'Puesto can mean a job or position (“un puesto de trabajo”), but puestos de frutas at a market are stalls.',
           },
-          { id: 'b', text: 'stalls' },
+          {
+            id: 'b', text: 'stalls',
+            note: 'At a market, puestos are stalls: «muchos puestos de frutas» are lots of fruit stalls.',
+          },
           { id: 'c', text: 'ports', note: 'Ports are puertos, with an r. Puestos has an s.' },
           { id: 'd', text: 'baskets', note: 'Baskets are cestas.' },
         ],
@@ -119,7 +130,10 @@ export const mercado: Text = {
         prompt: 'Hoy hace frío. (Yo) ___ una bufanda roja.',
         promptEn: "Today it's cold. I'm wearing a red scarf. (llevar = to wear)",
         options: [
-          { id: 'a', text: 'llevo' },
+          {
+            id: 'a', text: 'llevo',
+            note: 'Llevo is the yo form of llevar: regular -ar verbs end in -o for yo.',
+          },
           { id: 'b', text: 'lleva' },
           { id: 'c', text: 'llevas' },
           { id: 'd', text: 'llevan' },
@@ -147,7 +161,10 @@ export const mercado: Text = {
             text: 'faces',
             note: 'Caras can also be a noun meaning “faces” (una cara = a face). Here it describes the oranges, so it’s the adjective caro.',
           },
-          { id: 'b', text: 'expensive' },
+          {
+            id: 'b', text: 'expensive',
+            note: 'Caras is the adjective caro (expensive), feminine plural to match «las naranjas». The oranges at the first stall cost more.',
+          },
           {
             id: 'c',
             text: 'dear (beloved)',
@@ -177,7 +194,10 @@ export const mercado: Text = {
         options: [
           { id: 'a', text: 'van' },
           { id: 'b', text: 'vemos', note: 'Vemos is from ver: “we see”. One letter away from vamos.' },
-          { id: 'c', text: 'vamos' },
+          {
+            id: 'c', text: 'vamos',
+            note: '«Mi abuelo y yo» means the same as nosotros, so ir takes the nosotros form: vamos.',
+          },
           { id: 'd', text: 'voy' },
         ],
         correctOptionId: 'c',
@@ -200,7 +220,10 @@ export const mercado: Text = {
         optionsLang: 'es',
         options: [
           { id: 'a', text: 'despacio', note: 'Despacio means “slowly”.' },
-          { id: 'b', text: 'después' },
+          {
+            id: 'b', text: 'después',
+            note: 'Después means afterward or after: «después, compran pan» = afterward, they buy bread.',
+          },
           { id: 'c', text: 'despierto', note: 'Despierto means “awake”.' },
           { id: 'd', text: 'antes', note: 'Antes is the opposite: “before”.' },
         ],
@@ -231,7 +254,10 @@ export const mercado: Text = {
             note: 'Comparamos is from comparar: “we compare”. Look closely: compr-, not compar-.',
           },
           { id: 'c', text: 'compraron', note: 'Compraron is past tense: “they bought”.' },
-          { id: 'd', text: 'compramos' },
+          {
+            id: 'd', text: 'compramos',
+            note: 'With nosotros, -ar verbs end in -amos: compramos.',
+          },
         ],
         correctOptionId: 'd',
       },

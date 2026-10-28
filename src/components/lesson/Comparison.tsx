@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { isSlip, normalize, VERDICT_LABEL, type Verdict } from '../../lib/grade';
 import {
+  correctNote,
   distractorNote,
   gradeTarget,
   isCorrectOption,
@@ -60,7 +61,8 @@ export default function Comparison({ text, lesson }: Props) {
     // When the typed answer repeats the guess, the verdict (and its note) covers both.
     const sameAnswer = guess && normalize(guess.text) === normalize(typed);
     const guessNote = sameAnswer ? null : distractorNote(t, guess);
-    return { t, guess, guessedRight, guessNote, typed, grade, confusions, correction, corrected };
+    const why = correctNote(t);
+    return { t, guess, guessedRight, guessNote, why, typed, grade, confusions, correction, corrected };
   });
 
   const before = rows.filter((r) => r.guessedRight).length;
@@ -149,6 +151,14 @@ export default function Comparison({ text, lesson }: Props) {
               {VERDICT_LABEL[r.grade.verdict]}
               {r.grade.verdict !== 'correct' && <span>. {explain(r.t, r.grade, r.typed)}</span>}
             </p>
+            {r.why && (
+              <p className={styles.guessNote}>
+                <span className={styles.guessNoteLabel}>
+                  Why «<span lang={optionsLang(r.t)}>{r.why.answer}</span>»
+                </span>
+                {r.why.note}
+              </p>
+            )}
             {r.grade.variantNote && (
               <p className={styles.guessNote}>
                 <span className={styles.guessNoteLabel}>Good to know</span>

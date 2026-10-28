@@ -89,6 +89,8 @@ for (const text of texts) {
       errors.push(`${file}  target "${t.id}": correctOptionId "${t.pre.correctOptionId}" isn't an option`);
     }
     if (!t.post.accept.length) errors.push(`${file}  target "${t.id}" has no accepted answers`);
+    const correct = t.pre.options.find((o) => o.id === t.pre.correctOptionId);
+    if (correct && !correct.note) warnings.push(`${file}  target "${t.id}": the correct option has no note explaining why it's right`);
     if (t.evidenceHint && !findEvidence(text, t.match, t.evidenceHint)) {
       errors.push(`${file}  target "${t.id}": no story sentence has both ${JSON.stringify(t.match)} and "${t.evidenceHint}"`);
     }

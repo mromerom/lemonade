@@ -64,6 +64,12 @@ export function targetAnswer(target: Target): string {
   return target.post.accept[0];
 }
 
+/** Why the correct answer is right: the correct option's note, if it has one. */
+export function correctNote(target: Target): { answer: string; note: string } | null {
+  const option = target.pre.options.find((o) => o.id === target.pre.correctOptionId);
+  return option?.note ? { answer: option.text, note: option.note } : null;
+}
+
 /** True for the correct option or any also-correct variant. */
 export function isCorrectOption(target: Target, optionId: string | undefined): boolean {
   return optionId === target.pre.correctOptionId || Boolean(optionId && target.pre.alsoCorrect?.includes(optionId));
@@ -80,8 +86,9 @@ export function optionsLang(target: Target): 'es' | 'en' {
  * tense the picked form belongs to.
  */
 export function distractorNote(target: Target, option: QuestionOption | undefined): string | null {
-  if (!option) return null;
-  // Any option can carry a note, including an also-correct variant.
+  // The correct option's note is shown separately, as "why it's right".
+  if (!option || option.id === target.pre.correctOptionId) return null;
+  // Traps and also-correct variants can carry their own note.
   if (option.note) return option.note;
   if (isCorrectOption(target, option.id)) return null;
   if (target.kind === 'form') {

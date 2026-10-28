@@ -40,8 +40,9 @@ export interface QuestionOption {
   id: string;
   text: string;
   /**
-   * Why this distractor is wrong, shown after reading if the learner picked it.
-   * Verb-form options that match another person's form get a note automatically.
+   * On a trap: why it's wrong, shown after reading if the learner picked it.
+   * On the correct option: why it's right, shown to every learner after reading.
+   * Verb-form traps that match another person's form get a note automatically.
    */
   note?: string;
 }

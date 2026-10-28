@@ -264,3 +264,11 @@
   letter-spacing: 0.05em;
   color: var(--muted);
 }
+/* Keep the word itself in normal case, so accents stay readable. */
+.guessNoteLabel span {
+  font-family: var(--font-read);
+  font-size: 0.85rem;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--text);
+}

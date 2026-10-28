@@ -26,7 +26,10 @@ export const andres: Text = {
             text: 'excitante',
             note: 'Excitante is a false friend. It means “stimulating” (el café es excitante) or “arousing”, not “exciting”. Easy to mix up, and embarrassing to get wrong.',
           },
-          { id: 'b', text: 'emocionante' },
+          {
+            id: 'b', text: 'emocionante',
+            note: 'Emocionante comes from emoción: something that stirs up your feelings. That’s “exciting”.',
+          },
           {
             id: 'c',
             text: 'emotivo',
@@ -66,6 +69,8 @@ export const andres: Text = {
         'ellos/ellas': 'emocionen',
       },
       wrongForms: {
+        emocioné:
+          'yo form of the preterite (“I excited”). The accent on the last é changes both the person and the tense. Without it, emocione is the present subjunctive',
         emociona:
           'present indicative. After «no hay ni uno que…» the thing doesn’t exist, so Spanish requires the subjunctive',
         emocionaría:
@@ -78,10 +83,13 @@ export const andres: Text = {
         options: [
           {
             id: 'a',
-            text: 'emociona',
-            note: 'Emociona is the indicative, for things that exist. «No hay ni uno que…» describes something that doesn’t exist, so it needs the subjunctive: emocione. Compare «algo que le emociona» at the end of the story.',
+            text: 'emocioné',
+            note: 'One accent mark changes everything. Emocioné, stressed on the last syllable (e-mo-cio-NÉ), is yo in the preterite: “I excited” (me emocioné = I got excited). Emocione, stressed on CIO (e-mo-CIO-ne), is the present subjunctive this sentence needs.',
           },
-          { id: 'b', text: 'emocione' },
+          {
+            id: 'b', text: 'emocione',
+            note: 'Emocione is the present subjunctive. «No hay ni uno que…» describes something that doesn’t exist, and that always takes the subjunctive. The subject is «ni uno» (one puesto), so it’s singular.',
+          },
           { id: 'c', text: 'emocionen', note: 'Emocionen is plural. The subject is «ni uno» (not a single one), so it’s singular: emocione.' },
           { id: 'd', text: 'emociones', note: 'Emociones is the tú form. The subject is «ni uno», a puesto, not you.' },
         ],
@@ -106,7 +114,10 @@ export const andres: Text = {
         options: [
           { id: 'a', text: 'to learn', note: 'That’s aprender. Emprender starts with em-: em-pren-der.' },
           { id: 'b', text: 'to understand', note: 'To understand is entender or comprender. They only look similar.' },
-          { id: 'c', text: 'to start a business' },
+          {
+            id: 'c', text: 'to start a business',
+            note: 'Emprender is to take on something new, especially a business. Marta, who set up her own pyme, is asking why Andrés doesn’t do the same.',
+          },
           { id: 'd', text: 'to quit (a job)', note: 'To quit a job is dejar el trabajo.' },
         ],
         correctOptionId: 'c',
@@ -134,7 +145,10 @@ export const andres: Text = {
           { id: 'a', text: 'arma' },
           { id: 'b', text: 'amo', note: 'Amo is from amar: “I love”. One letter away from armo.' },
           { id: 'c', text: 'armé', note: 'Armé is past: “I plucked up”. The retelling is in the present.' },
-          { id: 'd', text: 'armo' },
+          {
+            id: 'd', text: 'armo',
+            note: 'The sentence starts with «le doy» (I give), so the subject is yo, and «me» matches it: me armo de valor.',
+          },
         ],
         correctOptionId: 'd',
       },
@@ -159,7 +173,10 @@ export const andres: Text = {
             text: 'a startup',
             note: 'In Spain a startup is una startup or una empresa emergente. A pyme is any small or medium-sized company (pequeña y mediana empresa), new or old.',
           },
-          { id: 'b', text: 'a small or medium-sized company' },
+          {
+            id: 'b', text: 'a small or medium-sized company',
+            note: 'Pyme is short for pequeña y mediana empresa: a small or medium-sized company. It’s written in lowercase, like a regular word.',
+          },
           { id: 'c', text: 'a business plan', note: 'A business plan is un plan de negocio.' },
           { id: 'd', text: 'a bank loan', note: 'A loan is un préstamo.' },
         ],
@@ -194,7 +211,10 @@ export const andres: Text = {
         options: [
           { id: 'a', text: 'decidí', note: 'Both are correct. In most of Spain, something that happened today («esta mañana») usually takes the pretérito perfecto: he decidido. In Latin America, and in parts of Spain such as the Canary Islands, Galicia and Asturias, the simple past decidí is the usual choice.' },
           { id: 'b', text: 'ha decidido' },
-          { id: 'c', text: 'he decidido' },
+          {
+            id: 'c', text: 'he decidido',
+            note: 'He decidido is the pretérito perfecto, the usual past in most of Spain for something that happened today («esta mañana»). «Voy» and «mi» tell you the subject is yo, so it’s he, not ha.',
+          },
           { id: 'd', text: 'decido', note: 'Decido is present: “I decide”. The decision already happened this morning.' },
         ],
         correctOptionId: 'c',
@@ -224,7 +244,10 @@ export const andres: Text = {
             text: 'to go for a swim',
             note: 'Literally it’s “to throw oneself into the pool”, but it’s figurative: to take a risk and go for it.',
           },
-          { id: 'b', text: 'to take the plunge' },
+          {
+            id: 'b', text: 'to take the plunge',
+            note: 'Lanzarse a la piscina means taking a risk and going for it. Andrés stops thinking it over and starts his company.',
+          },
           { id: 'c', text: 'to give up', note: 'To give up is rendirse, or tirar la toalla (“to throw in the towel”).' },
           { id: 'd', text: 'to throw a party', note: 'To throw a party is montar una fiesta. Montar again!' },
         ],
@@ -249,7 +272,10 @@ export const andres: Text = {
         options: [
           { id: 'a', text: 'empleado', note: 'Empleado means “employee”: the opposite of what Andrés wants to be.' },
           { id: 'b', text: 'emprendido', note: 'Emprendido is a participle: “undertaken”. The person is an emprendedor.' },
-          { id: 'c', text: 'emprendedor' },
+          {
+            id: 'c', text: 'emprendedor',
+            note: 'An emprendedor (emprendedora for a woman) is someone who starts a new venture, like Marta with her pyme.',
+          },
           { id: 'd', text: 'entretenido', note: 'Entretenido means “entertaining”.' },
         ],
         correctOptionId: 'c',
