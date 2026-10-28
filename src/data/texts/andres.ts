@@ -67,7 +67,7 @@ export const andres: Text = {
       },
       wrongForms: {
         emociona:
-          'present indicative. He hasn’t found that job yet, so after «quiere un trabajo que…» Spanish uses the subjunctive',
+          'present indicative. He hasn’t found that job yet, so after «quiere un trabajo que…» every variety of Spanish uses the subjunctive. «Que le emociona» only works for a specific job that already exists',
         emocionaría: 'conditional (“would excite”). After «quiere un trabajo que…», Spanish uses the present subjunctive',
         emocionó: 'preterite (“excited”, in the past)',
       },
@@ -78,7 +78,7 @@ export const andres: Text = {
           {
             id: 'a',
             text: 'emociona',
-            note: 'Emociona is the indicative. A job he hasn’t found yet takes the subjunctive: emocione. Later the story says «algo que le emociona», because by then that thing exists.',
+            note: 'Emociona is the indicative. This isn’t a regional difference: a job he hasn’t found yet takes the subjunctive everywhere (emocione). The indicative is for something that exists, which is why the story later says «algo que le emociona».',
           },
           { id: 'b', text: 'emocionaría', note: 'Emocionaría is the conditional, “would excite”. Here Spanish uses the present subjunctive.' },
           { id: 'c', text: 'emocione' },
@@ -184,29 +184,27 @@ export const andres: Text = {
         'ellos/ellas': 'han decidido',
       },
       wrongForms: {
-        decidí:
-          'pretérito indefinido. In most of Spain, something that happened today («esta mañana») takes the pretérito perfecto',
-        decido: 'present',
+        decido: 'present (“I decide”). The decision already happened this morning',
       },
       pre: {
         prompt: 'Esta mañana (yo) ___ lanzarme a la piscina.',
         promptEn: 'This morning I decided to take the plunge. (decidir = to decide)',
         options: [
-          {
-            id: 'a',
-            text: 'decidí',
-            note: 'Decidí (simple past) is normal in Latin America and some parts of Spain. In most of Spain, a past event from today («esta mañana») takes the pretérito perfecto: he decidido.',
-          },
+          { id: 'a', text: 'decidí', note: 'Both are correct. In most of Spain, something that happened today («esta mañana») usually takes the pretérito perfecto: he decidido. In Latin America, and in parts of Spain such as the Canary Islands, Galicia and Asturias, the simple past decidí is the usual choice.' },
           { id: 'b', text: 'ha decidido' },
           { id: 'c', text: 'he decidido' },
           { id: 'd', text: 'decido', note: 'Decido is present: “I decide”. The decision already happened this morning.' },
         ],
         correctOptionId: 'c',
+        alsoCorrect: ['a'],
       },
       post: {
         prompt: 'Esta mañana (yo) ___ lanzarme a la piscina. (decidir)',
         promptEn: 'This morning I decided to take the plunge.',
         accept: ['he decidido'],
+        variants: {
+          decidí: 'Both are correct. In most of Spain, something that happened today («esta mañana») usually takes the pretérito perfecto: he decidido. In Latin America, and in parts of Spain such as the Canary Islands, Galicia and Asturias, the simple past decidí is the usual choice.',
+        },
       },
       match: ['decidido'],
     },
@@ -258,6 +256,10 @@ export const andres: Text = {
         prompt: '¿Cómo se dice «entrepreneur» en español?',
         promptEn: 'How do you say “entrepreneur” in Spanish? (any gender)',
         accept: ['emprendedor', 'emprendedora'],
+        variants: {
+          empresario: 'Correct, with a different feel. Empresario is a business owner or businessperson in general, often of an established company. An emprendedor is someone starting something new: closer to a startup founder.',
+          empresaria: 'Correct, with a different feel. Empresario is a business owner or businessperson in general, often of an established company. An emprendedor is someone starting something new: closer to a startup founder.',
+        },
       },
       match: ['emprendedora'],
     },

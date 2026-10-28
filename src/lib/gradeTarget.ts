@@ -8,6 +8,8 @@ export interface TargetGrade extends Grade {
   usedTense?: string;
   /** Explanation for a typed trap answer (a false friend, a look-alike) */
   trapNote?: string;
+  /** Note for a correct variant answer (regional form, near-synonym) */
+  variantNote?: string;
 }
 
 /** True when the normalized phrase appears in the answer as whole words. */
@@ -30,6 +32,10 @@ export function gradeTarget(target: Target, answer: string): TargetGrade {
   const norm = normalize(typed);
   // Accepted answers may be several words ("he decidido", "lanzarse a la piscina").
   if (target.post.accept.some((a) => containsPhrase(norm, a))) return { verdict: 'correct', confusions: [] };
+  for (const [variant, note] of Object.entries(target.post.variants ?? {})) {
+    if (containsPhrase(norm, variant)) return { verdict: 'correct', confusions: [], variantNote: note };
+    if (containsPhrase(norm, variant, true)) return { verdict: 'accent', confusions: [], variantNote: note };
+  }
 
   for (const [trap, note] of Object.entries(target.post.traps ?? {})) {
     if (containsPhrase(norm, trap, true)) return { verdict: 'incorrect', confusions: [], trapNote: note };
@@ -58,18 +64,26 @@ export function targetAnswer(target: Target): string {
   return target.post.accept[0];
 }
 
+/** True for the correct option or any also-correct variant. */
+export function isCorrectOption(target: Target, optionId: string | undefined): boolean {
+  return optionId === target.pre.correctOptionId || Boolean(optionId && target.pre.alsoCorrect?.includes(optionId));
+}
+
 /** Language the before-reading options are written in. */
 export function optionsLang(target: Target): 'es' | 'en' {
   return target.pre.optionsLang ?? (target.kind === 'meaning' ? 'en' : 'es');
 }
 
 /**
- * Why a picked distractor is wrong: the option's own note, or for verb forms,
- * which person the picked form belongs to.
+ * A note on the picked option: its own note (why a trap is wrong, or what to
+ * know about a correct variant), or for wrong verb forms, which person or
+ * tense the picked form belongs to.
  */
 export function distractorNote(target: Target, option: QuestionOption | undefined): string | null {
-  if (!option || option.id === target.pre.correctOptionId) return null;
+  if (!option) return null;
+  // Any option can carry a note, including an also-correct variant.
   if (option.note) return option.note;
+  if (isCorrectOption(target, option.id)) return null;
   if (target.kind === 'form') {
     const match = (Object.entries(target.forms) as [Person, string][]).find(
       ([, form]) => normalize(form) === normalize(option.text),

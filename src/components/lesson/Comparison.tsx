@@ -3,6 +3,7 @@ import { isSlip, normalize, VERDICT_LABEL, type Verdict } from '../../lib/grade'
 import {
   distractorNote,
   gradeTarget,
+  isCorrectOption,
   optionsLang,
   targetAnswer,
   targetLabel,
@@ -49,16 +50,16 @@ export default function Comparison({ text, lesson }: Props) {
 
   const rows = text.targets.map((t) => {
     const guess = t.pre.options.find((o) => o.id === lesson.preAnswers[t.id]);
-    const guessedRight = lesson.preAnswers[t.id] === t.pre.correctOptionId;
+    const guessedRight = isCorrectOption(t, lesson.preAnswers[t.id]);
     const typed = lesson.postAnswers[t.id]?.trim() ?? '';
     const grade = gradeTarget(t, typed);
     // One explanation per kind of mix-up, even if it happened twice.
     const confusions = [...new Map(grade.confusions.map((c) => [c.id, c])).values()];
     const correction = lesson.corrections[t.id] ?? '';
     const corrected = grade.verdict === 'correct' || gradeTarget(t, correction).verdict === 'correct';
-    // Skip the guess note when the typed answer repeats the same mistake: the verdict explains it.
-    const sameMistake = guess && normalize(guess.text) === normalize(typed) && grade.verdict !== 'correct';
-    const guessNote = sameMistake ? null : distractorNote(t, guess);
+    // When the typed answer repeats the guess, the verdict (and its note) covers both.
+    const sameAnswer = guess && normalize(guess.text) === normalize(typed);
+    const guessNote = sameAnswer ? null : distractorNote(t, guess);
     return { t, guess, guessedRight, guessNote, typed, grade, confusions, correction, corrected };
   });
 
@@ -139,7 +140,7 @@ export default function Comparison({ text, lesson }: Props) {
 
             {r.guessNote && (
               <p className={styles.guessNote}>
-                <span className={styles.guessNoteLabel}>About your guess</span>
+                <span className={styles.guessNoteLabel}>{r.guessedRight ? 'Good to know' : 'About your guess'}</span>
                 {r.guessNote}
               </p>
             )}
@@ -148,6 +149,12 @@ export default function Comparison({ text, lesson }: Props) {
               {VERDICT_LABEL[r.grade.verdict]}
               {r.grade.verdict !== 'correct' && <span>. {explain(r.t, r.grade, r.typed)}</span>}
             </p>
+            {r.grade.variantNote && (
+              <p className={styles.guessNote}>
+                <span className={styles.guessNoteLabel}>Good to know</span>
+                {r.grade.variantNote}
+              </p>
+            )}
             {r.confusions.length > 0 && (
               <ul className={styles.confusions}>
                 {r.confusions.map((c) => (

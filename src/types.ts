@@ -60,6 +60,11 @@ interface TargetBase {
     promptEn?: string;
     options: QuestionOption[];
     correctOptionId: string;
+    /**
+     * Other options that are also right, e.g. a regional variant. Give them a
+     * note: it's shown after reading, even though the guess counts as correct.
+     */
+    alsoCorrect?: string[];
   };
   /** After reading: typed from memory */
   post: {
@@ -72,6 +77,11 @@ interface TargetBase {
      * e.g. a false friend: { excitante: 'Excitante is a false friend…' }
      */
     traps?: Record<string, string>;
+    /**
+     * Correct answers that deserve a note, e.g. regional or near-synonym
+     * variants: { decidí: 'Common in Latin America…' }. Graded correct.
+     */
+    variants?: Record<string, string>;
   };
   /** Surface forms to find in the reading for evidence (lowercase) */
   match: string[];

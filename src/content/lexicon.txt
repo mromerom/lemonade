@@ -535,7 +535,7 @@ decide
 decidido
   gloss: decided
   lemma: decidir
-  note: Participle. "Ha decidido" (pretérito perfecto): in Spain it's the usual past for today, as in "esta mañana ha decidido".
+  note: Participle. "Ha decidido" (pretérito perfecto) is the usual past for today in most of Spain: "esta mañana ha decidido". Latin America, and parts of Spain such as the Canaries, Galicia and Asturias, usually say "esta mañana decidió".
 dedicar
   gloss: to devote; to spend (time)
 dedicará
@@ -593,7 +593,7 @@ empleo
 emprendedora
   gloss: entrepreneur
   lemma: emprendedor
-  note: feminine
+  note: feminine. Someone starting something new. Compare "empresario/a": a business owner in general.
 emprendes
   gloss: you start a business; you take on
   lemma: emprender

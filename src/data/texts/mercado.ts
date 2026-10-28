@@ -19,6 +19,11 @@ export const mercado: Text = {
   // - Verb forms offer other persons of the same verb, plus look-alike verbs
   //   (vamos / vemos, compramos / comparamos).
   // - Give each trap a note: it's shown after reading if the learner picked it.
+  // - A variant that's also right (regional forms like decidí / he decidido,
+  //   near-synonyms like empresario / emprendedor) isn't a trap: list it in
+  //   pre.alsoCorrect and post.variants with a note. It's graded correct and
+  //   the note is shown as "Good to know".
+  // - post.traps explains wrong typed answers, e.g. a false friend.
   targets: [
     {
       id: 'bufanda',
