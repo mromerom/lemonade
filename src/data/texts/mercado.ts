@@ -24,6 +24,13 @@ export const mercado: Text = {
   //   pre.alsoCorrect and post.variants with a note. It's graded correct and
   //   the note is shown as "Good to know".
   // - post.traps explains wrong typed answers, e.g. a false friend.
+  // - Judge each fill-in sentence on its own, without the story: exactly one
+  //   option should be grammatical. If the context decides (indicative vs.
+  //   subjunctive, past vs. present), rewrite the sentence so it forces one
+  //   answer, e.g. "no hay ni uno que le ___" requires the subjunctive.
+  // - A1–A2 prompts may name the subject in parentheses, "(yo) ___". From B1,
+  //   leave it out and let the sentence make the subject clear ("Le doy
+  //   vueltas… y me ___", "Esta mañana ___ …: voy a montar mi empresa").
   targets: [
     {
       id: 'bufanda',

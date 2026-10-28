@@ -67,31 +67,33 @@ export const andres: Text = {
       },
       wrongForms: {
         emociona:
-          'present indicative. He hasn’t found that job yet, so after «quiere un trabajo que…» every variety of Spanish uses the subjunctive. «Que le emociona» only works for a specific job that already exists',
-        emocionaría: 'conditional (“would excite”). After «quiere un trabajo que…», Spanish uses the present subjunctive',
-        emocionó: 'preterite (“excited”, in the past)',
+          'present indicative. After «no hay ni uno que…» the thing doesn’t exist, so Spanish requires the subjunctive',
+        emocionaría:
+          'conditional (“would excite”). You may hear it in speech, but standard Spanish uses the present subjunctive here',
+        emocionó: 'preterite (“excited”). With «no hay» in the present, use the present subjunctive',
       },
       pre: {
-        prompt: 'Andrés quiere un trabajo que le ___.',
-        promptEn: 'Andrés wants work that excites him. (emocionar = to excite)',
+        prompt: 'Hay cientos de puestos, pero no hay ni uno que le ___ a Andrés.',
+        promptEn: 'There are hundreds of positions, but not a single one excites Andrés. (emocionar = to excite)',
         options: [
           {
             id: 'a',
             text: 'emociona',
-            note: 'Emociona is the indicative. This isn’t a regional difference: a job he hasn’t found yet takes the subjunctive everywhere (emocione). The indicative is for something that exists, which is why the story later says «algo que le emociona».',
+            note: 'Emociona is the indicative, for things that exist. «No hay ni uno que…» describes something that doesn’t exist, so it needs the subjunctive: emocione. Compare «algo que le emociona» at the end of the story.',
           },
-          { id: 'b', text: 'emocionaría', note: 'Emocionaría is the conditional, “would excite”. Here Spanish uses the present subjunctive.' },
-          { id: 'c', text: 'emocione' },
-          { id: 'd', text: 'emocionó', note: 'Emocionó is past: “excited”.' },
+          { id: 'b', text: 'emocione' },
+          { id: 'c', text: 'emocionen', note: 'Emocionen is plural. The subject is «ni uno» (not a single one), so it’s singular: emocione.' },
+          { id: 'd', text: 'emociones', note: 'Emociones is the tú form. The subject is «ni uno», a puesto, not you.' },
         ],
-        correctOptionId: 'c',
+        correctOptionId: 'b',
       },
       post: {
-        prompt: 'Andrés quiere un trabajo que le ___. (emocionar)',
-        promptEn: 'Andrés wants work that excites him.',
+        prompt: 'Hay cientos de puestos, pero no hay ni uno que le ___ a Andrés. (emocionar)',
+        promptEn: 'There are hundreds of positions, but not a single one excites Andrés.',
         accept: ['emocione'],
       },
       match: ['emocione'],
+      evidenceHint: 'ni uno',
     },
     {
       id: 'emprender',
@@ -126,8 +128,8 @@ export const andres: Text = {
       forms: { yo: 'armo', tú: 'armas', 'él/ella': 'arma', nosotros: 'armamos', 'ellos/ellas': 'arman' },
       wrongForms: { armé: 'preterite (“I plucked up”). The retelling is in the present' },
       pre: {
-        prompt: 'Al final, (yo) me ___ de valor.',
-        promptEn: 'In the end, I pluck up my courage. (armarse de valor = to pluck up courage)',
+        prompt: 'Le doy vueltas a la idea durante semanas y, al final, me ___ de valor.',
+        promptEn: 'I mull the idea over for weeks and, in the end, I pluck up my courage. (armarse de valor = to pluck up courage)',
         options: [
           { id: 'a', text: 'arma' },
           { id: 'b', text: 'amo', note: 'Amo is from amar: “I love”. One letter away from armo.' },
@@ -137,8 +139,8 @@ export const andres: Text = {
         correctOptionId: 'd',
       },
       post: {
-        prompt: 'Al final, (yo) me ___ de valor. (armarse)',
-        promptEn: 'In the end, I pluck up my courage.',
+        prompt: 'Le doy vueltas a la idea durante semanas y, al final, me ___ de valor. (armarse)',
+        promptEn: 'I mull the idea over for weeks and, in the end, I pluck up my courage.',
         accept: ['armo'],
       },
       match: ['arma', 'armo'],
@@ -187,8 +189,8 @@ export const andres: Text = {
         decido: 'present (“I decide”). The decision already happened this morning',
       },
       pre: {
-        prompt: 'Esta mañana (yo) ___ lanzarme a la piscina.',
-        promptEn: 'This morning I decided to take the plunge. (decidir = to decide)',
+        prompt: 'Esta mañana ___ lanzarme a la piscina: voy a montar mi propia empresa.',
+        promptEn: 'This morning I decided to take the plunge: I’m going to set up my own company. (decidir = to decide)',
         options: [
           { id: 'a', text: 'decidí', note: 'Both are correct. In most of Spain, something that happened today («esta mañana») usually takes the pretérito perfecto: he decidido. In Latin America, and in parts of Spain such as the Canary Islands, Galicia and Asturias, the simple past decidí is the usual choice.' },
           { id: 'b', text: 'ha decidido' },
@@ -199,8 +201,8 @@ export const andres: Text = {
         alsoCorrect: ['a'],
       },
       post: {
-        prompt: 'Esta mañana (yo) ___ lanzarme a la piscina. (decidir)',
-        promptEn: 'This morning I decided to take the plunge.',
+        prompt: 'Esta mañana ___ lanzarme a la piscina: voy a montar mi propia empresa. (decidir)',
+        promptEn: 'This morning I decided to take the plunge: I’m going to set up my own company.',
         accept: ['he decidido'],
         variants: {
           decidí: 'Both are correct. In most of Spain, something that happened today («esta mañana») usually takes the pretérito perfecto: he decidido. In Latin America, and in parts of Spain such as the Canary Islands, Galicia and Asturias, the simple past decidí is the usual choice.',

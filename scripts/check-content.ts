@@ -8,7 +8,7 @@ import { readFileSync } from 'node:fs';
 import { parseLexicon, parseStory } from '../src/content/parse';
 import { texts } from '../src/data/texts';
 import { parseMarkup, plainText } from '../src/lib/markup';
-import { sentences, spanishStrings } from '../src/lib/textWords';
+import { findEvidence, sentences, spanishStrings } from '../src/lib/textWords';
 import { tokenize } from '../src/lib/tokenize';
 
 const errors: string[] = [];
@@ -89,6 +89,9 @@ for (const text of texts) {
       errors.push(`${file}  target "${t.id}": correctOptionId "${t.pre.correctOptionId}" isn't an option`);
     }
     if (!t.post.accept.length) errors.push(`${file}  target "${t.id}" has no accepted answers`);
+    if (t.evidenceHint && !findEvidence(text, t.match, t.evidenceHint)) {
+      errors.push(`${file}  target "${t.id}": no story sentence has both ${JSON.stringify(t.match)} and "${t.evidenceHint}"`);
+    }
     const missing = t.match.filter((m) => !plainWords.has(m.toLocaleLowerCase('es')));
     if (missing.length === t.match.length) {
       errors.push(`${file}  target "${t.id}": none of ${JSON.stringify(t.match)} appear in the text`);

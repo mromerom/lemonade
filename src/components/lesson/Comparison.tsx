@@ -243,7 +243,7 @@ function Mark({ ok, partial }: { ok: boolean; partial?: boolean }) {
 
 /** Where the target appears in the reading. Verb forms show the story next to the retelling. */
 function EvidenceBlock({ text, target }: { text: Text; target: Target }) {
-  const evidence = findEvidence(text, target.match);
+  const evidence = findEvidence(text, target.match, target.evidenceHint);
   if (!evidence) return null;
   const forms = new Set(target.match.map((m) => m.toLocaleLowerCase('es')));
   const narrator = text.retelling.narrator;

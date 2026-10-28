@@ -165,6 +165,11 @@ le gustan
   note: Plural because the things liked are plural: "le gustan las ofertas".
   words: le, gustan
 
+ni uno
+  gloss: not a single one
+  note: "No hay ni uno que le emocione": something that doesn't exist takes the subjunctive.
+  words: ni, uno
+
 # ---------- Words ----------
 
 a
@@ -878,3 +883,7 @@ vueltas
   gloss: turns; laps
   lemma: vuelta
   note: "Darle vueltas a algo" = to keep thinking something over.
+ni
+  gloss: not even; nor
+uno
+  gloss: one

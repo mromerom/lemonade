@@ -85,6 +85,8 @@ interface TargetBase {
   };
   /** Surface forms to find in the reading for evidence (lowercase) */
   match: string[];
+  /** Optional phrase the evidence sentence must contain, when the forms appear more than once */
+  evidenceHint?: string;
 }
 
 /** "What does X mean?" before, "How do you say Y?" after. */

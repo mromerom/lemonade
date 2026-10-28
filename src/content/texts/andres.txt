@@ -18,8 +18,8 @@ example: Andrés se arma de valor => me armo de valor
 Andrés tiene treinta y dos años y vive en Madrid. Trabaja como ingeniero de software en una empresa grande. El sueldo [no está mal] y sus compañeros son majos. [Sin embargo], [desde hace] meses, Andrés está [harto de] su [curro]: quiere un trabajo que le emocione.
 > Andrés is thirty-two and lives in Madrid. He works as a software engineer at a big company. The salary isn't bad and his colleagues are nice. However, for months now, Andrés has been fed up with his job: he wants work that excites him.
 
-[Todas las noches], después de cenar, [echa un vistazo] a las [ofertas de empleo] en internet. Hay cientos de [puestos:jobs], pero ninguno [le dice nada]. Todos [le parecen] iguales: más reuniones, más pantallas, [más de lo mismo].
-> Every night, after dinner, he has a look at job listings online. There are hundreds of positions, but none of them speaks to him. They all seem the same to him: more meetings, more screens, more of the same.
+[Todas las noches], después de cenar, [echa un vistazo] a las [ofertas de empleo] en internet. Hay cientos de [puestos:jobs], pero ninguno [le dice nada]. No hay [ni uno] que le emocione. Todos [le parecen] iguales: más reuniones, más pantallas, [más de lo mismo].
+> Every night, after dinner, he has a look at job listings online. There are hundreds of positions, but none of them speaks to him. Not a single one excites him. They all seem the same to him: more meetings, more screens, more of the same.
 
 Un domingo, mientras [toma:have] un café con su amiga Marta, Andrés le cuenta cómo se siente. Marta es emprendedora: [hace dos años] [montó:setup] una pyme de diseño con dos socias. —¿Y por qué no emprendes tú? —le pregunta—. Si no lo intentas, nunca lo sabrás.
 > One Sunday, while he's having a coffee with his friend Marta, Andrés tells her how he feels. Marta is an entrepreneur: two years ago she set up a small design company with two partners. "So why don't you start a business?" she asks him. "If you don't try, you'll never know."
@@ -35,8 +35,8 @@ Su idea es una aplicación para ayudar a las pymes del barrio a vender por inter
 Tengo treinta y dos años y vivo en Madrid. [Trabajo:iwork] como ingeniero de software en una empresa grande. El sueldo [no está mal] y mis compañeros son majos. [Sin embargo], [desde hace] meses, estoy [harto de] mi [curro]: quiero un trabajo que me emocione.
 > I'm thirty-two and I live in Madrid. I work as a software engineer at a big company. The salary isn't bad and my colleagues are nice. However, for months now, I've been fed up with my job: I want work that excites me.
 
-[Todas las noches], después de cenar, [echo un vistazo] a las [ofertas de empleo] en internet. Hay cientos de [puestos:jobs], pero ninguno [me dice nada]. Todos [me parecen] iguales: más reuniones, más pantallas, [más de lo mismo].
-> Every night, after dinner, I have a look at job listings online. There are hundreds of positions, but none of them speaks to me. They all seem the same to me: more meetings, more screens, more of the same.
+[Todas las noches], después de cenar, [echo un vistazo] a las [ofertas de empleo] en internet. Hay cientos de [puestos:jobs], pero ninguno [me dice nada]. No hay [ni uno] que me emocione. Todos [me parecen] iguales: más reuniones, más pantallas, [más de lo mismo].
+> Every night, after dinner, I have a look at job listings online. There are hundreds of positions, but none of them speaks to me. Not a single one excites me. They all seem the same to me: more meetings, more screens, more of the same.
 
 Un domingo, mientras [tomo:have] un café con mi amiga Marta, le cuento cómo me siento. Marta es emprendedora: [hace dos años] [montó:setup] una pyme de diseño con dos socias. —¿Y por qué no emprendes tú? —me pregunta—. Si no lo intentas, nunca lo sabrás.
 > One Sunday, while I'm having a coffee with my friend Marta, I tell her how I feel. Marta is an entrepreneur: two years ago she set up a small design company with two partners. "So why don't you start a business?" she asks me. "If you don't try, you'll never know."

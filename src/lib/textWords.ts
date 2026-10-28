@@ -47,12 +47,15 @@ export interface Evidence {
  * The first story sentence using any of the target's forms, plus the matching
  * sentence from the retelling (the two parts are written in parallel).
  */
-export function findEvidence(text: Text, match: string[]): Evidence | null {
+export function findEvidence(text: Text, match: string[], hint?: string): Evidence | null {
   const forms = new Set(match.map((m) => m.toLocaleLowerCase('es')));
+  const needle = hint?.toLocaleLowerCase('es');
   for (let p = 0; p < text.story.length; p++) {
     const storySentences = sentences(text.story[p].es);
     for (let s = 0; s < storySentences.length; s++) {
-      const hit = tokenize(storySentences[s]).some((t) => t.kind === 'word' && forms.has(t.key));
+      const hit =
+        tokenize(storySentences[s]).some((t) => t.kind === 'word' && forms.has(t.key)) &&
+        (!needle || storySentences[s].toLocaleLowerCase('es').includes(needle));
       if (hit) {
         const retold = text.retelling.paragraphs[p] && sentences(text.retelling.paragraphs[p].es)[s];
         return { story: storySentences[s], retelling: retold };
