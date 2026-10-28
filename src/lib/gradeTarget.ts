@@ -42,12 +42,19 @@ export function gradeTarget(target: Target, answer: string): TargetGrade {
   }
 
   if (target.kind === 'form') {
-    for (const [person, form] of Object.entries(target.forms) as [Person, string][]) {
-      if (person === target.person || normalize(form) === normalize(targetAnswer(target))) continue;
-      if (containsPhrase(norm, form, true)) return { verdict: 'form', confusions: [], usedPerson: person };
-    }
-    for (const [form, tense] of Object.entries(target.wrongForms ?? {})) {
-      if (containsPhrase(norm, form, true)) return { verdict: 'form', confusions: [], usedTense: tense };
+    const others = (Object.entries(target.forms) as [Person, string][]).filter(
+      ([person, form]) => person !== target.person && normalize(form) !== normalize(targetAnswer(target)),
+    );
+    const tenses = Object.entries(target.wrongForms ?? {});
+    // Exact spelling first, so "armo" (present) isn't read as "armó" (él/ella);
+    // then ignoring accents, so "armo" typed for "armó" still gets named.
+    for (const bare of [false, true]) {
+      for (const [person, form] of others) {
+        if (containsPhrase(norm, form, bare)) return { verdict: 'form', confusions: [], usedPerson: person };
+      }
+      for (const [form, tense] of tenses) {
+        if (containsPhrase(norm, form, bare)) return { verdict: 'form', confusions: [], usedTense: tense };
+      }
     }
   }
 

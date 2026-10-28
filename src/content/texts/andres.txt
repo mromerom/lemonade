@@ -5,13 +5,19 @@ titleEn: Andrés wants to start a business
 level: B1
 summary: Andrés, a software engineer in Madrid, wants work that excites him.
 narrator: Andrés
-example: Andrés se arma de valor => me armo de valor
+example: Andrés se armó de valor => me armé de valor
 ---
 
-# Castilian Spanish (Spain). B1: present for the story, with the subjunctive
-# ("un trabajo que le emocione"), pretérito perfecto for today ("esta mañana
-# ha decidido") against indefinido for a finished time ("hace dos años montó"),
-# and the future ("seguirá", "saldrá").
+# Castilian Spanish (Spain), B1. Tenses on purpose:
+#   present for his situation now (paragraphs 1–2), with the subjunctive
+#     ("un trabajo que le emocione", "no hay ni uno que le emocione")
+#   past for what happened (3–4): imperfecto for background and feelings
+#     ("mientras tomaba un café", "le daba miedo") against indefinido for
+#     completed events ("le contó", "le dio vueltas", "se armó de valor")
+#   pretérito perfecto for today ("esta mañana ha decidido")
+#   future for his plans (5): "seguirá", "dedicará", "saldrá"
+# Synonyms on purpose: empresa / negocio, de momento / por ahora,
+# lanzarse a la piscina / dar el paso.
 
 ## Historia
 
@@ -21,14 +27,14 @@ Andrés tiene treinta y dos años y vive en Madrid. Trabaja como ingeniero de so
 [Todas las noches], después de cenar, [echa un vistazo] a las [ofertas de empleo] en internet. Hay cientos de [puestos:jobs], pero ninguno [le dice nada]. No hay [ni uno] que le emocione. Todos [le parecen] iguales: más reuniones, más pantallas, [más de lo mismo].
 > Every night, after dinner, he has a look at job listings online. There are hundreds of positions, but none of them speaks to him. Not a single one excites him. They all seem the same to him: more meetings, more screens, more of the same.
 
-Un domingo, mientras [toma:have] un café con su amiga Marta, Andrés le cuenta cómo se siente. Marta es emprendedora: [hace dos años] [montó:setup] una pyme de diseño con dos socias. —¿Y por qué no emprendes tú? —le pregunta—. Si no lo intentas, nunca lo sabrás.
-> One Sunday, while he's having a coffee with his friend Marta, Andrés tells her how he feels. Marta is an entrepreneur: two years ago she set up a small design company with two partners. "So why don't you start a business?" she asks him. "If you don't try, you'll never know."
+[Hace un mes], un domingo, mientras [tomaba:have] un café con su amiga Marta, Andrés le contó cómo se sentía. Marta es emprendedora: [hace dos años] [montó:setup] una pyme de diseño con dos socias. —¿Y por qué no emprendes tú? —le preguntó—. [A veces] [hay que] [lanzarse a la piscina]. Si no lo intentas, nunca lo sabrás.
+> A month ago, one Sunday, while he was having a coffee with his friend Marta, Andrés told her how he felt. Marta is an entrepreneur: two years ago she set up a small design company with two partners. "So why don't you start a business?" she asked him. "Sometimes you have to take the plunge. If you don't try, you'll never know."
 
-[Al principio], a Andrés [le da miedo]. ¿Y si [sale mal]? Pero [le da vueltas] a la idea durante semanas y, [al final], [se arma de valor]. Esta mañana ha decidido [dar el paso] y [montar:setup] su propio negocio.
-> At first, Andrés is scared. What if it goes wrong? But he mulls over the idea for weeks and, in the end, he plucks up his courage. This morning he decided to take the plunge: he's going to set up his own company.
+[Al principio], a Andrés [le daba miedo]. ¿Y si [salía mal]? Pero [le dio vueltas] a la idea durante semanas y, [al final], [se armó de valor]. Esta mañana ha decidido [dar el paso] y [montar:setup] su propio negocio.
+> At first, Andrés was scared. What if it went wrong? But he mulled the idea over for weeks and, in the end, he plucked up his courage. This morning he decided to take the step and set up his own business.
 
 Su idea es una plataforma para ayudar a pymes en su ciudad a vender sus productos y servicios por internet. [Por ahora], seguirá trabajando en su empresa y dedicará las tardes a su proyecto. No sabe si [saldrá bien], pero [por fin] tiene algo que le emociona [de verdad]. [Tiene su riesgo], pero también es muy emocionante.
-> His idea is an app to help small businesses in his city sell their products and services online. For now, he'll keep working at his company and spend his evenings on his project. He doesn't know if it will work out, but at last he has something that really excites him. It's risky, but also very exciting.
+> His idea is a platform to help small businesses in his city sell their products and services online. For now, he'll keep working at his company and spend his evenings on his project. He doesn't know if it will work out, but at last he has something that really excites him. It has its risks, but it's also very exciting.
 
 ## Retelling
 
@@ -38,14 +44,14 @@ Tengo treinta y dos años y vivo en Madrid. [Trabajo:iwork] como ingeniero de so
 [Todas las noches], después de cenar, [echo un vistazo] a las [ofertas de empleo] en internet. Hay cientos de [puestos:jobs], pero ninguno [me dice nada]. No hay [ni uno] que me emocione. Todos [me parecen] iguales: más reuniones, más pantallas, [más de lo mismo].
 > Every night, after dinner, I have a look at job listings online. There are hundreds of positions, but none of them speaks to me. Not a single one excites me. They all seem the same to me: more meetings, more screens, more of the same.
 
-Un domingo, mientras [tomo:have] un café con mi amiga Marta, le cuento cómo me siento. Marta es emprendedora: [hace dos años] [montó:setup] una pyme de diseño con dos socias. —¿Y por qué no emprendes tú? —me pregunta—. Si no lo intentas, nunca lo sabrás.
-> One Sunday, while I'm having a coffee with my friend Marta, I tell her how I feel. Marta is an entrepreneur: two years ago she set up a small design company with two partners. "So why don't you start a business?" she asks me. "If you don't try, you'll never know."
+[Hace un mes], un domingo, mientras [tomaba:have] un café con mi amiga Marta, le conté cómo me sentía. Marta es emprendedora: [hace dos años] [montó:setup] una pyme de diseño con dos socias. —¿Y por qué no emprendes tú? —me preguntó—. [A veces] [hay que] [lanzarse a la piscina]. Si no lo intentas, nunca lo sabrás.
+> A month ago, one Sunday, while I was having a coffee with my friend Marta, I told her how I felt. Marta is an entrepreneur: two years ago she set up a small design company with two partners. "So why don't you start a business?" she asked me. "Sometimes you have to take the plunge. If you don't try, you'll never know."
 
-[Al principio], [me da miedo]. ¿Y si [sale mal]? Pero [le doy vueltas] a la idea durante semanas y, [al final], [me armo de valor]. Esta mañana he decidido [lanzarme a la piscina]: voy a [montar:setup] mi propia empresa.
-> At first, I'm scared. What if it goes wrong? But I mull over the idea for weeks and, in the end, I pluck up my courage. This morning I decided to take the plunge: I'm going to set up my own company.
+[Al principio], [me daba miedo]. ¿Y si [salía mal]? Pero [le di vueltas] a la idea durante semanas y, [al final], [me armé de valor]. Esta mañana he decidido [dar el paso] y [montar:setup] mi propio negocio.
+> At first, I was scared. What if it went wrong? But I mulled the idea over for weeks and, in the end, I plucked up my courage. This morning I decided to take the step and set up my own business.
 
-Mi idea es una aplicación para ayudar a las pymes del barrio a vender por internet. [De momento], seguiré trabajando en mi empresa y dedicaré las tardes a mi proyecto. No sé si [saldrá bien], pero [por fin] tengo algo que me emociona [de verdad]. Es arriesgado, pero también muy emocionante.
-> My idea is an app to help small businesses in the neighborhood sell online. For now, I'll keep working at my company and spend my evenings on my project. I don't know if it will work out, but at last I have something that really excites me. It's risky, but also very exciting.
+Mi idea es una plataforma para ayudar a pymes en mi ciudad a vender sus productos y servicios por internet. [Por ahora], seguiré trabajando en mi empresa y dedicaré las tardes a mi proyecto. No sé si [saldrá bien], pero [por fin] tengo algo que me emociona [de verdad]. [Tiene su riesgo], pero también es muy emocionante.
+> My idea is a platform to help small businesses in my city sell their products and services online. For now, I'll keep working at my company and spend my evenings on my project. I don't know if it will work out, but at last I have something that really excites me. It has its risks, but it's also very exciting.
 
 ## Preguntas
 
@@ -77,12 +83,12 @@ Q: ¿Marta trabaja en una empresa grande?
 A: No, Marta no trabaja en una empresa grande. [Hace dos años] [montó:setup] una pyme con dos socias.
 > No, Marta doesn't work at a big company. Two years ago she set up a small business with two partners.
 
-S: [Al principio], a Andrés [le da miedo].
-> At first, Andrés is scared.
-Q: ¿Andrés decide [montar:setup] su empresa enseguida?
-> Does Andrés decide to set up his company right away?
-A: No, no lo decide enseguida. [Le da vueltas] a la idea durante semanas.
-> No, he doesn't decide right away. He mulls over the idea for weeks.
+S: [Al principio], a Andrés [le daba miedo].
+> At first, Andrés was scared.
+Q: ¿Andrés decidió [montar:setup] su negocio enseguida?
+> Did Andrés decide to set up his business right away?
+A: No, no lo decidió enseguida. [Le dio vueltas] a la idea durante semanas.
+> No, he didn't decide right away. He mulled the idea over for weeks.
 
 S: [De momento], Andrés seguirá trabajando en su empresa.
 > For now, Andrés will keep working at his company.

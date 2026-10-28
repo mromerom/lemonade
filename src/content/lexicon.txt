@@ -108,48 +108,15 @@ al principio
 al final
   gloss: in the end; finally
   words: al, final
-le da miedo
-  gloss: he's scared; it scares him
-  note: Literally "it gives him fear".
-  words: le, da, miedo
-me da miedo
-  gloss: I'm scared; it scares me
-  words: me, da, miedo
-sale mal
-  gloss: goes wrong; turns out badly
-  lemma: salir mal
-  words: sale, mal
 saldrá bien
   gloss: will go well; will work out
   lemma: salir bien
   note: Future of salir: saldré, saldrás, saldrá…
   words: saldrá, bien
-le da vueltas
-  gloss: mulls it over; keeps thinking about it
-  lemma: darle vueltas a algo
-  note: Literally "gives it turns". "Le da vueltas a la idea" = he keeps turning the idea over.
-  words: le, da, vueltas
-le doy vueltas
-  gloss: I mull it over; I keep thinking about it
-  lemma: darle vueltas a algo
-  words: le, doy, vueltas
-se arma de valor
-  gloss: plucks up his courage
-  lemma: armarse de valor
-  note: Literally "arms himself with courage".
-  words: se, arma, de, valor
-me armo de valor
-  gloss: I pluck up my courage
-  lemma: armarse de valor
-  words: me, armo, de, valor
 lanzarse a la piscina
   gloss: to take the plunge
   note: Literally "to throw oneself into the pool". In Spain you'll also hear "tirarse a la piscina".
   words: lanzarse, a, la, piscina
-lanzarme a la piscina
-  gloss: to take the plunge (myself)
-  lemma: lanzarse a la piscina
-  words: lanzarme, a, la, piscina
 de momento
   gloss: for now; for the time being
   words: de, momento
@@ -169,6 +136,62 @@ ni uno
   gloss: not a single one
   note: "No hay ni uno que le emocione": something that doesn't exist takes the subjunctive.
   words: ni, uno
+
+# ---------- Phrases: Andrés, past tenses ----------
+
+hace un mes
+  gloss: a month ago
+  words: hace:ago, un, mes
+a veces
+  gloss: sometimes
+  words: a, veces
+hay que
+  gloss: you have to; one has to
+  note: "Hay que" + infinitive: a general "must", with no particular subject.
+  words: hay, que
+le daba miedo
+  gloss: he was scared; it scared him
+  note: Imperfecto: a feeling that lasted, not a single event.
+  words: le, daba, miedo
+me daba miedo
+  gloss: I was scared; it scared me
+  note: Imperfecto: a feeling that lasted, not a single event.
+  words: me, daba, miedo
+salía mal
+  gloss: (it) went wrong; turned out badly
+  lemma: salir mal
+  note: "¿Y si salía mal?" = what if it went wrong? The imperfecto for a worry in the past.
+  words: salía, mal
+le dio vueltas
+  gloss: he mulled it over; kept thinking about it
+  lemma: darle vueltas a algo
+  note: Indefinido: a completed stretch of time ("durante semanas"), now over.
+  words: le, dio, vueltas
+le di vueltas
+  gloss: I mulled it over; kept thinking about it
+  lemma: darle vueltas a algo
+  words: le, di, vueltas
+se armó de valor
+  gloss: he plucked up his courage
+  lemma: armarse de valor
+  note: Indefinido: one completed moment, marked by "al final".
+  words: se, armó, de, valor
+me armé de valor
+  gloss: I plucked up my courage
+  lemma: armarse de valor
+  note: Indefinido: one completed moment, marked by "al final".
+  words: me, armé, de, valor
+dar el paso
+  gloss: to take the step; to make the move
+  note: Close to "lanzarse a la piscina", a little less dramatic.
+  words: dar, el, paso
+por ahora
+  gloss: for now; for the time being
+  note: Same as "de momento".
+  words: por, ahora
+tiene su riesgo
+  gloss: it has its risks; it's a bit risky
+  words: tiene, su, riesgo
 
 # ---------- Words ----------
 
@@ -482,26 +505,12 @@ amiga
 andrés
   gloss: Andrés
   name: yes
-aplicación
-  gloss: app; application
-arma
-  gloss: arms
-  lemma: armar
-  note: él/ella, present. "Armarse de valor" = to pluck up courage.
-armo
-  gloss: I arm
-  lemma: armar
-  note: yo, present
-arriesgado
-  gloss: risky
 años
   gloss: years
   lemma: año
 ayudar
   gloss: to help
   note: "ayudar a alguien a + infinitive" = to help someone do something
-barrio
-  gloss: neighborhood
 bien
   gloss: well; good
 café
@@ -516,27 +525,11 @@ como
 compañeros
   gloss: colleagues; coworkers
   lemma: compañero
-cuenta
-  gloss: tells
-  lemma: contar
-  note: él/ella, present (o → ue)
-cuento
-  gloss: I tell
-  lemma: contar
-  note: yo, present (o → ue)
 curro
   gloss: job; work
   note: Spain, informal. From currar = to work.
 cómo
   gloss: how
-da
-  gloss: gives
-  lemma: dar
-  note: él/ella, present
-decide
-  gloss: decides
-  lemma: decidir
-  note: él/ella, present
 decidido
   gloss: decided
   lemma: decidir
@@ -565,10 +558,6 @@ diseño
   gloss: design
 domingo
   gloss: Sunday
-doy
-  gloss: I give
-  lemma: dar
-  note: yo, present
 durante
   gloss: during; for
 echa
@@ -605,6 +594,7 @@ emprendes
   note: tú, present
 empresa
   gloss: company; business
+  note: Compare "negocio": any business, even a shop or a bar. "Empresa" is a company or firm.
 enseguida
   gloss: right away; at once
 es
@@ -648,9 +638,6 @@ intentas
   gloss: you try
   lemma: intentar
   note: tú, present
-lanzarme
-  gloss: to throw myself
-  lemma: lanzarse
 lanzarse
   gloss: to throw oneself; to launch oneself
 lo
@@ -720,18 +707,10 @@ parecen
   note: ellos/ellas, present
 piscina
   gloss: swimming pool
-pregunta
-  gloss: asks
-  lemma: preguntar
-  note: él/ella, present
 principio
   gloss: beginning
 profesor
   gloss: teacher
-propia
-  gloss: own
-  lemma: propio
-  note: feminine. "Su propia empresa" = his own company.
 proyecto
   gloss: project
 pyme
@@ -764,10 +743,6 @@ saldrá
   gloss: will turn out; will go out
   lemma: salir
   note: él/ella, future (irregular: saldr-)
-sale
-  gloss: goes out; turns out
-  lemma: salir
-  note: él/ella, present
 se
   gloss: himself; herself; oneself
   note: Reflexive pronoun: "se siente" = he feels.
@@ -785,14 +760,6 @@ semanas
 si
   gloss: if
   note: No accent. "Sí" with an accent means yes.
-siente
-  gloss: feels
-  lemma: sentir
-  note: él/ella, present (e → ie). "Se siente" = he feels.
-siento
-  gloss: I feel
-  lemma: sentir
-  note: yo, present (e → ie). "Me siento" = I feel.
 sin
   gloss: without
 socias
@@ -824,19 +791,6 @@ tiene
   gloss: has
   lemma: tener
   note: él/ella, present. Age uses tener: "tiene treinta y dos años".
-toma
-  gloss: takes
-  lemma: tomar
-  note: él/ella, present
-  sense have: has (food or drink)
-    lemma: tomar
-    note: "tomar un café" = to have a coffee
-tomo
-  gloss: I take
-  lemma: tomar
-  note: yo, present
-  sense have: I have (food or drink)
-    lemma: tomar
 trabaja
   gloss: works
   lemma: trabajar
@@ -887,3 +841,84 @@ ni
   gloss: not even; nor
 uno
   gloss: one
+ahora
+  gloss: now
+armé
+  gloss: I armed
+  lemma: armar
+  note: yo, indefinido. Accent on the last é; compare "armó" (él/ella).
+armó
+  gloss: armed
+  lemma: armar
+  note: él/ella, indefinido. Accent on the last ó; compare "armé" (yo).
+ciudad
+  gloss: city
+contó
+  gloss: told
+  lemma: contar
+  note: él/ella, indefinido. The o → ue change only happens in the present (cuenta).
+conté
+  gloss: I told
+  lemma: contar
+  note: yo, indefinido
+daba
+  gloss: gave
+  lemma: dar
+  note: Imperfecto. Same form for yo and él/ella.
+dar
+  gloss: to give
+decidió
+  gloss: decided
+  lemma: decidir
+  note: él/ella, indefinido
+di
+  gloss: I gave
+  lemma: dar
+  note: yo, indefinido. No accent: di, diste, dio.
+dio
+  gloss: gave
+  lemma: dar
+  note: él/ella, indefinido. No accent.
+mes
+  gloss: month
+negocio
+  gloss: business
+  note: Near-synonym of "empresa". "Negocio" is any business, even a shop or a bar; "empresa" is a company or firm. "Su propio negocio" = his own business.
+paso
+  gloss: step
+plataforma
+  gloss: platform
+preguntó
+  gloss: asked
+  lemma: preguntar
+  note: él/ella, indefinido
+productos
+  gloss: products
+  lemma: producto
+propio
+  gloss: own
+  note: Agrees with the noun: "su propio negocio", "su propia empresa".
+riesgo
+  gloss: risk
+salía
+  gloss: went out; turned out
+  lemma: salir
+  note: Imperfecto. Same form for yo and él/ella.
+sentía
+  gloss: felt
+  lemma: sentir
+  note: Imperfecto. "Cómo se sentía" = how he felt. Same form for yo: "cómo me sentía".
+servicios
+  gloss: services
+  lemma: servicio
+tomaba
+  gloss: was taking
+  lemma: tomar
+  note: Imperfecto. Same form for yo and él/ella.
+  sense have: was having (food or drink)
+    lemma: tomar
+    note: Imperfecto for the background: "mientras tomaba un café" (while he was having a coffee), when something else happened.
+veces
+  gloss: times
+  lemma: vez
+  note: "A veces" = sometimes

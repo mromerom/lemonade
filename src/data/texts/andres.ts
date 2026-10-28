@@ -135,29 +135,42 @@ export const andres: Text = {
       kind: 'form',
       verb: 'armarse',
       person: 'yo',
-      tense: 'present',
-      forms: { yo: 'armo', tú: 'armas', 'él/ella': 'arma', nosotros: 'armamos', 'ellos/ellas': 'arman' },
-      wrongForms: { armé: 'preterite (“I plucked up”). The retelling is in the present' },
+      tense: 'pretérito indefinido',
+      forms: { yo: 'armé', tú: 'armaste', 'él/ella': 'armó', nosotros: 'armamos', 'ellos/ellas': 'armaron' },
+      wrongForms: {
+        armaba:
+          'imperfecto, for ongoing or repeated actions. «Al final» marks one completed moment, so the indefinido',
+        armo: 'present. The sentence is in the past («le di vueltas»)',
+      },
       pre: {
-        prompt: 'Le doy vueltas a la idea durante semanas y, al final, me ___ de valor.',
-        promptEn: 'I mull the idea over for weeks and, in the end, I pluck up my courage. (armarse de valor = to pluck up courage)',
+        prompt: 'Le di vueltas a la idea durante semanas y, al final, me ___ de valor.',
+        promptEn: 'I mulled the idea over for weeks and, in the end, I plucked up my courage. (armarse de valor = to pluck up courage)',
         options: [
-          { id: 'a', text: 'arma' },
-          { id: 'b', text: 'amo', note: 'Amo is from amar: “I love”. One letter away from armo.' },
-          { id: 'c', text: 'armé', note: 'Armé is past: “I plucked up”. The retelling is in the present.' },
           {
-            id: 'd', text: 'armo',
-            note: 'The sentence starts with «le doy» (I give), so the subject is yo, and «me» matches it: me armo de valor.',
+            id: 'a',
+            text: 'armó',
+            note: 'Armó, with the accent on the ó, is él/ella: “he plucked up”. «Le di» (I gave) tells you the subject is yo, so it’s armé.',
           },
+          {
+            id: 'b',
+            text: 'armaba',
+            note: 'Armaba is the imperfecto, for ongoing or repeated actions (like «le daba miedo»). «Al final» marks one completed moment, so the indefinido: armé.',
+          },
+          {
+            id: 'c',
+            text: 'armé',
+            note: '«Le di vueltas» tells you two things: the subject is yo, and the sentence is in the past. «Al final» marks one completed moment, so it’s the indefinido: me armé de valor.',
+          },
+          { id: 'd', text: 'armo', note: 'Armo is the present. The sentence is in the past: «le di vueltas».' },
         ],
-        correctOptionId: 'd',
+        correctOptionId: 'c',
       },
       post: {
-        prompt: 'Le doy vueltas a la idea durante semanas y, al final, me ___ de valor. (armarse)',
-        promptEn: 'I mull the idea over for weeks and, in the end, I pluck up my courage.',
-        accept: ['armo'],
+        prompt: 'Le di vueltas a la idea durante semanas y, al final, me ___ de valor. (armarse)',
+        promptEn: 'I mulled the idea over for weeks and, in the end, I plucked up my courage.',
+        accept: ['armé'],
       },
-      match: ['arma', 'armo'],
+      match: ['armó', 'armé'],
     },
     {
       id: 'pyme',
@@ -206,8 +219,8 @@ export const andres: Text = {
         decido: 'present (“I decide”). The decision already happened this morning',
       },
       pre: {
-        prompt: 'Esta mañana ___ lanzarme a la piscina: voy a montar mi propia empresa.',
-        promptEn: 'This morning I decided to take the plunge: I’m going to set up my own company. (decidir = to decide)',
+        prompt: 'Esta mañana ___ dar el paso: voy a montar mi propio negocio.',
+        promptEn: 'This morning I decided to take the step: I’m going to set up my own business. (decidir = to decide)',
         options: [
           { id: 'a', text: 'decidí', note: 'Both are correct. In most of Spain, something that happened today («esta mañana») usually takes the pretérito perfecto: he decidido. In Latin America, and in parts of Spain such as the Canary Islands, Galicia and Asturias, the simple past decidí is the usual choice.' },
           { id: 'b', text: 'ha decidido' },
@@ -221,8 +234,8 @@ export const andres: Text = {
         alsoCorrect: ['a'],
       },
       post: {
-        prompt: 'Esta mañana ___ lanzarme a la piscina: voy a montar mi propia empresa. (decidir)',
-        promptEn: 'This morning I decided to take the plunge: I’m going to set up my own company.',
+        prompt: 'Esta mañana ___ dar el paso: voy a montar mi propio negocio. (decidir)',
+        promptEn: 'This morning I decided to take the step: I’m going to set up my own business.',
         accept: ['he decidido'],
         variants: {
           decidí: 'Both are correct. In most of Spain, something that happened today («esta mañana») usually takes the pretérito perfecto: he decidido. In Latin America, and in parts of Spain such as the Canary Islands, Galicia and Asturias, the simple past decidí is the usual choice.',
@@ -236,8 +249,8 @@ export const andres: Text = {
       word: 'lanzarse a la piscina',
       gloss: 'to take the plunge',
       pre: {
-        prompt: '«Ha decidido lanzarse a la piscina.» ¿Qué significa «lanzarse a la piscina»?',
-        promptEn: '“He decided to lanzarse a la piscina.” What does it mean?',
+        prompt: '«A veces hay que lanzarse a la piscina.» ¿Qué significa «lanzarse a la piscina»?',
+        promptEn: '“Sometimes you have to lanzarse a la piscina.” What does it mean?',
         options: [
           {
             id: 'a',
@@ -246,7 +259,7 @@ export const andres: Text = {
           },
           {
             id: 'b', text: 'to take the plunge',
-            note: 'Lanzarse a la piscina means taking a risk and going for it. Andrés stops thinking it over and starts his company.',
+            note: 'Lanzarse a la piscina means taking a risk and going for it. Marta tells Andrés that sometimes you have to, and in the end he does: he decides to dar el paso (take the step).',
           },
           { id: 'c', text: 'to give up', note: 'To give up is rendirse, or tirar la toalla (“to throw in the towel”).' },
           { id: 'd', text: 'to throw a party', note: 'To throw a party is montar una fiesta. Montar again!' },
@@ -258,7 +271,7 @@ export const andres: Text = {
         promptEn: 'How do you say “to take the plunge” in Spain? (a phrase with “piscina”)',
         accept: ['lanzarse a la piscina', 'tirarse a la piscina', 'lanzarme a la piscina'],
       },
-      match: ['lanzarse', 'lanzarme'],
+      match: ['lanzarse'],
     },
     {
       id: 'emprendedor',
