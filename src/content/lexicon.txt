@@ -239,6 +239,12 @@ tiene su riesgo
   pos: phrase
   words: tiene, su, riesgo
 
+treinta y dos
+  gloss: thirty-two
+  pos: number
+  note: From 31 to 99, tens and units are joined with "y": treinta y uno, cuarenta y cinco. (21–29 are one word: veintidós.)
+  words: treinta, y, dos
+
 # ---------- Words ----------
 
 a

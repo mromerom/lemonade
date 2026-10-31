@@ -19,7 +19,7 @@ const DEMO_KNOWN = [
   'es', 'son', 'está', 'hay', 'tiene', 'tengo', 'vive', 'vivo', 'quiere', 'quiero', 'va', 'van',
   'trabaja', 'trabajando', 'comprar', 'vender', 'ayudar',
   // everyday nouns and adjectives
-  'casa', 'años', 'mes', 'meses', 'semanas', 'domingo', 'sábados', 'dos', 'tres', 'treinta', 'sol',
+  'casa', 'años', 'mes', 'meses', 'semanas', 'domingo', 'sábados', 'dos', 'tres', 'treinta', 'treinta y dos', 'sol',
   'pan', 'café', 'madre', 'amiga', 'abuelo', 'ciudad', 'idea', 'internet', 'software', 'proyecto',
   'productos', 'servicios', 'plataforma', 'frutas', 'flores', 'naranja', 'naranjas', 'limón', 'río',
   'grande', 'pequeña', 'kilo', 'kilos', 'euros', 'trabajo',
