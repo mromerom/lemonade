@@ -1,8 +1,9 @@
-import { useEffect, useState, type MouseEvent, type ReactNode } from 'react';
+import { useCallback, useEffect, useRef, useState, type MouseEvent, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { lookupTerm } from '../../content';
 import { parseMarkup, plainText, toSegmentRuns } from '../../lib/markup';
 import { textWordKeys, wordStatus } from '../../lib/textWords';
+import { useDismiss } from '../../lib/useDismiss';
 import { useLearner } from '../../store/learnerStore';
 import type { Paragraph, Text } from '../../types';
 import GroupCard, { type GroupItem } from './GroupCard';
@@ -48,10 +49,15 @@ export default function Reader({ text, mode = 'lesson', onDone }: Props) {
 
   const newKeys = textWordKeys(text).filter((k) => wordStatus(state, k) === 'new');
 
-  function close() {
+  const close = useCallback(() => {
     setSelection(null);
     setAdding(false);
-  }
+  }, []);
+
+  // Clicking outside the card closes it. Words are left out: clicking one opens
+  // its own card, and in "select more words" mode it adds to the group.
+  const panelRef = useRef<HTMLElement>(null);
+  useDismiss(panelRef, Boolean(selection) && !adding, close, '[data-term]');
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -59,7 +65,7 @@ export default function Reader({ text, mode = 'lesson', onDone }: Props) {
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, []);
+  }, [close]);
 
   function onTermClick(e: MouseEvent, block: string, item: GroupItem) {
     const additive = e.shiftKey || adding;
@@ -114,6 +120,7 @@ export default function Reader({ text, mode = 'lesson', onDone }: Props) {
                       inGroup ? styles.grouped : '',
                     ].join(' ')}
                     aria-pressed={picked}
+                    data-term
                     onClick={(e) => onTermClick(e, block, { idx, key: seg.key, sense: seg.sense, text: seg.text })}
                   >
                     {seg.text}
@@ -254,7 +261,12 @@ export default function Reader({ text, mode = 'lesson', onDone }: Props) {
         )}
       </div>
 
-      <aside className={`${styles.panel} ${selection ? styles.panelOpen : ''}`} aria-live="polite" aria-label="Word details">
+      <aside
+        ref={panelRef}
+        className={`${styles.panel} ${selection ? styles.panelOpen : ''}`}
+        aria-live="polite"
+        aria-label="Word details"
+      >
         {single && !adding ? (
           <WordCard
             key={`${single.key}:${single.sense ?? ''}`}

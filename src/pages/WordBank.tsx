@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { lookupTerm } from '../content';
 import { useLearner } from '../store/learnerStore';
@@ -11,6 +11,7 @@ import {
   type BankEntry,
   type LevelBand,
 } from '../lib/wordBank';
+import { useDismiss } from '../lib/useDismiss';
 import type { PartOfSpeech } from '../types';
 import styles from './WordBank.module.css';
 
@@ -84,6 +85,11 @@ export default function WordBank() {
   function select(key: string | null) {
     setParams(key ? { w: key } : {}, { replace: true });
   }
+
+  // Clicking outside the detail card closes it; clicking another row opens that one.
+  const panelRef = useRef<HTMLElement>(null);
+  const closeDetail = useCallback(() => setParams({}, { replace: true }), [setParams]);
+  useDismiss(panelRef, Boolean(selected), closeDetail, '[data-bank-row]');
 
   function clearFilters() {
     setBand('all');
@@ -217,6 +223,7 @@ export default function WordBank() {
                   className={`${styles.row} ${selected?.key === e.key ? styles.rowSelected : ''}`}
                   onClick={() => select(e.key)}
                   aria-current={selected?.key === e.key}
+                  data-bank-row
                 >
                   <span className={styles.rowMain}>
                     <span className={styles.front} lang={direction === 'es-en' ? 'es' : 'en'}>
@@ -249,6 +256,7 @@ export default function WordBank() {
         )}
 
         <aside
+          ref={panelRef}
           className={`${styles.panel} ${selected ? styles.panelOpen : ''}`}
           aria-live="polite"
           aria-label="Word details"
