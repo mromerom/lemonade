@@ -24,7 +24,7 @@ example: Andrés se armó de valor => me armé de valor
 Andrés tiene [treinta y dos] años y vive en Madrid. Trabaja como ingeniero de software en una empresa grande. El sueldo [no está mal] y sus compañeros son majos. [Sin embargo], [desde hace] meses, Andrés está [harto de] su [curro]: quiere un trabajo que le emocione.
 > Andrés is thirty-two and lives in Madrid. He works as a software engineer at a big company. The salary isn't bad and his colleagues are nice. However, for months now, Andrés has been fed up with his job: he wants work that excites him.
 
-[Todas las noches], después de cenar, [echa un vistazo] a las [ofertas de empleo] en internet. Hay cientos de [puestos:jobs], pero ninguno [le dice nada]. No hay [ni uno] que le emocione. Todos [le parecen] iguales: más reuniones, más pantallas, [más de lo mismo].
+[Todas las noches], después de cenar, [echa un vistazo] a las [ofertas de empleo] en internet. Hay cientos de [puestos:jobs], pero ninguno [le llama la atención]. No hay [ni uno] que le emocione. Todos [le parecen] iguales: más reuniones, más pantallas, [más de lo mismo].
 > Every night, after dinner, he has a look at job listings online. There are hundreds of positions, but none of them speaks to him. Not a single one excites him. They all seem the same to him: more meetings, more screens, more of the same.
 
 [Hace un mes], un domingo, mientras [tomaba:have] un café con su amiga Marta, Andrés le contó cómo se sentía. Marta es emprendedora: [hace dos años] [montó:setup] una pyme de diseño con dos socias. —¿Y por qué no emprendes tú? —le preguntó—. [A veces] [hay que] [lanzarse a la piscina]. Si no lo intentas, nunca lo sabrás.
@@ -69,7 +69,7 @@ Q: ¿Andrés quiere un trabajo que le pague más?
 A: No, el sueldo [no está mal]. Quiere un trabajo que le emocione.
 > No, the salary isn't bad. He wants work that excites him.
 
-S: Hay cientos de [puestos:jobs], pero ninguno [le dice nada].
+S: Hay cientos de [puestos:jobs], pero ninguno [le llama la atención].
 > There are hundreds of positions, but none of them speaks to him.
 Q: ¿[Le gustan] las [ofertas de empleo] que ve en internet?
 > Does he like the job listings he sees online?
