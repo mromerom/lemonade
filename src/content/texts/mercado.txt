@@ -77,10 +77,10 @@ A: No, las naranjas no son baratas en el primer puesto. Son caras: cuestan tres 
 
 S: Lucía y su abuelo van al segundo puesto.
 > Lucía and her grandfather go to the second stall.
-Q: ¿Lucía y su abuelo van al tercer puesto?
-> Do Lucía and her grandfather go to the third stall?
-A: No, no van al tercer puesto. Van al segundo puesto.
-> No, they don't go to the third stall. They go to the second stall.
+Q: ¿Compran naranjas en el segundo puesto?
+> Do they buy oranges at the second stall?
+A: Sí, compran dos kilos de naranjas en el segundo puesto.
+> Yes, they buy two kilos of oranges at the second stall.
 
 S: La vendedora le regala un limón a Lucía.
 > The seller gives Lucía a lemon.
@@ -95,3 +95,10 @@ Q: ¿Compran pan antes de comprar naranjas?
 > Do they buy bread before buying oranges?
 A: No, no compran pan antes. Compran pan después de comprar naranjas.
 > No, they don't buy bread before. They buy bread after buying oranges.
+
+S: [Más tarde], vuelven a casa. Lucía está contenta.
+> Later, they go back home. Lucía is happy.
+Q: ¿Lucía está contenta?
+> Is Lucía happy?
+A: Sí, Lucía está contenta. [Le gusta] mucho el mercado.
+> Yes, Lucía is happy. She really likes the market.

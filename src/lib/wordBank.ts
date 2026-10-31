@@ -154,9 +154,10 @@ export function wordBank(state: LearnerState): BankEntry[] {
   const entries: BankEntry[] = [];
   for (const key of keys) {
     const entry = lexicon[key];
-    if (entry?.name) continue;
-    const record = state.words[key];
     const userPhrase = state.userPhrases?.[key];
+    // Skip names, and words an author has since removed from the lexicon.
+    if (entry?.name || (!entry && !userPhrase)) continue;
+    const record = state.words[key];
     const levels = [...new Set(contextsFor(key, 99).map((c) => c.level))].sort();
     const senses = entry?.senses ?? [];
     entries.push({

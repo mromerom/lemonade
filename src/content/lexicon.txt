@@ -574,11 +574,6 @@ tarde
   sense afternoon: afternoon
     pos: noun
     note: "la tarde" = the afternoon
-tercer
-  gloss: third
-  pos: adjective
-  lemma: tercero
-  note: shortened before a masculine noun
 todos
   gloss: all; every
   pos: determiner
@@ -908,11 +903,6 @@ ofertas
   gloss: offers; listings
   pos: noun
   lemma: oferta
-pague
-  gloss: pays
-  pos: verb
-  lemma: pagar
-  note: Present subjunctive: "un trabajo que le pague más" (a job that would pay him more).
 pantallas
   gloss: screens
   pos: noun

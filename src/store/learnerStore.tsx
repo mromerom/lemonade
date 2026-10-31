@@ -1,3 +1,4 @@
+import { lexicon } from '../content';
 import { createContext, useContext, useEffect, useReducer, type ReactNode } from 'react';
 import type { LearnerState, LessonProgress, LessonStage, ReviewItem, WordStatus } from '../types';
 
@@ -53,12 +54,23 @@ function createDemoState(): LearnerState {
   };
 }
 
+/**
+ * Drop saved words that no longer exist in the lexicon (an author renamed or
+ * removed them, e.g. "le dice nada"). The learner's own phrases are kept.
+ */
+function pruneRemovedTerms(state: LearnerState): LearnerState {
+  const words = Object.fromEntries(
+    Object.entries(state.words).filter(([key]) => lexicon[key] || state.userPhrases?.[key]),
+  );
+  return Object.keys(words).length === Object.keys(state.words).length ? state : { ...state, words };
+}
+
 function load(): LearnerState {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw) as LearnerState;
-      if (parsed.version === 2) return parsed;
+      if (parsed.version === 2) return pruneRemovedTerms(parsed);
     }
   } catch {
     // Storage blocked or corrupt: fall through to a fresh demo profile.

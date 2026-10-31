@@ -204,26 +204,41 @@ export default function Reader({ text, mode = 'lesson', onDone }: Props) {
         <Part
           n={3}
           title="Preguntas y respuestas"
-          hint="Read each question and answer it in your head before you reveal the answer."
+          hint="Answer each question in your head, then show the answer to check."
         >
-          {/* Plain text: this part is an exercise, not more reading to look words up in. */}
+          {/* Part of the text, set like the story, but without tap-to-translate words. */}
           <ol className={styles.qaList} lang="es">
             {text.qa.map((item, i) => {
               const open = revealed.has(i);
+              const enOpen = translated.has(`qa-${i}`);
               return (
                 <li key={i} className={styles.qa}>
-                  <p className={styles.qaStatement}>{plainText(item.statement.es)}</p>
-                  <p className={styles.qaQuestion}>{plainText(item.question.es)}</p>
-                  {open ? (
-                    <p className={styles.qaAnswer}>{plainText(item.answer.es)}</p>
-                  ) : (
-                    <button type="button" className={styles.reveal} onClick={() => setRevealed((s) => toggle(s, i))}>
-                      Show answer
+                  <p>{plainText(item.statement.es)}</p>
+                  <p>{plainText(item.question.es)}</p>
+                  {open && <p>{plainText(item.answer.es)}</p>}
+                  <div className={styles.qaActions}>
+                    <button
+                      type="button"
+                      className={styles.reveal}
+                      aria-expanded={open}
+                      onClick={() => setRevealed((s) => toggle(s, i))}
+                    >
+                      {open ? 'Hide answer' : 'Show answer'}
                     </button>
-                  )}
-                  {translateToggle(
-                    `qa-${i}`,
-                    `${item.statement.en} ${item.question.en}${open ? ` ${item.answer.en}` : ''}`,
+                    <button
+                      type="button"
+                      className={styles.translateBtn}
+                      aria-expanded={enOpen}
+                      onClick={() => setTranslated((s) => toggle(s, `qa-${i}`))}
+                    >
+                      {enOpen ? 'Hide translation' : 'Translate'}
+                    </button>
+                  </div>
+                  {enOpen && (
+                    <p className={styles.translation} lang="en">
+                      {item.statement.en} {item.question.en}
+                      {open ? ` ${item.answer.en}` : ''}
+                    </p>
                   )}
                 </li>
               );

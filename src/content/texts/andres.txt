@@ -62,12 +62,12 @@ Q: ¿Andrés trabaja como profesor?
 A: No, Andrés no trabaja como profesor. Trabaja como ingeniero de software.
 > No, Andrés doesn't work as a teacher. He works as a software engineer.
 
-S: Andrés quiere un trabajo que le emocione.
-> Andrés wants work that excites him.
-Q: ¿Andrés quiere un trabajo que le pague más?
-> Does Andrés want a job that pays him more?
-A: No, el sueldo [no está mal]. Quiere un trabajo que le emocione.
-> No, the salary isn't bad. He wants work that excites him.
+S: [Desde hace] meses, Andrés está [harto de] su [curro].
+> For months now, Andrés has been fed up with his job.
+Q: ¿Andrés está [harto de] su trabajo?
+> Is Andrés fed up with his job?
+A: Sí, Andrés está [harto de] su trabajo. Quiere un trabajo que le emocione.
+> Yes, Andrés is fed up with his job. He wants work that excites him.
 
 S: Hay cientos de [puestos:jobs], pero ninguno [le llama la atención].
 > There are hundreds of positions, but none of them catches his eye.
@@ -78,10 +78,10 @@ A: No, no [le gustan]. Todos los [puestos:jobs] [le parecen] iguales.
 
 S: Marta es emprendedora.
 > Marta is an entrepreneur.
-Q: ¿Marta trabaja en una empresa grande?
-> Does Marta work at a big company?
-A: No, Marta no trabaja en una empresa grande. [Hace dos años] [montó:setup] una pyme con dos socias.
-> No, Marta doesn't work at a big company. Two years ago she set up a small business with two partners.
+Q: ¿Marta [montó:setup] una pyme [hace dos años]?
+> Did Marta set up a small business two years ago?
+A: Sí, Marta [montó:setup] una pyme de diseño [hace dos años], con dos socias.
+> Yes, Marta set up a small design company two years ago, with two partners.
 
 S: [Al principio], a Andrés [le daba miedo].
 > At first, Andrés was scared.
@@ -90,9 +90,16 @@ Q: ¿Andrés decidió [montar:setup] su negocio enseguida?
 A: No, no lo decidió enseguida. [Le dio vueltas] a la idea durante semanas.
 > No, he didn't decide right away. He mulled the idea over for weeks.
 
-S: [De momento], Andrés seguirá trabajando en su empresa.
+S: [Al final], Andrés [se armó de valor].
+> In the end, Andrés plucked up his courage.
+Q: ¿Andrés ha decidido [dar el paso]?
+> Has Andrés decided to take the step?
+A: Sí, esta mañana Andrés ha decidido [dar el paso] y [montar:setup] su propio negocio.
+> Yes, this morning Andrés decided to take the step and set up his own business.
+
+S: [Por ahora], Andrés seguirá trabajando en su empresa.
 > For now, Andrés will keep working at his company.
-Q: ¿Andrés deja su trabajo hoy?
-> Is Andrés quitting his job today?
-A: No, [de momento] no deja su trabajo. Va a dedicar las tardes a su proyecto.
-> No, for now he isn't quitting his job. He's going to spend his evenings on his project.
+Q: ¿Andrés va a dedicar las tardes a su proyecto?
+> Is Andrés going to spend his evenings on his project?
+A: Sí, Andrés va a dedicar las tardes a su proyecto. [De momento], no deja su trabajo.
+> Yes, Andrés is going to spend his evenings on his project. For now, he isn't quitting his job.
