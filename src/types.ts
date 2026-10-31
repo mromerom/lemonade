@@ -171,6 +171,15 @@ export interface ReviewItem {
   dueAt: number;
 }
 
+/** A group of words the learner selected (shift-click) and saved with their own meaning. */
+export interface UserPhrase {
+  text: string;
+  gloss: string;
+  /** Lexicon terms of the words in the group, in order */
+  words: string[];
+  createdAt: number;
+}
+
 export interface LearnerState {
   version: 2;
   profile: { name: string };
@@ -178,4 +187,6 @@ export interface LearnerState {
   words: Record<string, WordRecord>;
   lessons: Record<string, LessonProgress>;
   reviewQueue: ReviewItem[];
+  /** Phrases the learner grouped themselves, keyed like words (lowercase text) */
+  userPhrases?: Record<string, UserPhrase>;
 }

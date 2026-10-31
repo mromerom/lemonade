@@ -15,6 +15,8 @@ interface Props {
   /** Sense used at this spot in the text; omitted means the default */
   senseId?: string;
   onClose: () => void;
+  /** Start picking more words to group with this one (for touch screens, where there's no shift key) */
+  onAddWords?: () => void;
 }
 
 /**
@@ -24,7 +26,7 @@ interface Props {
  *   3. other meanings this learner has already met (in any reading)
  *   4. every other meaning, behind a reveal
  */
-export default function WordCard({ termKey, senseId, onClose }: Props) {
+export default function WordCard({ termKey, senseId, onClose, onAddWords }: Props) {
   const { state, dispatch } = useLearner();
   const [showAll, setShowAll] = useState(false);
   const entry = lookupTerm(termKey);
@@ -89,6 +91,12 @@ export default function WordCard({ termKey, senseId, onClose }: Props) {
             {seen.length ? 'More meanings' : 'Other meanings'} ({unseen.length})
           </button>
         ))}
+
+      {onAddWords && (
+        <button type="button" className={styles.moreBtn} onClick={onAddWords}>
+          Select more words with this one
+        </button>
+      )}
 
       {!entry?.name && (
         <div className={styles.statusRow} role="group" aria-label="Word status">

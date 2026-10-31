@@ -30,3 +30,12 @@
   margin: 0 0 1rem;
   color: var(--muted);
 }
+
+.reviewNote {
+  margin: 0;
+  padding: 0.5rem 0.8rem;
+  border-radius: 8px;
+  background: var(--surface-2);
+  font-size: 0.9rem;
+  color: var(--muted);
+}

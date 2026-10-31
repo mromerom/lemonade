@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, Outlet, useNavigate } from 'react-router-dom';
+import { setDevMode, useDevMode } from '../lib/devMode';
 import { useLearner } from '../store/learnerStore';
 import styles from './Layout.module.css';
 
@@ -7,6 +8,7 @@ export default function Layout() {
   const { state, dispatch } = useLearner();
   const navigate = useNavigate();
   const [confirming, setConfirming] = useState(false);
+  const dev = useDevMode();
 
   function reset() {
     dispatch({ type: 'resetAll' });
@@ -45,6 +47,12 @@ export default function Layout() {
       <main className={styles.main}>
         <Outlet />
       </main>
+      <footer className={styles.footer}>
+        <label className={styles.devToggle}>
+          <input type="checkbox" checked={dev} onChange={(e) => setDevMode(e.target.checked)} />
+          Testing tools
+        </label>
+      </footer>
     </div>
   );
 }

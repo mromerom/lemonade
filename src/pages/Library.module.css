@@ -92,7 +92,9 @@
   color: var(--muted);
 }
 
-.cta {
+.actions {
   margin-top: auto;
-  align-self: flex-start;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }

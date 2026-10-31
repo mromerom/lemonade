@@ -1,16 +1,26 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useState, type MouseEvent, type ReactNode } from 'react';
+import { Link } from 'react-router-dom';
 import { lookupTerm } from '../../content';
-import { parseMarkup, toSegmentRuns } from '../../lib/markup';
+import { parseMarkup, plainText, toSegmentRuns } from '../../lib/markup';
 import { textWordKeys, wordStatus } from '../../lib/textWords';
 import { useLearner } from '../../store/learnerStore';
 import type { Paragraph, Text } from '../../types';
+import GroupCard, { type GroupItem } from './GroupCard';
 import WordCard from './WordCard';
 import shared from './shared.module.css';
 import styles from './Reader.module.css';
 
 interface Props {
   text: Text;
+  /** "lesson" is part of the four steps; "review" is reading a finished text again */
+  mode?: 'lesson' | 'review';
   onDone: () => void;
+}
+
+/** Words picked in one paragraph: one word, or several with shift-click. */
+interface Selection {
+  block: string;
+  items: GroupItem[];
 }
 
 function Part({ n, title, hint, children }: { n: number; title: string; hint: string; children: ReactNode }) {
@@ -28,23 +38,44 @@ function Part({ n, title, hint, children }: { n: number; title: string; hint: st
   );
 }
 
-export default function Reader({ text, onDone }: Props) {
+export default function Reader({ text, mode = 'lesson', onDone }: Props) {
   const { state, dispatch } = useLearner();
-  const [selected, setSelected] = useState<{ key: string; sense?: string } | null>(null);
+  const [selection, setSelection] = useState<Selection | null>(null);
+  // On touch screens there's no shift key, so the card offers an "add words" mode.
+  const [adding, setAdding] = useState(false);
   const [translated, setTranslated] = useState<Set<string>>(new Set());
   const [revealed, setRevealed] = useState<Set<number>>(new Set());
 
   const newKeys = textWordKeys(text).filter((k) => wordStatus(state, k) === 'new');
 
+  function close() {
+    setSelection(null);
+    setAdding(false);
+  }
+
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setSelected(null);
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') close();
+    };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, []);
 
-  function select(key: string, sense?: string) {
-    setSelected({ key, sense });
-    dispatch({ type: 'lookupWord', key, sense });
+  function onTermClick(e: MouseEvent, block: string, item: GroupItem) {
+    const additive = e.shiftKey || adding;
+    if (additive && selection && selection.block === block) {
+      // Shift-click toggles the word in or out of the group.
+      const has = selection.items.some((i) => i.idx === item.idx);
+      const items = has
+        ? selection.items.filter((i) => i.idx !== item.idx)
+        : [...selection.items, item].sort((a, b) => a.idx - b.idx);
+      if (items.length === 0) close();
+      else setSelection({ block, items });
+      return;
+    }
+    setSelection({ block, items: [item] });
+    if (!additive) setAdding(false);
+    dispatch({ type: 'lookupWord', key: item.key, sense: item.sense });
   }
 
   const toggle = <T,>(set: Set<T>, value: T) => {
@@ -55,18 +86,22 @@ export default function Reader({ text, onDone }: Props) {
   };
 
   /** Spanish text where every term (word or bracketed phrase) is a button. */
-  function tappable(es: string) {
+  function tappable(es: string, block: string) {
+    const segments = parseMarkup(es);
+    const indexOf = new Map(segments.map((s, i) => [s, i]));
     return (
       <>
-        {toSegmentRuns(parseMarkup(es)).map((run, r) =>
+        {toSegmentRuns(segments).map((run, r) =>
           run.kind === 'space' ? (
             <span key={r}>{run.text}</span>
           ) : (
             <span key={r} className={styles.run}>
               {run.segments.map((seg, j) => {
                 if (seg.kind === 'other') return <span key={j}>{seg.text}</span>;
+                const idx = indexOf.get(seg) ?? -1;
                 const status = lookupTerm(seg.key)?.name ? 'known' : wordStatus(state, seg.key);
-                const isSelected = selected?.key === seg.key && selected.sense === seg.sense;
+                const picked = selection?.block === block && selection.items.some((i) => i.idx === idx);
+                const inGroup = picked && selection!.items.length > 1;
                 return (
                   <button
                     key={j}
@@ -75,9 +110,11 @@ export default function Reader({ text, onDone }: Props) {
                       styles.word,
                       styles[status],
                       seg.phrase ? styles.phrase : '',
-                      isSelected ? styles.selected : '',
+                      picked ? styles.selected : '',
+                      inGroup ? styles.grouped : '',
                     ].join(' ')}
-                    onClick={() => select(seg.key, seg.sense)}
+                    aria-pressed={picked}
+                    onClick={(e) => onTermClick(e, block, { idx, key: seg.key, sense: seg.sense, text: seg.text })}
                   >
                     {seg.text}
                   </button>
@@ -116,9 +153,7 @@ export default function Reader({ text, onDone }: Props) {
       <div className={styles.text} lang="es">
         {paragraphs.map((p, i) => (
           <div key={i} className={styles.paragraph}>
-            <p>
-              {tappable(p.es)}
-            </p>
+            <p>{tappable(p.es, `${id}-${i}`)}</p>
             {translateToggle(`${id}-${i}`, p.en)}
           </div>
         ))}
@@ -126,8 +161,12 @@ export default function Reader({ text, onDone }: Props) {
     );
   }
 
-
   const narrator = text.retelling.narrator;
+  const single = selection && selection.items.length === 1 ? selection.items[0] : null;
+  const group = selection && selection.items.length > 1 ? selection.items : null;
+  const groupKey = group?.map((i) => i.text).join(' ').toLocaleLowerCase('es');
+  // A shift-selected group that matches a lexicon phrase gets the normal card.
+  const groupEntry = groupKey ? lookupTerm(groupKey) : undefined;
 
   return (
     <div className={styles.layout}>
@@ -136,7 +175,9 @@ export default function Reader({ text, onDone }: Props) {
           <span className={styles.statusNew}>new</span>
           <span className={styles.statusLearning}>learning</span>
           <span>known</span>
-          <span className={styles.legendHint}>Tap any word to translate it.</span>
+          <span className={styles.legendHint}>
+            Tap a word to translate it. Shift-click to select several words together.
+          </span>
         </div>
 
         <Part n={1} title="La historia" hint={`The story, told about ${narrator}.`}>
@@ -153,28 +194,23 @@ export default function Reader({ text, onDone }: Props) {
           {prose('retell', text.retelling.paragraphs)}
         </Part>
 
-        <Part n={3} title="Preguntas y respuestas" hint="Read each question and answer it in your head before you reveal the answer.">
+        <Part
+          n={3}
+          title="Preguntas y respuestas"
+          hint="Read each question and answer it in your head before you reveal the answer."
+        >
+          {/* Plain text: this part is an exercise, not more reading to look words up in. */}
           <ol className={styles.qaList} lang="es">
             {text.qa.map((item, i) => {
               const open = revealed.has(i);
               return (
                 <li key={i} className={styles.qa}>
-                  <p className={styles.qaStatement}>
-                    {tappable(item.statement.es)}
-                  </p>
-                  <p className={styles.qaQuestion}>
-                    {tappable(item.question.es)}
-                  </p>
+                  <p className={styles.qaStatement}>{plainText(item.statement.es)}</p>
+                  <p className={styles.qaQuestion}>{plainText(item.question.es)}</p>
                   {open ? (
-                    <p className={styles.qaAnswer}>
-                      {tappable(item.answer.es)}
-                    </p>
+                    <p className={styles.qaAnswer}>{plainText(item.answer.es)}</p>
                   ) : (
-                    <button
-                      type="button"
-                      className={styles.reveal}
-                      onClick={() => setRevealed((s) => toggle(s, i))}
-                    >
+                    <button type="button" className={styles.reveal} onClick={() => setRevealed((s) => toggle(s, i))}>
                       Show answer
                     </button>
                   )}
@@ -198,29 +234,47 @@ export default function Reader({ text, onDone }: Props) {
               Mark {newKeys.length} remaining new words as known
             </button>
           )}
-          <button type="button" className="btn btn-primary" onClick={onDone}>
-            I'm done reading →
-          </button>
+          {mode === 'review' ? (
+            <>
+              <Link to="/" className="btn btn-quiet">
+                Back to library
+              </Link>
+              <button type="button" className="btn btn-primary" onClick={onDone}>
+                See my results
+              </button>
+            </>
+          ) : (
+            <button type="button" className="btn btn-primary" onClick={onDone}>
+              I'm done reading →
+            </button>
+          )}
         </div>
-        <p className={styles.doneHint}>
-          Next you'll type the new words and verb forms from memory, without the text.
-        </p>
+        {mode === 'lesson' && (
+          <p className={styles.doneHint}>Next you'll type the new words and verb forms from memory, without the text.</p>
+        )}
       </div>
 
-      <aside
-        className={`${styles.panel} ${selected ? styles.panelOpen : ''}`}
-        aria-live="polite"
-        aria-label="Word details"
-      >
-        {selected ? (
+      <aside className={`${styles.panel} ${selection ? styles.panelOpen : ''}`} aria-live="polite" aria-label="Word details">
+        {single && !adding ? (
           <WordCard
-            key={`${selected.key}:${selected.sense ?? ''}`}
-            termKey={selected.key}
-            senseId={selected.sense}
-            onClose={() => setSelected(null)}
+            key={`${single.key}:${single.sense ?? ''}`}
+            termKey={single.key}
+            senseId={single.sense}
+            onClose={close}
+            onAddWords={() => setAdding(true)}
+          />
+        ) : selection && groupEntry && !adding ? (
+          <WordCard key={groupKey} termKey={groupKey!} onClose={close} />
+        ) : selection ? (
+          <GroupCard
+            key={groupKey ?? single?.key}
+            items={selection.items}
+            adding={adding}
+            onDoneAdding={() => setAdding(false)}
+            onClose={close}
           />
         ) : (
-          <p className={styles.empty}>Tap a word to see what it means.</p>
+          <p className={styles.empty}>Tap a word to see what it means. Shift-click to select a group of words.</p>
         )}
       </aside>
     </div>

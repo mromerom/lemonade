@@ -52,15 +52,25 @@
   margin: 0;
 }
 
+/*
+ * Browsers draw buttons as inline-blocks, so the box is as tall as its line
+ * height. A shorter line height and a little padding keep each highlight
+ * around its own word: no touching the next word or the lines above/below.
+ * A bracketed phrase is one button, so it gets one continuous highlight.
+ */
 .word {
-  display: inline;
-  padding: 0.05em 0.12em;
-  margin: 0 -0.12em;
+  display: inline-block;
+  /* The negative margin cancels the side padding, so punctuation and spacing
+     stay where the text puts them; highlights reach only 0.06em into the
+     space between words, which leaves a visible gap. */
+  padding: 0.06em 0.06em;
+  margin: 0 -0.06em;
   border: 0;
   border-radius: 4px;
   background: transparent;
   font: inherit;
-  line-height: inherit;
+  line-height: 1.3;
+  vertical-align: baseline;
   color: inherit;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
@@ -79,6 +89,10 @@
 .selected {
   outline: 2px solid var(--text);
   outline-offset: 1px;
+}
+/* Words picked together with shift-click */
+.grouped {
+  outline-style: dashed;
 }
 
 .translateBtn {
@@ -413,4 +427,46 @@
   .layout:has(.panelOpen) .column {
     padding-bottom: calc(60vh + 2rem);
   }
+}
+
+.addingNote {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.6rem;
+  padding: 0.6rem 0.7rem;
+  border-radius: 8px;
+  background: var(--surface-2);
+  font-size: 0.875rem;
+}
+.addingNote p {
+  margin: 0;
+}
+.addingNote .btn {
+  align-self: flex-start;
+  padding: 0.35rem 0.9rem;
+}
+.saveRow {
+  display: flex;
+  gap: 0.4rem;
+}
+.glossInput {
+  flex: 1;
+  min-width: 0;
+  padding: 0.45rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.9rem;
+}
+.saveRow .btn {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.85rem;
+}
+.savedNote {
+  margin: 0.4rem 0 0;
+  font-size: 0.8rem;
+  color: var(--good);
 }

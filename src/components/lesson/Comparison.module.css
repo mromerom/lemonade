@@ -272,3 +272,30 @@
   letter-spacing: 0;
   color: var(--text);
 }
+
+.correctionForm {
+  margin: 0;
+}
+.checkBtn {
+  flex: none;
+  margin-top: 0.35rem;
+}
+.correctionFeedback {
+  margin: 0.4rem 0 0;
+  font-size: 0.875rem;
+  color: var(--bad);
+}
+.correctedLine {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0.9rem 0 0;
+  font-size: 0.95rem;
+  color: var(--good);
+}
+.correctedLine strong {
+  font-family: var(--font-read);
+}
+.correctedLine .fixed {
+  margin-top: 0;
+}

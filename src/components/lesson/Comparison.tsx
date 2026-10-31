@@ -14,6 +14,7 @@ import { findEvidence } from '../../lib/textWords';
 import { tokenize } from '../../lib/tokenize';
 import { useLearner } from '../../store/learnerStore';
 import type { LessonProgress, Target, Text } from '../../types';
+import CorrectionField from './CorrectionField';
 import TargetPrompt from './TargetPrompt';
 import shared from './shared.module.css';
 import styles from './Comparison.module.css';
@@ -179,29 +180,14 @@ export default function Comparison({ text, lesson }: Props) {
             {r.grade.verdict !== 'correct' && (
               <>
                 <EvidenceBlock text={text} target={r.t} />
-                <label className={styles.correctionLabel} htmlFor={`fix-${r.t.id}`}>
-                  Type «{targetAnswer(r.t)}»
-                </label>
-                <div className={styles.correctionRow}>
-                  <input
-                    id={`fix-${r.t.id}`}
-                    className={`${shared.input} ${styles.correctionInput}`}
-                    lang="es"
-                    autoComplete="off"
-                    autoCapitalize="none"
-                    spellCheck={false}
-                    disabled={finished}
-                    value={r.correction}
-                    onChange={(e) =>
-                      dispatch({ type: 'setCorrection', textId: text.id, targetId: r.t.id, text: e.target.value })
-                    }
-                  />
-                  {r.corrected && (
-                    <span className={styles.fixed} role="status" aria-label="Corrected">
-                      ✓
-                    </span>
-                  )}
-                </div>
+                <CorrectionField
+                  target={r.t}
+                  saved={r.corrected ? r.correction : ''}
+                  disabled={finished}
+                  onCorrect={(value) =>
+                    dispatch({ type: 'setCorrection', textId: text.id, targetId: r.t.id, text: value })
+                  }
+                />
               </>
             )}
           </li>

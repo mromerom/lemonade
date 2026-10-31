@@ -32,7 +32,7 @@ export default function Library() {
         {texts.map((text) => {
           const lesson = state.lessons[text.id];
           const counts = statusCounts(text, state);
-          const action = !lesson ? 'Start' : lesson.stage === 'done' ? 'Read again' : 'Continue';
+          const action = lesson ? 'Continue' : 'Start';
           return (
             <li key={text.id} className={styles.card}>
               <div className={styles.meta}>
@@ -48,9 +48,22 @@ export default function Library() {
                 <span className={styles.countLearning}>{counts.learning} learning</span>
                 <span className={styles.countKnown}>{counts.known} known</span>
               </div>
-              <Link to={`/read/${text.id}`} className={`btn btn-primary ${styles.cta}`}>
-                {action}
-              </Link>
+              <div className={styles.actions}>
+                {lesson?.stage === 'done' ? (
+                  <>
+                    <Link to={`/read/${text.id}?view=text`} className="btn btn-primary">
+                      Read again
+                    </Link>
+                    <Link to={`/read/${text.id}`} className="btn btn-quiet">
+                      See results
+                    </Link>
+                  </>
+                ) : (
+                  <Link to={`/read/${text.id}`} className="btn btn-primary">
+                    {action}
+                  </Link>
+                )}
+              </div>
             </li>
           );
         })}

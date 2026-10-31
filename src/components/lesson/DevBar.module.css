@@ -1,0 +1,38 @@
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  margin-top: -1rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px dashed var(--muted);
+  border-radius: 8px;
+  font-size: 0.8rem;
+}
+.label {
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+.group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+.btn {
+  padding: 0.25rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+.btn:hover {
+  background: var(--surface-2);
+}
+.btn[aria-pressed='true'] {
+  background: var(--text);
+  border-color: var(--text);
+  color: var(--bg);
+}

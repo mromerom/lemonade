@@ -12,10 +12,15 @@ export function spanishStrings(text: Text): string[] {
   ];
 }
 
+/** Spanish strings the learner reads and taps: story and retelling (Q&A is plain text). */
+export function readingStrings(text: Text): string[] {
+  return [...text.story.map((p) => p.es), ...text.retelling.paragraphs.map((p) => p.es)];
+}
+
 /** Unique trackable terms in a text: words and bracketed phrases, proper nouns excluded. */
 export function textWordKeys(text: Text): string[] {
   const keys = new Set<string>();
-  for (const s of spanishStrings(text)) {
+  for (const s of readingStrings(text)) {
     for (const seg of parseMarkup(s)) {
       if (seg.kind === 'term' && !lookupTerm(seg.key)?.name) keys.add(seg.key);
     }

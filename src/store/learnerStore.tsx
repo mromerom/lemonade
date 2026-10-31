@@ -4,11 +4,32 @@ import type { LearnerState, LessonProgress, LessonStage, ReviewItem, WordStatus 
 const STORAGE_KEY = 'lemonade:learner:v2';
 const DAY = 24 * 60 * 60 * 1000;
 
-/** Words the demo learner already knows, so the reader looks like a real A1–A2 profile. */
+/**
+ * The demo learner's word bank, so a reading looks like it would for a real
+ * A2–B1 learner: mostly known words, some being learned, and the new ones
+ * stand out. Words the readings teach (their targets) are left out on purpose.
+ */
 const DEMO_KNOWN = [
-  'a', 'al', 'casa', 'con', 'de', 'del', 'dos', 'el', 'en', 'es', 'este', 'está', 'hay',
-  'la', 'las', 'los', 'para', 'pero', 'porque', 'qué', 'siempre', 'son', 'su', 'tres',
-  'un', 'una', 'unas', 'y',
+  // grammar words
+  'a', 'al', 'con', 'de', 'del', 'el', 'en', 'la', 'las', 'los', 'le', 'lo', 'me', 'mi', 'mis', 'se',
+  'su', 'sus', 'un', 'una', 'unas', 'y', 'que', 'qué', 'no', 'sí', 'si', 'por', 'para', 'pero',
+  'porque', 'como', 'cómo', 'muy', 'más', 'también', 'todos', 'todas', 'mucho', 'muchos', 'yo', 'tú',
+  'algo', 'nada', 'nunca', 'ahora', 'hoy', 'primero', 'segundo',
+  // common verbs
+  'es', 'son', 'está', 'hay', 'tiene', 'tengo', 'vive', 'vivo', 'quiere', 'quiero', 'va', 'van',
+  'trabaja', 'trabajando', 'comprar', 'vender', 'ayudar',
+  // everyday nouns and adjectives
+  'casa', 'años', 'mes', 'meses', 'semanas', 'domingo', 'sábados', 'dos', 'tres', 'treinta', 'sol',
+  'pan', 'café', 'madre', 'amiga', 'abuelo', 'ciudad', 'idea', 'internet', 'software', 'proyecto',
+  'productos', 'servicios', 'plataforma', 'frutas', 'flores', 'naranja', 'naranjas', 'limón', 'río',
+  'grande', 'pequeña', 'kilo', 'kilos', 'euros', 'trabajo',
+];
+
+/** Words the demo learner has looked up before but is still learning (yellow). */
+const DEMO_LEARNING = [
+  'mercado', 'plaza', 'verduras', 'vecina', 'roja', 'amarillas', 'contenta', 'ofertas', 'empleo',
+  'sueldo', 'compañeros', 'ingeniero', 'empresa', 'negocio', 'durante', 'mientras', 'mañana',
+  'tardes', 'cientos', 'iguales', 'reuniones', 'pantallas', 'ofertas de empleo', 'sin embargo',
 ];
 
 function createDemoState(): LearnerState {
@@ -16,9 +37,10 @@ function createDemoState(): LearnerState {
   return {
     version: 2,
     profile: { name: 'Demo learner' },
-    words: Object.fromEntries(
-      DEMO_KNOWN.map((w) => [w, { status: 'known' as const, lookups: 0, updatedAt: now }]),
-    ),
+    words: Object.fromEntries([
+      ...DEMO_KNOWN.map((w) => [w, { status: 'known' as const, lookups: 0, updatedAt: now }]),
+      ...DEMO_LEARNING.map((w) => [w, { status: 'learning' as const, lookups: 1, updatedAt: now }]),
+    ]),
     lessons: {},
     reviewQueue: [],
   };
@@ -56,6 +78,7 @@ type Action =
   | { type: 'setCorrection'; textId: string; targetId: string; text: string }
   | { type: 'completeLesson'; textId: string; missedTargetIds: string[] }
   | { type: 'restartLesson'; textId: string }
+  | { type: 'savePhrase'; key: string; text: string; gloss: string; words: string[] }
   | { type: 'resetAll' };
 
 function emptyLesson(): LessonProgress {
@@ -142,6 +165,25 @@ function reducer(state: LearnerState, action: Action): LearnerState {
     }
     case 'restartLesson':
       return { ...state, lessons: { ...state.lessons, [action.textId]: emptyLesson() } };
+    case 'savePhrase': {
+      const prev = state.words[action.key];
+      return {
+        ...state,
+        userPhrases: {
+          ...state.userPhrases,
+          [action.key]: { text: action.text, gloss: action.gloss, words: action.words, createdAt: now },
+        },
+        words: {
+          ...state.words,
+          [action.key]: {
+            ...prev,
+            status: prev && prev.status !== 'new' ? prev.status : 'learning',
+            lookups: (prev?.lookups ?? 0) + 1,
+            updatedAt: now,
+          },
+        },
+      };
+    }
     case 'resetAll':
       return createDemoState();
   }
