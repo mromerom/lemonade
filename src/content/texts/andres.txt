@@ -21,7 +21,7 @@ example: Andrés se armó de valor => me armé de valor
 
 ## Historia
 
-Andrés tiene treinta y dos años y vive en Madrid. Trabaja como ingeniero de software en una empresa grande. El sueldo [no está mal] y sus compañeros son majos. [Sin embargo], [desde hace] meses, Andrés está [harto de] su [curro]: quiere un trabajo que le emocione.
+Andrés tiene [treinta y dos] años y vive en Madrid. Trabaja como ingeniero de software en una empresa grande. El sueldo [no está mal] y sus compañeros son majos. [Sin embargo], [desde hace] meses, Andrés está [harto de] su [curro]: quiere un trabajo que le emocione.
 > Andrés is thirty-two and lives in Madrid. He works as a software engineer at a big company. The salary isn't bad and his colleagues are nice. However, for months now, Andrés has been fed up with his job: he wants work that excites him.
 
 [Todas las noches], después de cenar, [echa un vistazo] a las [ofertas de empleo] en internet. Hay cientos de [puestos:jobs], pero ninguno [le dice nada]. No hay [ni uno] que le emocione. Todos [le parecen] iguales: más reuniones, más pantallas, [más de lo mismo].
@@ -38,7 +38,7 @@ Su idea es una plataforma para ayudar a pymes en su ciudad a vender sus producto
 
 ## Retelling
 
-Tengo treinta y dos años y vivo en Madrid. [Trabajo:iwork] como ingeniero de software en una empresa grande. El sueldo [no está mal] y mis compañeros son majos. [Sin embargo], [desde hace] meses, estoy [harto de] mi [curro]: quiero un trabajo que me emocione.
+Tengo [treinta y dos] años y vivo en Madrid. [Trabajo:iwork] como ingeniero de software en una empresa grande. El sueldo [no está mal] y mis compañeros son majos. [Sin embargo], [desde hace] meses, estoy [harto de] mi [curro]: quiero un trabajo que me emocione.
 > I'm thirty-two and I live in Madrid. I work as a software engineer at a big company. The salary isn't bad and my colleagues are nice. However, for months now, I've been fed up with my job: I want work that excites me.
 
 [Todas las noches], después de cenar, [echo un vistazo] a las [ofertas de empleo] en internet. Hay cientos de [puestos:jobs], pero ninguno [me dice nada]. No hay [ni uno] que me emocione. Todos [me parecen] iguales: más reuniones, más pantallas, [más de lo mismo].

@@ -24,7 +24,7 @@ export const andres: Text = {
           {
             id: 'a',
             text: 'excitante',
-            note: 'Excitante is a false friend. It means “stimulating” (el café es excitante) or “arousing”, not “exciting”. Easy to mix up, and embarrassing to get wrong.',
+            note: 'Excitante is a false friend. It means “stimulating” or “arousing”, not “exciting”. Easy to mix up, and potentially embarrassing to get wrong.',
           },
           {
             id: 'b', text: 'emocionante',
