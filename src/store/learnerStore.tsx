@@ -38,8 +38,15 @@ function createDemoState(): LearnerState {
     version: 2,
     profile: { name: 'Demo learner' },
     words: Object.fromEntries([
-      ...DEMO_KNOWN.map((w) => [w, { status: 'known' as const, lookups: 0, updatedAt: now }]),
-      ...DEMO_LEARNING.map((w) => [w, { status: 'learning' as const, lookups: 1, updatedAt: now }]),
+      // Stagger the added times a minute apart so "order added" has an order.
+      ...DEMO_KNOWN.map((w, i) => [
+        w,
+        { status: 'known' as const, lookups: 0, updatedAt: now, addedAt: now - (DEMO_KNOWN.length + DEMO_LEARNING.length - i) * 60_000 },
+      ]),
+      ...DEMO_LEARNING.map((w, i) => [
+        w,
+        { status: 'learning' as const, lookups: 1, updatedAt: now, addedAt: now - (DEMO_LEARNING.length - i) * 60_000 },
+      ]),
     ]),
     lessons: {},
     reviewQueue: [],
@@ -76,7 +83,13 @@ type Action =
   | { type: 'setPreAnswer'; textId: string; targetId: string; optionId: string }
   | { type: 'setPostAnswer'; textId: string; targetId: string; answer: string }
   | { type: 'setCorrection'; textId: string; targetId: string; text: string }
-  | { type: 'completeLesson'; textId: string; missedTargetIds: string[] }
+  | {
+      type: 'completeLesson';
+      textId: string;
+      missedTargetIds: string[];
+      /** Lexicon terms for the missed targets: they join the word bank as "learning" */
+      missedTerms?: string[];
+    }
   | { type: 'restartLesson'; textId: string }
   | { type: 'savePhrase'; key: string; text: string; gloss: string; words: string[] }
   | { type: 'resetAll' };
@@ -107,7 +120,13 @@ function reducer(state: LearnerState, action: Action): LearnerState {
         ...state,
         words: {
           ...state.words,
-          [action.key]: { status, senses, lookups: (prev?.lookups ?? 0) + 1, updatedAt: now },
+          [action.key]: {
+            status,
+            senses,
+            lookups: (prev?.lookups ?? 0) + 1,
+            updatedAt: now,
+            addedAt: prev?.addedAt ?? now,
+          },
         },
       };
     }
@@ -117,14 +136,26 @@ function reducer(state: LearnerState, action: Action): LearnerState {
         ...state,
         words: {
           ...state.words,
-          [action.key]: { ...prev, status: action.status, lookups: prev?.lookups ?? 0, updatedAt: now },
+          [action.key]: {
+            ...prev,
+            status: action.status,
+            lookups: prev?.lookups ?? 0,
+            updatedAt: now,
+            addedAt: prev?.addedAt ?? now,
+          },
         },
       };
     }
     case 'markKnown': {
       const words = { ...state.words };
       for (const key of action.keys) {
-        words[key] = { ...words[key], status: 'known', lookups: words[key]?.lookups ?? 0, updatedAt: now };
+        words[key] = {
+          ...words[key],
+          status: 'known',
+          lookups: words[key]?.lookups ?? 0,
+          updatedAt: now,
+          addedAt: words[key]?.addedAt ?? now,
+        };
       }
       return { ...state, words };
     }
@@ -161,7 +192,19 @@ function reducer(state: LearnerState, action: Action): LearnerState {
         stage: 'done',
         completedAt: now,
       }));
-      return { ...next, reviewQueue: [...kept, ...fresh] };
+      // Missed words go into the word bank as "learning" (a known word drops back to learning).
+      const words = { ...next.words };
+      for (const key of action.missedTerms ?? []) {
+        const prev = words[key];
+        words[key] = {
+          ...prev,
+          status: 'learning',
+          lookups: prev?.lookups ?? 0,
+          updatedAt: now,
+          addedAt: prev?.addedAt ?? now,
+        };
+      }
+      return { ...next, words, reviewQueue: [...kept, ...fresh] };
     }
     case 'restartLesson':
       return { ...state, lessons: { ...state.lessons, [action.textId]: emptyLesson() } };
@@ -180,6 +223,7 @@ function reducer(state: LearnerState, action: Action): LearnerState {
             status: prev && prev.status !== 'new' ? prev.status : 'learning',
             lookups: (prev?.lookups ?? 0) + 1,
             updatedAt: now,
+            addedAt: prev?.addedAt ?? now,
           },
         },
       };

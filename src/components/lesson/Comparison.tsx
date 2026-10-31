@@ -14,6 +14,7 @@ import { findEvidence } from '../../lib/textWords';
 import { tokenize } from '../../lib/tokenize';
 import { useLearner } from '../../store/learnerStore';
 import type { LessonProgress, Target, Text } from '../../types';
+import { targetTerm } from '../../lib/wordBank';
 import CorrectionField from './CorrectionField';
 import TargetPrompt from './TargetPrompt';
 import shared from './shared.module.css';
@@ -76,6 +77,10 @@ export default function Comparison({ text, lesson }: Props) {
       type: 'completeLesson',
       textId: text.id,
       missedTargetIds: rows.filter((r) => r.grade.verdict !== 'correct').map((r) => r.t.id),
+      missedTerms: rows
+        .filter((r) => r.grade.verdict !== 'correct')
+        .map((r) => targetTerm(r.t))
+        .filter((k): k is string => Boolean(k)),
     });
   }
 

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, Outlet, useNavigate } from 'react-router-dom';
+import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { setDevMode, useDevMode } from '../lib/devMode';
 import { useLearner } from '../store/learnerStore';
 import styles from './Layout.module.css';
@@ -24,6 +24,9 @@ export default function Layout() {
           <span aria-hidden="true">lemoNade</span>
         </Link>
         <div className={styles.right}>
+          <NavLink to="/words" className={({ isActive }) => `${styles.nav} ${isActive ? styles.navActive : ''}`}>
+            Word bank
+          </NavLink>
           {confirming ? (
             <div className={styles.confirm} role="group" aria-label="Confirm reset">
               <span className={styles.confirmText}>Clear all progress?</span>

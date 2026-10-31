@@ -116,3 +116,37 @@
   color: var(--muted);
   cursor: pointer;
 }
+
+.nav {
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--header-fg);
+  text-decoration: none;
+}
+.nav:hover {
+  background: rgb(255 255 255 / 0.08);
+}
+.navActive {
+  color: var(--accent);
+}
+
+/* Keep header links on one line; tighten the bar on phones. */
+.nav,
+.right :global(.btn) {
+  white-space: nowrap;
+}
+@media (max-width: 480px) {
+  .brand {
+    font-size: 1.45rem;
+  }
+  .right {
+    gap: 0.15rem;
+  }
+  .nav,
+  .right :global(.btn) {
+    padding: 0.4rem 0.55rem;
+    font-size: 0.85rem;
+  }
+}

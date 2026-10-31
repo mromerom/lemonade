@@ -29,6 +29,10 @@ for (const entry of Object.values(lexicon)) {
   }
 }
 
+for (const entry of Object.values(lexicon)) {
+  if (!entry.senses[0]?.pos) errors.push(`lexicon.txt  "${entry.term}" has no pos: line`);
+}
+
 const used = new Set<string>();
 
 for (const text of texts) {

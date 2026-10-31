@@ -1,0 +1,64 @@
+.section {
+  display: flex;
+  flex-direction: column;
+}
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+.chevron {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  background: var(--surface-2);
+  font-size: 1.2rem;
+  line-height: 1;
+  transition: transform 0.15s ease;
+}
+.chevronOpen {
+  transform: rotate(90deg);
+}
+.titles {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.title {
+  font-family: var(--font-read);
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+.summary {
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+.actions {
+  flex: none;
+}
+.body {
+  padding-top: 1rem;
+}
+@media (prefers-reduced-motion: reduce) {
+  .chevron {
+    transition: none;
+  }
+}

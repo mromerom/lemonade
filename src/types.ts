@@ -8,7 +8,15 @@ export interface Sense {
   lemma?: string;
   /** Short grammar or usage note */
   note?: string;
+  /** Part of speech, e.g. "noun"; see PARTS_OF_SPEECH */
+  pos?: PartOfSpeech;
 }
+
+export const PARTS_OF_SPEECH = [
+  'noun', 'verb', 'adjective', 'adverb', 'pronoun', 'article', 'determiner',
+  'preposition', 'conjunction', 'number', 'name', 'phrase',
+] as const;
+export type PartOfSpeech = (typeof PARTS_OF_SPEECH)[number];
 
 /** A word or phrase in the shared lexicon (src/content/lexicon.txt). */
 export interface LexiconEntry {
@@ -146,6 +154,8 @@ export interface WordRecord {
   senses?: string[];
   lookups: number;
   updatedAt: number;
+  /** When the term entered the word bank (first looked up or marked); older saves fall back to updatedAt */
+  addedAt?: number;
 }
 
 export type LessonStage = 'pre' | 'read' | 'post' | 'compare' | 'done';

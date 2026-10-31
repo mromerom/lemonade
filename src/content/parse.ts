@@ -3,7 +3,7 @@
  * lexicon.txt and texts/*.txt for the format). Pure functions with no Vite
  * dependencies, so the content checker can run them in Node.
  */
-import type { Lexicon, LexiconEntry, Paragraph, QAItem, Sense } from '../types';
+import { PARTS_OF_SPEECH, type Lexicon, type LexiconEntry, type Paragraph, type PartOfSpeech, type QAItem, type Sense } from '../types';
 
 export interface ParseError {
   file: string;
@@ -73,6 +73,17 @@ export function parseLexicon(raw: string, file = 'lexicon.txt'): { lexicon: Lexi
         else s[key] = value;
         break;
       }
+      case 'pos': {
+        const s = target ?? entry.senses.find((x) => x.id === 'default');
+        if (!(PARTS_OF_SPEECH as readonly string[]).includes(value)) {
+          errors.push({ file, line, message: `Unknown pos "${value}". Use one of: ${PARTS_OF_SPEECH.join(', ')}` });
+        } else if (!s) {
+          errors.push({ file, line, message: `"pos" before "gloss" for "${entry.term}"` });
+        } else {
+          s.pos = value as PartOfSpeech;
+        }
+        break;
+      }
       case 'name':
         entry.name = value === 'yes' || value === 'true';
         break;
@@ -89,6 +100,9 @@ export function parseLexicon(raw: string, file = 'lexicon.txt'): { lexicon: Lexi
 
   for (const e of Object.values(lexicon)) {
     if (!e.senses.length && !e.name) errors.push({ file, line: 0, message: `"${e.term}" has no gloss` });
+    // Other senses share the main part of speech unless they set their own.
+    const main = e.senses[0]?.pos;
+    for (const s of e.senses.slice(1)) s.pos ??= main;
   }
   return { lexicon, errors };
 }
