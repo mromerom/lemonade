@@ -97,15 +97,17 @@ ofertas de empleo
   gloss: job listings; job offers
   pos: phrase
   words: ofertas, de, empleo
-le dice nada
-  gloss: (doesn't) speak to him; mean anything to him
+le llama la atención
+  gloss: catches his eye; appeals to him
   pos: phrase
-  note: "Ninguno le dice nada" = none of them speaks to him. Spanish stacks negatives: ninguno … nada.
-  words: le, dice, nada
-me dice nada
-  gloss: (doesn't) speak to me; mean anything to me
+  lemma: llamar la atención
+  note: Works like gustar: the thing that catches the eye is the subject. "Ninguno le llama la atención" = none of them catches his eye. Careful: "le llamaron la atención" can also mean he was told off.
+  words: le, llama, la, atención
+me llama la atención
+  gloss: catches my eye; appeals to me
   pos: phrase
-  words: me, dice, nada
+  lemma: llamar la atención
+  words: me, llama, la, atención
 le parecen
   gloss: seem to him
   pos: phrase
@@ -722,11 +724,6 @@ deja
 desde
   gloss: since; from
   pos: preposition
-dice
-  gloss: says; tells
-  pos: verb
-  lemma: decir
-  note: él/ella, present
 diseño
   gloss: design
   pos: noun
@@ -897,10 +894,6 @@ montó
 muy
   gloss: very
   pos: adverb
-nada
-  gloss: nothing; anything
-  pos: pronoun
-  note: After a negative, it means "anything": "ninguno le dice nada".
 noches
   gloss: nights
   pos: noun
@@ -1215,3 +1208,14 @@ veces
   pos: noun
   lemma: vez
   note: "A veces" = sometimes
+llama
+  gloss: calls
+  pos: verb
+  lemma: llamar
+  note: él/ella, present. "Llamar la atención" = to catch someone's eye.
+  sense flame: flame
+    pos: noun
+    note: "una llama" = a flame (also the animal, a llama)
+atención
+  gloss: attention
+  pos: noun

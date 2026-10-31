@@ -25,7 +25,7 @@ Andrés tiene [treinta y dos] años y vive en Madrid. Trabaja como ingeniero de 
 > Andrés is thirty-two and lives in Madrid. He works as a software engineer at a big company. The salary isn't bad and his colleagues are nice. However, for months now, Andrés has been fed up with his job: he wants work that excites him.
 
 [Todas las noches], después de cenar, [echa un vistazo] a las [ofertas de empleo] en internet. Hay cientos de [puestos:jobs], pero ninguno [le llama la atención]. No hay [ni uno] que le emocione. Todos [le parecen] iguales: más reuniones, más pantallas, [más de lo mismo].
-> Every night, after dinner, he has a look at job listings online. There are hundreds of positions, but none of them speaks to him. Not a single one excites him. They all seem the same to him: more meetings, more screens, more of the same.
+> Every night, after dinner, he has a look at job listings online. There are hundreds of positions, but none of them catches his eye. Not a single one excites him. They all seem the same to him: more meetings, more screens, more of the same.
 
 [Hace un mes], un domingo, mientras [tomaba:have] un café con su amiga Marta, Andrés le contó cómo se sentía. Marta es emprendedora: [hace dos años] [montó:setup] una pyme de diseño con dos socias. —¿Y por qué no emprendes tú? —le preguntó—. [A veces] [hay que] [lanzarse a la piscina]. Si no lo intentas, nunca lo sabrás.
 > A month ago, one Sunday, while he was having a coffee with his friend Marta, Andrés told her how he felt. Marta is an entrepreneur: two years ago she set up a small design company with two partners. "So why don't you start a business?" she asked him. "Sometimes you have to take the plunge. If you don't try, you'll never know."
@@ -41,8 +41,8 @@ Su idea es una plataforma para ayudar a pymes en su ciudad a vender sus producto
 Tengo [treinta y dos] años y vivo en Madrid. [Trabajo:iwork] como ingeniero de software en una empresa grande. El sueldo [no está mal] y mis compañeros son majos. [Sin embargo], [desde hace] meses, estoy [harto de] mi [curro]: quiero un trabajo que me emocione.
 > I'm thirty-two and I live in Madrid. I work as a software engineer at a big company. The salary isn't bad and my colleagues are nice. However, for months now, I've been fed up with my job: I want work that excites me.
 
-[Todas las noches], después de cenar, [echo un vistazo] a las [ofertas de empleo] en internet. Hay cientos de [puestos:jobs], pero ninguno [me dice nada]. No hay [ni uno] que me emocione. Todos [me parecen] iguales: más reuniones, más pantallas, [más de lo mismo].
-> Every night, after dinner, I have a look at job listings online. There are hundreds of positions, but none of them speaks to me. Not a single one excites me. They all seem the same to me: more meetings, more screens, more of the same.
+[Todas las noches], después de cenar, [echo un vistazo] a las [ofertas de empleo] en internet. Hay cientos de [puestos:jobs], pero ninguno [me llama la atención]. No hay [ni uno] que me emocione. Todos [me parecen] iguales: más reuniones, más pantallas, [más de lo mismo].
+> Every night, after dinner, I have a look at job listings online. There are hundreds of positions, but none of them catches my eye. Not a single one excites me. They all seem the same to me: more meetings, more screens, more of the same.
 
 [Hace un mes], un domingo, mientras [tomaba:have] un café con mi amiga Marta, le conté cómo me sentía. Marta es emprendedora: [hace dos años] [montó:setup] una pyme de diseño con dos socias. —¿Y por qué no emprendes tú? —me preguntó—. [A veces] [hay que] [lanzarse a la piscina]. Si no lo intentas, nunca lo sabrás.
 > A month ago, one Sunday, while I was having a coffee with my friend Marta, I told her how I felt. Marta is an entrepreneur: two years ago she set up a small design company with two partners. "So why don't you start a business?" she asked me. "Sometimes you have to take the plunge. If you don't try, you'll never know."
@@ -70,7 +70,7 @@ A: No, el sueldo [no está mal]. Quiere un trabajo que le emocione.
 > No, the salary isn't bad. He wants work that excites him.
 
 S: Hay cientos de [puestos:jobs], pero ninguno [le llama la atención].
-> There are hundreds of positions, but none of them speaks to him.
+> There are hundreds of positions, but none of them catches his eye.
 Q: ¿[Le gustan] las [ofertas de empleo] que ve en internet?
 > Does he like the job listings he sees online?
 A: No, no [le gustan]. Todos los [puestos:jobs] [le parecen] iguales.

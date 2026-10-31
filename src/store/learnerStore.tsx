@@ -14,7 +14,7 @@ const DEMO_KNOWN = [
   'a', 'al', 'con', 'de', 'del', 'el', 'en', 'la', 'las', 'los', 'le', 'lo', 'me', 'mi', 'mis', 'se',
   'su', 'sus', 'un', 'una', 'unas', 'y', 'que', 'qué', 'no', 'sí', 'si', 'por', 'para', 'pero',
   'porque', 'como', 'cómo', 'muy', 'más', 'también', 'todos', 'todas', 'mucho', 'muchos', 'yo', 'tú',
-  'algo', 'nada', 'nunca', 'ahora', 'hoy', 'primero', 'segundo',
+  'algo', 'nunca', 'ahora', 'hoy', 'primero', 'segundo',
   // common verbs
   'es', 'son', 'está', 'hay', 'tiene', 'tengo', 'vive', 'vivo', 'quiere', 'quiero', 'va', 'van',
   'trabaja', 'trabajando', 'comprar', 'vender', 'ayudar',
