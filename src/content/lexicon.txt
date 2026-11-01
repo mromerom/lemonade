@@ -155,13 +155,20 @@ al final
   gloss: in the end; finally
   pos: phrase
   words: al, final
-saldrá bien
-  gloss: will go well; will work out
+le saldrá bien
+  gloss: it will work out for him
   pos: phrase
   form: future
-  lemma: salir bien
-  note: Future of salir: saldré, saldrás, saldrá…
-  words: saldrá, bien
+  lemma: salirle bien (a alguien)
+  note: Future of salir: saldré, saldrás, saldrá… "Le" is who it works out for: "no sabe si le saldrá bien" = he doesn't know if it will work out (for him).
+  words: le, saldrá, bien
+me saldrá bien
+  gloss: it will work out for me
+  pos: phrase
+  form: future
+  lemma: salirle bien (a alguien)
+  note: "Me" is who it works out for. The verb stays saldrá: the subject is the plan, not you.
+  words: me, saldrá, bien
 lanzarse a la piscina
   gloss: to take the plunge
   pos: phrase
@@ -224,13 +231,25 @@ me daba miedo
   form: imperfect
   note: Imperfecto: a feeling that lasted, not a single event.
   words: me, daba, miedo
-salía mal
-  gloss: (it) went wrong; turned out badly
+le salía mal
+  gloss: it went wrong for him
   pos: phrase
   form: imperfect
-  lemma: salir mal
-  note: "¿Y si salía mal?" = what if it went wrong? The imperfecto for a worry in the past.
-  words: salía, mal
+  lemma: salirle mal (a alguien)
+  note: "¿Y si le salía mal?" = what if it went wrong (for him)? The imperfecto for a worry in the past. "Le" is who it goes wrong for.
+  words: le, salía, mal
+me salía mal
+  gloss: it went wrong for me
+  pos: phrase
+  form: imperfect
+  lemma: salirle mal (a alguien)
+  note: "Me" is who it goes wrong for. The verb stays salía: the subject is the plan, not you.
+  words: me, salía, mal
+por qué
+  gloss: why
+  pos: phrase
+  note: Two words with an accent for "why?"; one word without it, porque, for "because".
+  words: por, qué
 le dio vueltas
   gloss: he mulled it over; kept thinking about it
   pos: phrase
@@ -1365,12 +1384,12 @@ llamar la atención
   gloss: to catch someone's eye
   pos: phrase
   form: infinitive
-salir bien
-  gloss: to go well; to work out
+salirle bien (a alguien)
+  gloss: to work out (for someone)
   pos: phrase
   form: infinitive
-salir mal
-  gloss: to go wrong
+salirle mal (a alguien)
+  gloss: to go wrong (for someone)
   pos: phrase
   form: infinitive
 darle vueltas a algo
