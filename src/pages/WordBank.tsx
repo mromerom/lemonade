@@ -1,18 +1,19 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { lookupTerm } from '../content';
 import { useLearner } from '../store/learnerStore';
 import {
-  contextsFor,
+  bankGroups,
+  formLabel,
+  groupContexts,
+  groupKeyOf,
   highlightSegments,
   LEVEL_BAND_LABEL,
   levelBand,
-  wordBank,
-  type BankEntry,
+  type BankGroup,
   type LevelBand,
 } from '../lib/wordBank';
 import { useDismiss } from '../lib/useDismiss';
-import type { PartOfSpeech } from '../types';
+import type { PartOfSpeech, WordStatus } from '../types';
 import styles from './WordBank.module.css';
 
 type Direction = 'es-en' | 'en-es';
@@ -46,7 +47,8 @@ export default function WordBank() {
   const [unknownOnly, setUnknownOnly] = useState(false);
   const [types, setTypes] = useState<Set<PartOfSpeech>>(new Set());
   const [query, setQuery] = useState('');
-  const selectedKey = params.get('w');
+  // Old links may name a form ("voy"); open its dictionary form ("ir").
+  const selectedParam = params.get('w');
 
   useEffect(() => {
     try {
@@ -56,9 +58,9 @@ export default function WordBank() {
     }
   }, [direction, sort]);
 
-  const all = useMemo(() => wordBank(state), [state]);
-  const front = (e: BankEntry) => (direction === 'es-en' ? e.es : e.en);
-  const back = (e: BankEntry) => (direction === 'es-en' ? e.en : e.es);
+  const all = useMemo(() => bankGroups(state), [state]);
+  const front = (e: BankGroup) => (direction === 'es-en' ? e.es : e.en);
+  const back = (e: BankGroup) => (direction === 'es-en' ? e.en : e.es);
 
   const shown = useMemo(() => {
     const q = query.trim().toLocaleLowerCase();
@@ -68,7 +70,8 @@ export default function WordBank() {
         (!missedOnly || e.missed) &&
         (!unknownOnly || e.status !== 'known') &&
         (types.size === 0 || e.pos.some((p) => types.has(p))) &&
-        (!q || e.es.toLocaleLowerCase().includes(q) || e.en.toLocaleLowerCase().includes(q)),
+        (!q ||
+          [e.es, e.en, ...e.forms.flatMap((f) => [f.key, f.en])].some((t) => t.toLocaleLowerCase().includes(q))),
     );
     if (sort === 'az') {
       const lang = direction === 'es-en' ? 'es' : 'en';
@@ -80,7 +83,10 @@ export default function WordBank() {
   }, [all, band, missedOnly, unknownOnly, types, query, sort, direction]);
 
   const filtered = band !== 'all' || missedOnly || unknownOnly || types.size > 0 || query.trim() !== '';
-  const selected = all.find((e) => e.key === selectedKey) ?? null;
+  const selected =
+    all.find((e) => e.key === selectedParam) ??
+    (selectedParam ? all.find((e) => e.key === groupKeyOf(selectedParam)) : undefined) ??
+    null;
 
   function select(key: string | null) {
     setParams(key ? { w: key } : {}, { replace: true });
@@ -237,7 +243,13 @@ export default function WordBank() {
                     {e.missed && <span className={styles.missed}>missed</span>}
                     <span className={`${styles.status} ${styles[e.status]}`}>{e.status}</span>
                     <span className={styles.metaText}>
-                      {[e.pos.join(', '), e.levels.join(', ')].filter(Boolean).join(' · ')}
+                      {[
+                        e.forms.length > 1 ? `${e.known} of ${e.forms.length} forms known` : '',
+                        e.pos.join(', '),
+                        e.levels.join(', '),
+                      ]
+                        .filter(Boolean)
+                        .join(' · ')}
                     </span>
                   </span>
                 </button>
@@ -265,7 +277,7 @@ export default function WordBank() {
             <Detail
               entry={selected}
               onClose={() => select(null)}
-              onStatus={(status) => dispatch({ type: 'setWordStatus', key: selected.key, status })}
+              onStatus={(key, status) => dispatch({ type: 'setWordStatus', key, status })}
             />
           ) : (
             <p className={styles.panelEmpty}>Pick a word to see the sentences you met it in.</p>
@@ -276,18 +288,41 @@ export default function WordBank() {
   );
 }
 
+function StatusButtons({
+  status,
+  label,
+  onStatus,
+  small,
+}: {
+  status: WordStatus;
+  label: string;
+  onStatus: (s: 'learning' | 'known') => void;
+  small?: boolean;
+}) {
+  return (
+    <div className={small ? styles.formStatus : styles.statusRow} role="group" aria-label={label}>
+      {(['learning', 'known'] as const).map((s) => (
+        <button key={s} type="button" className={styles.statusBtn} aria-pressed={status === s} onClick={() => onStatus(s)}>
+          {s === 'learning' ? 'Learning' : 'Known'}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 function Detail({
   entry,
   onClose,
   onStatus,
 }: {
-  entry: BankEntry;
+  entry: BankGroup;
   onClose: () => void;
-  onStatus: (s: 'learning' | 'known') => void;
+  onStatus: (key: string, s: 'learning' | 'known') => void;
 }) {
   const { state } = useLearner();
-  const contexts = contextsFor(entry.key);
-  const lemma = lookupTerm(entry.key)?.senses[0]?.lemma;
+  const contexts = groupContexts(entry.forms);
+  // A plain word: one form, filed under itself. Otherwise list the forms.
+  const single = entry.forms.length === 1 && entry.forms[0].key === entry.key ? entry.forms[0] : null;
 
   return (
     <div className={styles.card}>
@@ -296,9 +331,9 @@ function Detail({
           <p className={styles.cardTerm} lang="es">
             {entry.es}
           </p>
-          {lemma && (
+          {!single && (
             <p className={styles.cardLemma}>
-              from <span lang="es">{lemma}</span>
+              {entry.known} of {entry.forms.length} {entry.forms.length === 1 ? 'form' : 'forms'} known
             </p>
           )}
         </div>
@@ -311,11 +346,11 @@ function Detail({
         <p className={styles.cardGloss}>{entry.en || 'No meaning saved yet.'}</p>
       ) : (
         <ul className={styles.senses}>
-          {entry.senses.map((s, i) => (
+          {(single ? entry.senses : entry.senses.slice(0, 1)).map((s, i) => (
             <li key={s.id}>
               <span className={i === 0 ? styles.cardGloss : styles.senseGloss}>{s.gloss}</span>
               {s.pos && <span className={styles.pos}>{s.pos}</span>}
-              {s.note && <span className={styles.senseNote}>{s.note}</span>}
+              {single && s.note && <span className={styles.senseNote}>{s.note}</span>}
             </li>
           ))}
         </ul>
@@ -323,19 +358,34 @@ function Detail({
 
       {entry.missed && <p className={styles.missedNote}>You missed this in a reading’s questions. It will come back for review.</p>}
 
-      <div className={styles.statusRow} role="group" aria-label="Word status">
-        {(['learning', 'known'] as const).map((s) => (
-          <button
-            key={s}
-            type="button"
-            className={styles.statusBtn}
-            aria-pressed={(state.words[entry.key]?.status ?? 'learning') === s}
-            onClick={() => onStatus(s)}
-          >
-            {s === 'learning' ? 'Learning' : 'Known'}
-          </button>
-        ))}
-      </div>
+      {single ? (
+        <StatusButtons status={single.status} label="Word status" onStatus={(s) => onStatus(single.key, s)} />
+      ) : (
+        <div className={styles.cardSection}>
+          <p className={styles.cardLabel}>Forms you’ve met</p>
+          <ul className={styles.forms}>
+            {entry.forms.map((f) => (
+              <li key={f.key} className={styles.form}>
+                <div className={styles.formText}>
+                  <span className={styles.formEs} lang="es">
+                    {f.key}
+                  </span>
+                  <span className={styles.formEn}>{f.en}</span>
+                  {f.form && <span className={styles.formTag}>{formLabel(f.form)}</span>}
+                  {f.status === 'new' && <span className={styles.formNew}>not saved yet</span>}
+                  {f.missed && <span className={styles.missed}>missed</span>}
+                </div>
+                <StatusButtons
+                  small
+                  status={f.status}
+                  label={`Status of ${f.key}`}
+                  onStatus={(s) => onStatus(f.key, s)}
+                />
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       <div className={styles.cardSection}>
         <p className={styles.cardLabel}>Where you saw it</p>
@@ -344,11 +394,16 @@ function Detail({
             {contexts.map((c, i) => (
               <li key={i}>
                 <p className={styles.sentence} lang="es">
-                  {highlightSegments(c.sentence, entry.key).map(({ seg, hit }, j) =>
+                  {highlightSegments(c.sentence, c.formKey).map(({ seg, hit }, j) =>
                     hit ? <mark key={j}>{seg.text}</mark> : <span key={j}>{seg.text}</span>,
                   )}
                 </p>
                 <p className={styles.source}>
+                  {!single && c.form && (
+                    <>
+                      <span lang="es">{c.formKey}</span>, {formLabel(c.form)} ·{' '}
+                    </>
+                  )}
                   <Link to={`/read/${c.textId}${state.lessons[c.textId]?.stage === 'done' ? '?view=text' : ''}`}>
                     {c.textTitle}
                   </Link>{' '}

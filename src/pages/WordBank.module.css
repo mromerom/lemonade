@@ -438,3 +438,58 @@
     transition: none;
   }
 }
+
+/* Forms of a dictionary word, each with its own status */
+.forms {
+  list-style: none;
+  margin: 0.4rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+.form {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+.form:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+.formText {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.15rem 0.5rem;
+  min-width: 0;
+}
+.formEs {
+  font-family: var(--font-read);
+  font-weight: 600;
+}
+.formEn {
+  font-size: 0.875rem;
+}
+.formTag,
+.formNew {
+  flex-basis: 100%;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+.formNew {
+  flex-basis: auto;
+  font-style: italic;
+}
+.formStatus {
+  display: flex;
+  gap: 0.3rem;
+  flex-shrink: 0;
+}
+.formStatus .statusBtn {
+  flex: none;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+}

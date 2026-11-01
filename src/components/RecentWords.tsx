@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useLearner } from '../store/learnerStore';
-import { recentEntries } from '../lib/wordBank';
+import { groupKeyOf, recentEntries } from '../lib/wordBank';
 import styles from './RecentWords.module.css';
 
 /** The ten most recently added terms, newest on the left. Scrolls sideways when they don't fit. */
@@ -17,7 +17,7 @@ export default function RecentWords() {
       <ol className={styles.row}>
         {recent.map((e) => (
           <li key={e.key}>
-            <Link to={`/words?w=${encodeURIComponent(e.key)}`} className={`${styles.chip} ${styles[e.status]}`}>
+            <Link to={`/words?w=${encodeURIComponent(e.userPhrase ? e.key : groupKeyOf(e.key))}`} className={`${styles.chip} ${styles[e.status]}`}>
               <span className={styles.es} lang="es">
                 {e.es}
               </span>

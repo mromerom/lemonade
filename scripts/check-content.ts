@@ -31,7 +31,19 @@ for (const entry of Object.values(lexicon)) {
 
 for (const entry of Object.values(lexicon)) {
   if (!entry.senses[0]?.pos) errors.push(`lexicon.txt  "${entry.term}" has no pos: line`);
+  for (const s of entry.senses) {
+    const where = s.id === 'default' ? `"${entry.term}"` : `"${entry.term}" sense ${s.id}`;
+    // Verbs need a form so the word bank can show which conjugation it is.
+    if (s.pos === 'verb' && !s.form) errors.push(`lexicon.txt  ${where} is a verb but has no form: line`);
+    // The word bank groups forms under their lemma, so it needs an entry.
+    if (s.lemma && (s.pos === 'verb' || s.pos === 'phrase') && !lexicon[s.lemma]) {
+      errors.push(`lexicon.txt  ${where} has lemma "${s.lemma}", which isn't in the lexicon`);
+    }
+  }
 }
+
+/** Dictionary forms other entries point to count as used. */
+const lemmas = new Set(Object.values(lexicon).flatMap((e) => e.senses.map((s) => s.lemma).filter(Boolean)));
 
 const used = new Set<string>();
 
@@ -114,7 +126,7 @@ for (const text of texts) {
 }
 
 for (const term of Object.keys(lexicon)) {
-  if (!used.has(term)) warnings.push(`lexicon.txt  "${term}" isn't used by any reading`);
+  if (!used.has(term) && !lemmas.has(term)) warnings.push(`lexicon.txt  "${term}" isn't used by any reading`);
 }
 
 console.log('');

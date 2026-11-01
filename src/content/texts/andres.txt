@@ -21,7 +21,7 @@ example: Andrés se armó de valor => me armé de valor
 
 ## Historia
 
-Andrés tiene [treinta y dos] años y vive en Madrid. Trabaja como ingeniero de software en una empresa grande. El sueldo [no está mal] y sus compañeros son majos. [Sin embargo], [desde hace] meses, Andrés está [harto de] su [curro]: quiere un trabajo que le emocione.
+Andrés tiene [treinta y dos] años y vive en Madrid. [Trabaja como] ingeniero de software en una empresa grande. El sueldo [no está mal] y sus compañeros son majos. [Sin embargo], [desde hace] meses, Andrés está [harto de] su [curro]: quiere un trabajo que le emocione.
 > Andrés is thirty-two and lives in Madrid. He works as a software engineer at a big company. The salary isn't bad and his colleagues are nice. However, for months now, Andrés has been fed up with his job: he wants work that excites him.
 
 [Todas las noches], después de cenar, [echa un vistazo] a las [ofertas de empleo] en internet. Hay cientos de [puestos:jobs], pero ninguno [le llama la atención]. No hay [ni uno] que le emocione. Todos [le parecen] iguales: más reuniones, más pantallas, [más de lo mismo].
@@ -33,12 +33,12 @@ Andrés tiene [treinta y dos] años y vive en Madrid. Trabaja como ingeniero de 
 [Al principio], a Andrés [le daba miedo]. ¿Y si [salía mal]? Pero [le dio vueltas] a la idea durante semanas y, [al final], [se armó de valor]. Esta mañana ha decidido [dar el paso] y [montar:setup] su propio negocio.
 > At first, Andrés was scared. What if it went wrong? But he mulled the idea over for weeks and, in the end, he plucked up his courage. This morning he decided to take the step and set up his own business.
 
-Su idea es una plataforma para ayudar a pymes en su ciudad a vender sus productos y servicios por internet. [Por ahora], seguirá trabajando en su empresa y dedicará las tardes a su proyecto. No sabe si [saldrá bien], pero [por fin] tiene algo que le emociona [de verdad]. [Tiene su riesgo], pero también es muy emocionante.
+Su idea es una plataforma para ayudar a pymes en su ciudad a vender sus productos y servicios por internet. [Por ahora], [seguirá trabajando] en su empresa y dedicará las tardes a su proyecto. No sabe si [saldrá bien], pero [por fin] tiene algo que le emociona [de verdad]. [Tiene su riesgo], pero también es muy emocionante.
 > His idea is a platform to help small businesses in his city sell their products and services online. For now, he'll keep working at his company and spend his evenings on his project. He doesn't know if it will work out, but at last he has something that really excites him. It has its risks, but it's also very exciting.
 
 ## Retelling
 
-Tengo [treinta y dos] años y vivo en Madrid. [Trabajo:iwork] como ingeniero de software en una empresa grande. El sueldo [no está mal] y mis compañeros son majos. [Sin embargo], [desde hace] meses, estoy [harto de] mi [curro]: quiero un trabajo que me emocione.
+Tengo [treinta y dos] años y vivo en Madrid. [Trabajo como] ingeniero de software en una empresa grande. El sueldo [no está mal] y mis compañeros son majos. [Sin embargo], [desde hace] meses, estoy [harto de] mi [curro]: quiero un trabajo que me emocione.
 > I'm thirty-two and I live in Madrid. I work as a software engineer at a big company. The salary isn't bad and my colleagues are nice. However, for months now, I've been fed up with my job: I want work that excites me.
 
 [Todas las noches], después de cenar, [echo un vistazo] a las [ofertas de empleo] en internet. Hay cientos de [puestos:jobs], pero ninguno [me llama la atención]. No hay [ni uno] que me emocione. Todos [me parecen] iguales: más reuniones, más pantallas, [más de lo mismo].
@@ -50,7 +50,7 @@ Tengo [treinta y dos] años y vivo en Madrid. [Trabajo:iwork] como ingeniero de 
 [Al principio], [me daba miedo]. ¿Y si [salía mal]? Pero [le di vueltas] a la idea durante semanas y, [al final], [me armé de valor]. Esta mañana he decidido [dar el paso] y [montar:setup] mi propio negocio.
 > At first, I was scared. What if it went wrong? But I mulled the idea over for weeks and, in the end, I plucked up my courage. This morning I decided to take the step and set up my own business.
 
-Mi idea es una plataforma para ayudar a pymes en mi ciudad a vender sus productos y servicios por internet. [Por ahora], seguiré trabajando en mi empresa y dedicaré las tardes a mi proyecto. No sé si [saldrá bien], pero [por fin] tengo algo que me emociona [de verdad]. [Tiene su riesgo], pero también es muy emocionante.
+Mi idea es una plataforma para ayudar a pymes en mi ciudad a vender sus productos y servicios por internet. [Por ahora], [seguiré trabajando] en mi empresa y dedicaré las tardes a mi proyecto. No sé si [saldrá bien], pero [por fin] tengo algo que me emociona [de verdad]. [Tiene su riesgo], pero también es muy emocionante.
 > My idea is a platform to help small businesses in my city sell their products and services online. For now, I'll keep working at my company and spend my evenings on my project. I don't know if it will work out, but at last I have something that really excites me. It has its risks, but it's also very exciting.
 
 ## Preguntas

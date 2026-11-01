@@ -10,6 +10,25 @@ export interface Sense {
   note?: string;
   /** Part of speech, e.g. "noun"; see PARTS_OF_SPEECH */
   pos?: PartOfSpeech;
+  /** Verbs and verb phrases: which conjugation this is */
+  form?: VerbForm;
+}
+
+/** Persons a lexicon form can be tagged with. */
+export const FORM_PERSONS = ['yo', 'tú', 'él/ella', 'nosotros', 'vosotros', 'ellos/ellas'] as const;
+export type FormPerson = (typeof FORM_PERSONS)[number];
+
+/** Tenses and moods, plus the forms that have no person. */
+export const TENSES = [
+  'present', 'present subjunctive', 'imperfect', 'preterite', 'present perfect', 'future', 'conditional',
+  'infinitive', 'gerund', 'participle',
+] as const;
+export type Tense = (typeof TENSES)[number];
+
+/** A conjugated form: "yo, preterite" → { person: 'yo', tense: 'preterite' }. */
+export interface VerbForm {
+  person?: FormPerson;
+  tense: Tense;
 }
 
 export const PARTS_OF_SPEECH = [

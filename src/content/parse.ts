@@ -3,7 +3,7 @@
  * lexicon.txt and texts/*.txt for the format). Pure functions with no Vite
  * dependencies, so the content checker can run them in Node.
  */
-import { PARTS_OF_SPEECH, type Lexicon, type LexiconEntry, type Paragraph, type PartOfSpeech, type QAItem, type Sense } from '../types';
+import { FORM_PERSONS, PARTS_OF_SPEECH, TENSES, type FormPerson, type Tense, type VerbForm, type Lexicon, type LexiconEntry, type Paragraph, type PartOfSpeech, type QAItem, type Sense } from '../types';
 
 export interface ParseError {
   file: string;
@@ -12,6 +12,28 @@ export interface ParseError {
 }
 
 // ---------- Lexicon ----------
+
+/** Persons as written in the lexicon; "él", "ella", "usted" all mean él/ella. */
+const PERSON_ALIASES: Record<string, FormPerson> = {
+  él: 'él/ella', ella: 'él/ella', usted: 'él/ella', ellos: 'ellos/ellas', ellas: 'ellos/ellas', ustedes: 'ellos/ellas',
+};
+
+/** "yo, preterite" or "present" or "infinitive" → VerbForm, or an error message. */
+export function parseForm(value: string): VerbForm | string {
+  const parts = value.split(',').map((p) => p.trim());
+  const tense = parts.pop() as Tense;
+  if (!(TENSES as readonly string[]).includes(tense)) {
+    return `Unknown tense "${tense}" in form. Use one of: ${TENSES.join(', ')}`;
+  }
+  if (!parts.length) return { tense };
+  const raw = parts.join(',');
+  const person = PERSON_ALIASES[raw] ?? raw;
+  if (parts.length > 1 || !(FORM_PERSONS as readonly string[]).includes(person)) {
+    return `Unknown person "${raw}" in form. Use one of: ${FORM_PERSONS.join(', ')}`;
+  }
+  if (['infinitive', 'gerund', 'participle'].includes(tense)) return `An ${tense} has no person: write "form: ${tense}"`;
+  return { person: person as FormPerson, tense };
+}
 
 export function parseLexicon(raw: string, file = 'lexicon.txt'): { lexicon: Lexicon; errors: ParseError[] } {
   const lexicon: Lexicon = {};
@@ -84,6 +106,14 @@ export function parseLexicon(raw: string, file = 'lexicon.txt'): { lexicon: Lexi
         }
         break;
       }
+      case 'form': {
+        const s = target ?? entry.senses.find((x) => x.id === 'default');
+        const parsed = parseForm(value);
+        if (typeof parsed === 'string') errors.push({ file, line, message: parsed });
+        else if (!s) errors.push({ file, line, message: `"form" before "gloss" for "${entry.term}"` });
+        else s.form = parsed;
+        break;
+      }
       case 'name':
         entry.name = value === 'yes' || value === 'true';
         break;
@@ -101,8 +131,12 @@ export function parseLexicon(raw: string, file = 'lexicon.txt'): { lexicon: Lexi
   for (const e of Object.values(lexicon)) {
     if (!e.senses.length && !e.name) errors.push({ file, line: 0, message: `"${e.term}" has no gloss` });
     // Other senses share the main part of speech unless they set their own.
-    const main = e.senses[0]?.pos;
-    for (const s of e.senses.slice(1)) s.pos ??= main;
+    // A verb's other senses are the same conjugation unless they say otherwise.
+    const main = e.senses[0];
+    for (const s of e.senses.slice(1)) {
+      s.pos ??= main?.pos;
+      if (s.pos === main?.pos) s.form ??= main?.form;
+    }
   }
   return { lexicon, errors };
 }

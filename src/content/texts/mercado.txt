@@ -29,7 +29,7 @@ example: Lucía va => voy
 [Todos los sábados], Lucía va al mercado con su abuelo. El mercado está en una plaza pequeña, [cerca del] río. Hay muchos puestos de frutas, verduras, pan y flores.
 > Every Saturday, Lucía goes to the market with her grandfather. The market is in a small square, near the river. There are many stalls of fruit, vegetables, bread and flowers.
 
-Hoy [hace frío], pero el sol brilla. Lucía lleva una bufanda roja. Su abuelo quiere comprar naranjas, porque mañana por la [mañana:morning] va a preparar un pastel para su vecina.
+Hoy [hace frío], pero el sol brilla. Lucía lleva una bufanda roja. Su abuelo quiere comprar naranjas, porque mañana por la [mañana:morning] [va a] preparar un pastel para su vecina.
 > Today it's cold, but the sun is shining. Lucía is wearing a red scarf. Her grandfather wants to buy oranges, because tomorrow morning he is going to make a cake for his neighbor.
 
 En el primer puesto, las naranjas son caras. Cuestan tres euros el kilo. [Por eso], Lucía y su abuelo van al segundo puesto. Allí, las naranjas cuestan dos euros el kilo. Compran dos kilos. Además, la vendedora le regala un limón a Lucía.
@@ -43,7 +43,7 @@ Después, compran pan y unas flores amarillas. [Más tarde], vuelven a casa. Luc
 [Todos los sábados], voy al mercado con mi abuelo. El mercado está en una plaza pequeña, [cerca del] río. Hay muchos puestos de frutas, verduras, pan y flores.
 > Every Saturday, I go to the market with my grandfather. The market is in a small square, near the river. There are many stalls of fruit, vegetables, bread and flowers.
 
-Hoy [hace frío], pero el sol brilla. Llevo una bufanda roja. Mi abuelo quiere comprar naranjas, porque mañana por la [mañana:morning] va a preparar un pastel para su vecina.
+Hoy [hace frío], pero el sol brilla. Llevo una bufanda roja. Mi abuelo quiere comprar naranjas, porque mañana por la [mañana:morning] [va a] preparar un pastel para su vecina.
 > Today it's cold, but the sun is shining. I'm wearing a red scarf. My grandfather wants to buy oranges, because tomorrow morning he is going to make a cake for his neighbor.
 
 En el primer puesto, las naranjas son caras. Cuestan tres euros el kilo. [Por eso], mi abuelo y yo vamos al segundo puesto. Allí, las naranjas cuestan dos euros el kilo. Compramos dos kilos. Además, la vendedora me regala un limón.

@@ -6,12 +6,19 @@
 #     pos: ...                part of speech: noun, verb, adjective, adverb, pronoun,
 #                             article, determiner, preposition, conjunction, number,
 #                             name, or phrase (for any multi-word term)
-#     lemma: ...              dictionary form, if different
+#     lemma: ...              dictionary form, if different. The word bank groups
+#                             every form under it ("voy", "va" → "ir"), so the
+#                             dictionary form needs its own entry (see the end)
+#     form: ...               verbs and verb phrases: person and tense, e.g.
+#                             "yo, preterite", "él/ella, present", "infinitive".
+#                             Tenses: present, present subjunctive, imperfect,
+#                             preterite, present perfect, future, conditional,
+#                             infinitive, gerund, participle
 #     note: ...               short grammar or usage note
 #     name: yes               proper noun: never highlighted or tracked
 #     words: a, b, c:sense    phrases only: which sense each word has inside the phrase
 #     sense ID: gloss         another meaning; use it in a text as [term:ID]
-#       lemma: / note: / pos: indented under a sense, they belong to that sense
+#       lemma: / note: / pos: / form: indented under a sense, they belong to that sense
 #
 # In a story, [le gusta] marks a phrase and [mañana:morning] picks a sense.
 # Lines starting with # are comments.
@@ -26,6 +33,8 @@ todos los sábados
 hace frío
   gloss: it's cold (weather)
   pos: phrase
+  lemma: hacer frío
+  form: present
   note: Spanish says "it makes cold": hacer + frío
   words: hace, frío
 
@@ -48,6 +57,7 @@ más tarde
 le gusta
   gloss: she likes; he likes
   pos: phrase
+  form: present
   lemma: gustar
   note: Literally "it pleases her". The thing liked is the subject: "a Lucía le gusta el mercado".
   words: le, gusta
@@ -55,6 +65,7 @@ le gusta
 me gusta
   gloss: I like
   pos: phrase
+  form: present
   lemma: gustar
   note: Literally "it pleases me".
   words: me, gusta
@@ -64,6 +75,8 @@ me gusta
 no está mal
   gloss: isn't bad; not bad
   pos: phrase
+  lemma: no estar mal
+  form: present
   words: no, está, mal
 sin embargo
   gloss: however
@@ -86,11 +99,13 @@ todas las noches
 echa un vistazo
   gloss: has a look; takes a glance
   pos: phrase
+  form: él/ella, present
   lemma: echar un vistazo
   words: echa, un, vistazo
 echo un vistazo
   gloss: I have a look; I take a glance
   pos: phrase
+  form: yo, present
   lemma: echar un vistazo
   words: echo, un, vistazo
 ofertas de empleo
@@ -100,23 +115,27 @@ ofertas de empleo
 le llama la atención
   gloss: catches his eye; appeals to him
   pos: phrase
+  form: present
   lemma: llamar la atención
   note: Works like gustar: the thing that catches the eye is the subject. "Ninguno le llama la atención" = none of them catches his eye. Careful: "le llamaron la atención" can also mean he was told off.
   words: le, llama, la, atención
 me llama la atención
   gloss: catches my eye; appeals to me
   pos: phrase
+  form: present
   lemma: llamar la atención
   words: me, llama, la, atención
 le parecen
   gloss: seem to him
   pos: phrase
+  form: present
   lemma: parecer
   note: Works like gustar: the things that seem are the subject.
   words: le, parecen
 me parecen
   gloss: seem to me
   pos: phrase
+  form: present
   lemma: parecer
   words: me, parecen
 más de lo mismo
@@ -139,12 +158,14 @@ al final
 saldrá bien
   gloss: will go well; will work out
   pos: phrase
+  form: future
   lemma: salir bien
   note: Future of salir: saldré, saldrás, saldrá…
   words: saldrá, bien
 lanzarse a la piscina
   gloss: to take the plunge
   pos: phrase
+  form: infinitive
   note: Literally "to throw oneself into the pool". In Spain you'll also hear "tirarse a la piscina".
   words: lanzarse, a, la, piscina
 de momento
@@ -162,6 +183,7 @@ de verdad
 le gustan
   gloss: he likes; she likes (more than one thing)
   pos: phrase
+  form: present
   lemma: gustar
   note: Plural because the things liked are plural: "le gustan las ofertas".
   words: le, gustan
@@ -185,50 +207,61 @@ a veces
 hay que
   gloss: you have to; one has to
   pos: phrase
+  form: present
   note: "Hay que" + infinitive: a general "must", with no particular subject.
   words: hay, que
 le daba miedo
   gloss: he was scared; it scared him
   pos: phrase
+  lemma: dar miedo
+  form: imperfect
   note: Imperfecto: a feeling that lasted, not a single event.
   words: le, daba, miedo
 me daba miedo
   gloss: I was scared; it scared me
   pos: phrase
+  lemma: dar miedo
+  form: imperfect
   note: Imperfecto: a feeling that lasted, not a single event.
   words: me, daba, miedo
 salía mal
   gloss: (it) went wrong; turned out badly
   pos: phrase
+  form: imperfect
   lemma: salir mal
   note: "¿Y si salía mal?" = what if it went wrong? The imperfecto for a worry in the past.
   words: salía, mal
 le dio vueltas
   gloss: he mulled it over; kept thinking about it
   pos: phrase
+  form: él/ella, preterite
   lemma: darle vueltas a algo
   note: Indefinido: a completed stretch of time ("durante semanas"), now over.
   words: le, dio, vueltas
 le di vueltas
   gloss: I mulled it over; kept thinking about it
   pos: phrase
+  form: yo, preterite
   lemma: darle vueltas a algo
   words: le, di, vueltas
 se armó de valor
   gloss: he plucked up his courage
   pos: phrase
+  form: él/ella, preterite
   lemma: armarse de valor
   note: Indefinido: one completed moment, marked by "al final".
   words: se, armó, de, valor
 me armé de valor
   gloss: I plucked up my courage
   pos: phrase
+  form: yo, preterite
   lemma: armarse de valor
   note: Indefinido: one completed moment, marked by "al final".
   words: me, armé, de, valor
 dar el paso
   gloss: to take the step; to make the move
   pos: phrase
+  form: infinitive
   note: Close to "lanzarse a la piscina", a little less dramatic.
   words: dar, el, paso
 por ahora
@@ -239,6 +272,8 @@ por ahora
 tiene su riesgo
   gloss: it has its risks; it's a bit risky
   pos: phrase
+  lemma: tener su riesgo
+  form: present
   words: tiene, su, riesgo
 
 treinta y dos
@@ -246,6 +281,42 @@ treinta y dos
   pos: number
   note: From 31 to 99, tens and units are joined with "y": treinta y uno, cuarenta y cinco. (21–29 are one word: veintidós.)
   words: treinta, y, dos
+
+# ---------- Phrases: verb + preposition, verb + gerund ----------
+
+trabaja como
+  gloss: works as
+  pos: phrase
+  lemma: trabajar como
+  form: él/ella, present
+  note: In Spain you'll also hear "trabaja de": "trabaja de camarero".
+  words: trabaja, como
+trabajo como
+  gloss: I work as
+  pos: phrase
+  lemma: trabajar como
+  form: yo, present
+  words: trabajo:iwork, como
+va a
+  gloss: is going to
+  pos: phrase
+  lemma: ir a
+  form: él/ella, present
+  note: ir a + infinitive talks about the near future: "va a preparar" = is going to make.
+  words: va, a
+seguirá trabajando
+  gloss: will keep working
+  pos: phrase
+  lemma: seguir trabajando
+  form: él/ella, future
+  note: seguir + gerund (-ando, -iendo) = to keep doing something.
+  words: seguirá, trabajando
+seguiré trabajando
+  gloss: I will keep working
+  pos: phrase
+  lemma: seguir trabajando
+  form: yo, future
+  words: seguiré, trabajando
 
 # ---------- Words ----------
 
@@ -283,6 +354,7 @@ baratas
 brilla
   gloss: shines
   pos: verb
+  form: él/ella, present
   lemma: brillar
   note: él/ella, present
 bufanda
@@ -308,16 +380,19 @@ cerca
 compramos
   gloss: we buy
   pos: verb
+  form: nosotros, present
   lemma: comprar
   note: nosotros, present
 compran
   gloss: they buy
   pos: verb
+  form: ellos/ellas, present
   lemma: comprar
   note: ellos/ellas, present
 comprar
   gloss: to buy
   pos: verb
+  form: infinitive
 con
   gloss: with
   pos: preposition
@@ -329,6 +404,7 @@ contenta
 cuestan
   gloss: cost
   pos: verb
+  form: ellos/ellas, present
   lemma: costar
   note: ellos/ellas, present (o → ue)
 de
@@ -358,11 +434,13 @@ eso
 estoy
   gloss: I am (state)
   pos: verb
+  form: yo, present
   lemma: estar
   note: yo, present
 está
   gloss: is (location or state)
   pos: verb
+  form: él/ella, present
   lemma: estar
   note: él/ella, present
 euros
@@ -383,11 +461,13 @@ frío
 gusta
   gloss: pleases
   pos: verb
+  form: él/ella, present
   lemma: gustar
   note: él/ella, present. Used for "like": "me gusta" = I like it.
 hace
   gloss: makes; does
   pos: verb
+  form: él/ella, present
   lemma: hacer
   note: él/ella, present. Also used for weather.
   sense ago: ago
@@ -395,6 +475,7 @@ hace
 hay
   gloss: there is; there are
   pos: verb
+  form: present
   lemma: haber
 hoy
   gloss: today
@@ -424,11 +505,13 @@ limón
 lleva
   gloss: is wearing; carries
   pos: verb
+  form: él/ella, present
   lemma: llevar
   note: él/ella, present
 llevo
   gloss: I'm wearing; I carry
   pos: verb
+  form: yo, present
   lemma: llevar
   note: yo, present
 los
@@ -510,6 +593,7 @@ porque
 preparar
   gloss: to prepare; to make
   pos: verb
+  form: infinitive
 primer
   gloss: first
   pos: adjective
@@ -532,11 +616,13 @@ puestos
 quiere
   gloss: wants
   pos: verb
+  form: él/ella, present
   lemma: querer
   note: él/ella, present (e → ie)
 regala
   gloss: gives (as a gift)
   pos: verb
+  form: él/ella, present
   lemma: regalar
   note: él/ella, present
 roja
@@ -556,6 +642,7 @@ sol
 son
   gloss: are
   pos: verb
+  form: ellos/ellas, present
   lemma: ser
   note: ellos/ellas, present
 su
@@ -596,16 +683,19 @@ unas
 va
   gloss: goes
   pos: verb
+  form: él/ella, present
   lemma: ir
   note: él/ella, present
 vamos
   gloss: we go
   pos: verb
+  form: nosotros, present
   lemma: ir
   note: nosotros, present
 van
   gloss: they go
   pos: verb
+  form: ellos/ellas, present
   lemma: ir
   note: ellos/ellas, present
 vecina
@@ -625,16 +715,19 @@ verduras
 volvemos
   gloss: we go back
   pos: verb
+  form: nosotros, present
   lemma: volver
   note: nosotros, present
 voy
   gloss: I go
   pos: verb
+  form: yo, present
   lemma: ir
   note: yo, present
 vuelven
   gloss: they go back
   pos: verb
+  form: ellos/ellas, present
   lemma: volver
   note: ellos/ellas, present (o → ue)
 y
@@ -665,6 +758,7 @@ años
 ayudar
   gloss: to help
   pos: verb
+  form: infinitive
   note: "ayudar a alguien a + infinitive" = to help someone do something
 bien
   gloss: well; good
@@ -675,6 +769,7 @@ café
 cenar
   gloss: to have dinner
   pos: verb
+  form: infinitive
   note: "después de cenar" = after dinner
 cientos
   gloss: hundreds
@@ -696,24 +791,29 @@ cómo
 decidido
   gloss: decided
   pos: verb
+  form: participle
   lemma: decidir
   note: Participle. "Ha decidido" (pretérito perfecto) is the usual past for today in most of Spain: "esta mañana ha decidido". Latin America, and parts of Spain such as the Canaries, Galicia and Asturias, usually say "esta mañana decidió".
 dedicar
   gloss: to devote; to spend (time)
   pos: verb
+  form: infinitive
 dedicará
   gloss: will devote; will spend (time)
   pos: verb
+  form: él/ella, future
   lemma: dedicar
   note: él/ella, future
 dedicaré
   gloss: I will devote; I will spend (time)
   pos: verb
+  form: yo, future
   lemma: dedicar
   note: yo, future
 deja
   gloss: leaves; quits
   pos: verb
+  form: él/ella, present
   lemma: dejar
   note: "dejar el trabajo" = to quit your job
 desde
@@ -731,11 +831,13 @@ durante
 echa
   gloss: throws; puts
   pos: verb
+  form: él/ella, present
   lemma: echar
   note: él/ella, present. "Echar un vistazo" = to have a look.
 echo
   gloss: I throw; I put
   pos: verb
+  form: yo, present
   lemma: echar
   note: yo, present
 embargo
@@ -745,6 +847,7 @@ embargo
 emociona
   gloss: excites; moves (emotionally)
   pos: verb
+  form: él/ella, present
   lemma: emocionar
   note: Present indicative. "Algo que le emociona": the thing exists, so the indicative. Compare "un trabajo que le emocione".
 emocionante
@@ -754,6 +857,7 @@ emocionante
 emocione
   gloss: excites
   pos: verb
+  form: él/ella, present subjunctive
   lemma: emocionar
   note: Present subjunctive (él/ella). "Quiere un trabajo que le emocione": he hasn't found that job, so the subjunctive.
 empleo
@@ -767,6 +871,7 @@ emprendedora
 emprendes
   gloss: you start a business; you take on
   pos: verb
+  form: tú, present
   lemma: emprender
   note: tú, present
 empresa
@@ -779,6 +884,7 @@ enseguida
 es
   gloss: is
   pos: verb
+  form: él/ella, present
   lemma: ser
   note: él/ella, present
 esta
@@ -797,11 +903,13 @@ grande
 gustan
   gloss: please
   pos: verb
+  form: ellos/ellas, present
   lemma: gustar
   note: ellos/ellas, present. "Le gustan" = he likes them.
 ha
   gloss: has
   pos: verb
+  form: él/ella, present
   lemma: haber
   note: Helper verb for the pretérito perfecto: "ha decidido" = has decided / decided (today).
 harto
@@ -810,6 +918,7 @@ harto
 he
   gloss: I have
   pos: verb
+  form: yo, present
   lemma: haber
   note: Helper verb: "he decidido" = I have decided / I decided (today).
 idea
@@ -829,11 +938,13 @@ internet
 intentas
   gloss: you try
   pos: verb
+  form: tú, present
   lemma: intentar
   note: tú, present
 lanzarse
   gloss: to throw oneself; to launch oneself
   pos: verb
+  form: infinitive
 lo
   gloss: it
   pos: pronoun
@@ -877,11 +988,13 @@ momento
 montar
   gloss: to ride; to get on
   pos: verb
+  form: infinitive
   sense setup: to set up (a business)
     note: "montar una empresa" = to set up a company
 montó
   gloss: rode; got on
   pos: verb
+  form: él/ella, preterite
   lemma: montar
   sense setup: set up (a business)
     lemma: montar
@@ -910,6 +1023,7 @@ pantallas
 parecen
   gloss: seem
   pos: verb
+  form: ellos/ellas, present
   lemma: parecer
   note: ellos/ellas, present
 piscina
@@ -938,6 +1052,7 @@ que
 quiero
   gloss: I want
   pos: verb
+  form: yo, present
   lemma: querer
   note: yo, present (e → ie)
 qué
@@ -951,16 +1066,19 @@ reuniones
 sabe
   gloss: knows
   pos: verb
+  form: él/ella, present
   lemma: saber
   note: él/ella, present
 sabrás
   gloss: you will know
   pos: verb
+  form: tú, future
   lemma: saber
   note: tú, future (irregular: sabr-)
 saldrá
   gloss: will turn out; will go out
   pos: verb
+  form: él/ella, future
   lemma: salir
   note: él/ella, future (irregular: saldr-)
 se
@@ -970,11 +1088,13 @@ se
 seguiré
   gloss: I will keep (doing)
   pos: verb
+  form: yo, future
   lemma: seguir
   note: yo, future. "Seguir + -ando/-iendo" = to keep doing.
 seguirá
   gloss: will keep (doing)
   pos: verb
+  form: él/ella, future
   lemma: seguir
   note: él/ella, future. "Seguir + -ando/-iendo" = to keep doing.
 semanas
@@ -1006,6 +1126,7 @@ sus
 sé
   gloss: I know
   pos: verb
+  form: yo, present
   lemma: saber
   note: yo, present (irregular)
 también
@@ -1019,21 +1140,25 @@ tardes
 tengo
   gloss: I have
   pos: verb
+  form: yo, present
   lemma: tener
   note: yo, present. "Tengo treinta años" = I'm thirty.
 tiene
   gloss: has
   pos: verb
+  form: él/ella, present
   lemma: tener
   note: él/ella, present. Age uses tener: "tiene treinta y dos años".
 trabaja
   gloss: works
   pos: verb
+  form: él/ella, present
   lemma: trabajar
   note: él/ella, present
 trabajando
   gloss: working
   pos: verb
+  form: gerund
   lemma: trabajar
   note: gerund
 trabajo
@@ -1042,7 +1167,7 @@ trabajo
   sense iwork: I work
     pos: verb
     lemma: trabajar
-    note: yo, present
+    form: yo, present
 treinta
   gloss: thirty
   pos: number
@@ -1056,12 +1181,14 @@ valor
 vender
   gloss: to sell
   pos: verb
+  form: infinitive
 verdad
   gloss: truth
   pos: noun
 ve
   gloss: sees
   pos: verb
+  form: él/ella, present
   lemma: ver
   note: él/ella, present
 vistazo
@@ -1070,11 +1197,13 @@ vistazo
 vive
   gloss: lives
   pos: verb
+  form: él/ella, present
   lemma: vivir
   note: él/ella, present
 vivo
   gloss: I live
   pos: verb
+  form: yo, present
   lemma: vivir
   note: yo, present
 todas
@@ -1099,11 +1228,13 @@ ahora
 armé
   gloss: I armed
   pos: verb
+  form: yo, preterite
   lemma: armar
   note: yo, indefinido. Accent on the last é; compare "armó" (él/ella).
 armó
   gloss: armed
   pos: verb
+  form: él/ella, preterite
   lemma: armar
   note: él/ella, indefinido. Accent on the last ó; compare "armé" (yo).
 ciudad
@@ -1112,34 +1243,41 @@ ciudad
 contó
   gloss: told
   pos: verb
+  form: él/ella, preterite
   lemma: contar
   note: él/ella, indefinido. The o → ue change only happens in the present (cuenta).
 conté
   gloss: I told
   pos: verb
+  form: yo, preterite
   lemma: contar
   note: yo, indefinido
 daba
   gloss: gave
   pos: verb
+  form: él/ella, imperfect
   lemma: dar
   note: Imperfecto. Same form for yo and él/ella.
 dar
   gloss: to give
   pos: verb
+  form: infinitive
 decidió
   gloss: decided
   pos: verb
+  form: él/ella, preterite
   lemma: decidir
   note: él/ella, indefinido
 di
   gloss: I gave
   pos: verb
+  form: yo, preterite
   lemma: dar
   note: yo, indefinido. No accent: di, diste, dio.
 dio
   gloss: gave
   pos: verb
+  form: él/ella, preterite
   lemma: dar
   note: él/ella, indefinido. No accent.
 mes
@@ -1158,6 +1296,7 @@ plataforma
 preguntó
   gloss: asked
   pos: verb
+  form: él/ella, preterite
   lemma: preguntar
   note: él/ella, indefinido
 productos
@@ -1174,11 +1313,13 @@ riesgo
 salía
   gloss: went out; turned out
   pos: verb
+  form: él/ella, imperfect
   lemma: salir
   note: Imperfecto. Same form for yo and él/ella.
 sentía
   gloss: felt
   pos: verb
+  form: él/ella, imperfect
   lemma: sentir
   note: Imperfecto. "Cómo se sentía" = how he felt. Same form for yo: "cómo me sentía".
 servicios
@@ -1188,6 +1329,7 @@ servicios
 tomaba
   gloss: was taking
   pos: verb
+  form: él/ella, imperfect
   lemma: tomar
   note: Imperfecto. Same form for yo and él/ella.
   sense have: was having (food or drink)
@@ -1201,6 +1343,7 @@ veces
 llama
   gloss: calls
   pos: verb
+  form: él/ella, present
   lemma: llamar
   note: él/ella, present. "Llamar la atención" = to catch someone's eye.
   sense flame: flame
@@ -1209,3 +1352,188 @@ llama
 atención
   gloss: attention
   pos: noun
+
+# ---------- Dictionary forms ----------
+# Entries other entries point to with "lemma:". The word bank groups every
+# form under its dictionary form and shows this meaning for the group.
+
+echar un vistazo
+  gloss: to have a look
+  pos: phrase
+  form: infinitive
+llamar la atención
+  gloss: to catch someone's eye
+  pos: phrase
+  form: infinitive
+salir bien
+  gloss: to go well; to work out
+  pos: phrase
+  form: infinitive
+salir mal
+  gloss: to go wrong
+  pos: phrase
+  form: infinitive
+darle vueltas a algo
+  gloss: to mull something over
+  pos: phrase
+  form: infinitive
+armarse de valor
+  gloss: to pluck up courage
+  pos: phrase
+  form: infinitive
+dar miedo
+  gloss: to be scary; to scare
+  pos: phrase
+  form: infinitive
+hacer frío
+  gloss: to be cold (weather)
+  pos: phrase
+  form: infinitive
+no estar mal
+  gloss: to not be bad
+  pos: phrase
+  form: infinitive
+tener su riesgo
+  gloss: to have its risks
+  pos: phrase
+  form: infinitive
+trabajar como
+  gloss: to work as
+  pos: phrase
+  form: infinitive
+ir a
+  gloss: to be going to (+ infinitive)
+  pos: phrase
+  form: infinitive
+seguir trabajando
+  gloss: to keep working
+  pos: phrase
+  form: infinitive
+brillar
+  gloss: to shine
+  pos: verb
+  form: infinitive
+costar
+  gloss: to cost
+  pos: verb
+  form: infinitive
+estar
+  gloss: to be (location or state)
+  pos: verb
+  form: infinitive
+gustar
+  gloss: to please; to like
+  pos: verb
+  form: infinitive
+hacer
+  gloss: to make; to do
+  pos: verb
+  form: infinitive
+haber
+  gloss: to have (helper verb); there is/are
+  pos: verb
+  form: infinitive
+llevar
+  gloss: to wear; to carry
+  pos: verb
+  form: infinitive
+querer
+  gloss: to want
+  pos: verb
+  form: infinitive
+regalar
+  gloss: to give (as a gift)
+  pos: verb
+  form: infinitive
+ser
+  gloss: to be
+  pos: verb
+  form: infinitive
+ir
+  gloss: to go
+  pos: verb
+  form: infinitive
+volver
+  gloss: to go back; to return
+  pos: verb
+  form: infinitive
+decidir
+  gloss: to decide
+  pos: verb
+  form: infinitive
+dejar
+  gloss: to leave; to quit
+  pos: verb
+  form: infinitive
+echar
+  gloss: to throw; to put
+  pos: verb
+  form: infinitive
+emocionar
+  gloss: to excite; to move (emotionally)
+  pos: verb
+  form: infinitive
+emprender
+  gloss: to start (a business); to take on
+  pos: verb
+  form: infinitive
+intentar
+  gloss: to try
+  pos: verb
+  form: infinitive
+parecer
+  gloss: to seem
+  pos: verb
+  form: infinitive
+saber
+  gloss: to know
+  pos: verb
+  form: infinitive
+salir
+  gloss: to go out; to turn out
+  pos: verb
+  form: infinitive
+seguir
+  gloss: to keep (doing); to follow
+  pos: verb
+  form: infinitive
+tener
+  gloss: to have
+  pos: verb
+  form: infinitive
+trabajar
+  gloss: to work
+  pos: verb
+  form: infinitive
+ver
+  gloss: to see
+  pos: verb
+  form: infinitive
+vivir
+  gloss: to live
+  pos: verb
+  form: infinitive
+armar
+  gloss: to arm; to put together
+  pos: verb
+  form: infinitive
+contar
+  gloss: to tell; to count
+  pos: verb
+  form: infinitive
+preguntar
+  gloss: to ask
+  pos: verb
+  form: infinitive
+sentir
+  gloss: to feel
+  pos: verb
+  form: infinitive
+tomar
+  gloss: to take; to have (food or drink)
+  pos: verb
+  form: infinitive
+llamar
+  gloss: to call
+  pos: verb
+  form: infinitive

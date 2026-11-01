@@ -1,6 +1,6 @@
 import { lexicon } from '../content';
 import { texts } from '../data/texts';
-import type { LearnerState, PartOfSpeech, Sense, Target, Text, WordStatus } from '../types';
+import { FORM_PERSONS, TENSES, type LearnerState, type PartOfSpeech, type Sense, type Target, type Text, type VerbForm, type WordStatus } from '../types';
 import { gradeTarget } from './gradeTarget';
 import { parseMarkup, plainText, type Segment } from './markup';
 import { tokenize } from './tokenize';
@@ -61,11 +61,14 @@ function markedSentences(es: string): string[] {
 }
 
 const occurrences = new Map<string, Occurrence[]>();
+/** Terms that appear as their own segment, not only inside a bracketed phrase. */
+const standalone = new Set<string>();
 for (const text of texts) {
   for (const para of [...text.story, ...text.retelling.paragraphs]) {
     for (const sentence of markedSentences(para.es)) {
       for (const seg of parseMarkup(sentence)) {
         if (seg.kind !== 'term') continue;
+        standalone.add(seg.key);
         // A phrase counts for itself and for each word in it ("armé" in "me armé de valor").
         const keys = [seg.key, ...(seg.phrase ? tokenize(seg.text).filter((t) => t.kind === 'word').map((t) => t.key) : [])];
         for (const key of keys) {
@@ -139,6 +142,90 @@ export function missedTerms(state: LearnerState): Set<string> {
   return missed;
 }
 
+// ---------- Grouping by dictionary form ----------
+
+/**
+ * The dictionary form a term is filed under: "voy" → "ir", "le gusta" →
+ * "gustar". Only when the lexicon has an entry for it, so a plural like
+ * "flores" (lemma "flor", no entry) stays on its own.
+ */
+export function groupKeyOf(term: string): string {
+  const lemma = lexicon[term]?.senses[0]?.lemma;
+  return lemma && lexicon[lemma] ? lemma : term;
+}
+
+/** Every lexicon term filed under each dictionary form. */
+const members = new Map<string, string[]>();
+for (const term of Object.keys(lexicon)) {
+  if (lexicon[term].name) continue;
+  const key = groupKeyOf(term);
+  members.set(key, [...(members.get(key) ?? []), term]);
+}
+
+const TENSE_LABEL: Partial<Record<VerbForm['tense'], string>> = {
+  preterite: 'preterite (indefinido)',
+  imperfect: 'imperfect (imperfecto)',
+  'present perfect': 'present perfect (pretérito perfecto)',
+  'present subjunctive': 'present subjunctive (subjuntivo)',
+};
+
+/** "yo · preterite (indefinido)" */
+export function formLabel(form: VerbForm): string {
+  return [form.person, TENSE_LABEL[form.tense] ?? form.tense].filter(Boolean).join(' · ');
+}
+
+function formOrder(f?: VerbForm): number {
+  if (!f) return 999;
+  return TENSES.indexOf(f.tense) * 10 + (f.person ? FORM_PERSONS.indexOf(f.person) + 1 : 0);
+}
+
+/** One form of a dictionary word, with its own status. */
+export interface BankForm {
+  key: string;
+  en: string;
+  form?: VerbForm;
+  /** "new" for forms met in a reading but not saved yet */
+  status: WordStatus;
+  missed: boolean;
+  addedAt: number;
+}
+
+/** A sentence for the detail panel, with the form it shows. */
+export interface FormContext extends Context {
+  formKey: string;
+  form?: VerbForm;
+}
+
+/**
+ * Up to `limit` sentences for a group, chosen to show the most variety:
+ * first one sentence per tense, then one per person, then the rest.
+ */
+export function groupContexts(forms: BankForm[], limit = 4): FormContext[] {
+  const pool: FormContext[] = [];
+  for (const f of forms) {
+    for (const c of contextsFor(f.key, 99)) {
+      if (!pool.some((p) => p.sentence === c.sentence)) pool.push({ ...c, formKey: f.key, form: f.form });
+    }
+  }
+  const picked: FormContext[] = [];
+  const passes: ((c: FormContext) => string)[] = [
+    (c) => c.form?.tense ?? c.formKey,
+    (c) => `${c.form?.tense ?? c.formKey}|${c.form?.person ?? ''}`,
+    (c) => c.sentence,
+  ];
+  for (const keyOf of passes) {
+    const seen = new Set(picked.map(keyOf));
+    for (const c of pool) {
+      if (picked.length >= limit) return picked;
+      if (picked.includes(c) || seen.has(keyOf(c))) continue;
+      picked.push(c);
+      seen.add(keyOf(c));
+    }
+  }
+  return picked;
+}
+
+// ---------- The bank ----------
 // ---------- The bank ----------
 
 export function wordBank(state: LearnerState): BankEntry[] {
@@ -182,4 +269,86 @@ export function recentEntries(state: LearnerState, n = 10): BankEntry[] {
   return wordBank(state)
     .sort((a, b) => b.addedAt - a.addedAt)
     .slice(0, n);
+}
+
+/** A word bank row: a dictionary form and the forms of it the learner has met. */
+export interface BankGroup {
+  key: string;
+  es: string;
+  en: string;
+  pos: PartOfSpeech[];
+  /** Senses, for a group that is just one word */
+  senses: Sense[];
+  /** Known only when every form is known, so the bank never overstates what the learner knows */
+  status: Exclude<WordStatus, 'new'>;
+  forms: BankForm[];
+  known: number;
+  addedAt: number;
+  levels: string[];
+  bands: LevelBand[];
+  missed: boolean;
+  userPhrase: boolean;
+}
+
+/** The word bank grouped by dictionary form. */
+export function bankGroups(state: LearnerState): BankGroup[] {
+  const saved = wordBank(state);
+  const byGroup = new Map<string, BankEntry[]>();
+  for (const e of saved) {
+    const key = e.userPhrase ? e.key : groupKeyOf(e.key);
+    byGroup.set(key, [...(byGroup.get(key) ?? []), e]);
+  }
+
+  const groups: BankGroup[] = [];
+  for (const [key, entries] of byGroup) {
+    const head = lexicon[key];
+    if (entries[0].userPhrase) {
+      const e = entries[0];
+      groups.push({
+        ...e,
+        forms: [{ key: e.key, en: e.en, status: e.status, missed: e.missed, addedAt: e.addedAt }],
+        known: e.status === 'known' ? 1 : 0,
+      });
+      continue;
+    }
+    // Forms: the saved ones, plus forms met in a reading but not saved yet.
+    const keys = (members.get(key) ?? [key]).filter(
+      (k) => entries.some((e) => e.key === k) || standalone.has(k),
+    );
+    const forms: BankForm[] = keys
+      .map((k) => {
+        const e = entries.find((x) => x.key === k);
+        const sense = lexicon[k]?.senses[0];
+        return {
+          key: k,
+          en: sense?.gloss ?? '—',
+          form: sense?.form,
+          status: e?.status ?? state.words[k]?.status ?? 'new',
+          missed: e?.missed ?? false,
+          addedAt: e?.addedAt ?? 0,
+        };
+      })
+      .sort((a, b) => formOrder(a.form) - formOrder(b.form) || a.key.localeCompare(b.key, 'es'));
+    const levels = [...new Set(entries.flatMap((e) => e.levels).concat(keys.flatMap((k) => contextsFor(k, 99).map((c) => c.level))))].sort();
+    const known = forms.filter((f) => f.status === 'known').length;
+    const senses = head?.senses ?? entries[0].senses;
+    groups.push({
+      key,
+      es: key,
+      en: senses[0]?.gloss ?? entries[0].en,
+      pos: head
+        ? [...new Set(head.senses.map((s) => s.pos).filter((p): p is PartOfSpeech => !!p))]
+        : [...new Set(entries.flatMap((e) => e.pos))],
+      senses,
+      status: known === forms.length ? 'known' : 'learning',
+      forms,
+      known,
+      addedAt: Math.max(...entries.map((e) => e.addedAt)),
+      levels,
+      bands: [...new Set(levels.map(levelBand))],
+      missed: entries.some((e) => e.missed),
+      userPhrase: false,
+    });
+  }
+  return groups;
 }

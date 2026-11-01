@@ -3,7 +3,7 @@ import Collapsible from '../components/Collapsible';
 import RecentWords from '../components/RecentWords';
 import { texts } from '../data/texts';
 import { statusCounts } from '../lib/textWords';
-import { wordBank } from '../lib/wordBank';
+import { bankGroups } from '../lib/wordBank';
 import { useLearner } from '../store/learnerStore';
 import type { LessonStage } from '../types';
 import styles from './Library.module.css';
@@ -18,7 +18,7 @@ const STAGE_LABEL: Record<LessonStage, string> = {
 
 export default function Library() {
   const { state } = useLearner();
-  const bank = wordBank(state);
+  const bank = bankGroups(state);
   const learning = bank.filter((e) => e.status === 'learning').length;
 
   return (
