@@ -611,7 +611,7 @@ puestos
   gloss: stalls; stands
   pos: noun
   lemma: puesto
-  sense jobs: jobs; positions
+  sense job: jobs; positions
     lemma: puesto
 quiere
   gloss: wants

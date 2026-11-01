@@ -28,6 +28,8 @@ export interface Context {
   level: string;
   /** Marked-up Spanish sentence */
   sentence: string;
+  /** Which sense of the term the sentence uses ("default" unless marked) */
+  sense: string;
 }
 
 export interface BankEntry {
@@ -53,6 +55,7 @@ export interface BankEntry {
 interface Occurrence {
   text: Text;
   sentence: string;
+  sense: string;
 }
 
 /** Split marked-up text into sentences without breaking inside [brackets]. */
@@ -70,10 +73,16 @@ for (const text of texts) {
         if (seg.kind !== 'term') continue;
         standalone.add(seg.key);
         // A phrase counts for itself and for each word in it ("armé" in "me armé de valor").
-        const keys = [seg.key, ...(seg.phrase ? tokenize(seg.text).filter((t) => t.kind === 'word').map((t) => t.key) : [])];
-        for (const key of keys) {
+        const inner = seg.phrase ? tokenize(seg.text).filter((t) => t.kind === 'word').map((t) => t.key) : [];
+        const phraseWords = lexicon[seg.key]?.words ?? [];
+        const uses: [string, string][] = [
+          [seg.key, seg.sense ?? 'default'],
+          // a word inside a phrase has the sense the phrase lists for it
+          ...inner.map((k): [string, string] => [k, phraseWords.find((w) => w.word === k)?.sense ?? 'default']),
+        ];
+        for (const [key, sense] of uses) {
           const list = occurrences.get(key) ?? [];
-          if (!list.some((o) => o.sentence === sentence)) list.push({ text, sentence });
+          if (!list.some((o) => o.sentence === sentence)) list.push({ text, sentence, sense });
           occurrences.set(key, list);
         }
       }
@@ -89,7 +98,7 @@ export function contextsFor(key: string, limit = 4): Context[] {
       [...text.story, ...text.retelling.paragraphs]
         .flatMap((p) => markedSentences(p.es))
         .filter((s) => normalize(plainText(s)).includes(normalize(key)))
-        .map((sentence) => ({ text, sentence })),
+        .map((sentence) => ({ text, sentence, sense: 'default' })),
     );
   }
   return found.slice(0, limit).map((o) => ({
@@ -97,6 +106,7 @@ export function contextsFor(key: string, limit = 4): Context[] {
     textTitle: o.text.title,
     level: o.text.level,
     sentence: o.sentence,
+    sense: o.sense,
   }));
 }
 
@@ -190,29 +200,47 @@ export interface BankForm {
   addedAt: number;
 }
 
-/** A sentence for the detail panel, with the form it shows. */
+/** A sentence for the detail panel, with the form and meaning it shows. */
 export interface FormContext extends Context {
   formKey: string;
   form?: VerbForm;
+  /** The meaning used in this sentence, when the word has more than one */
+  gloss: string;
+}
+
+/** The headword's sense matching a form's sense ("puestos:job" → "puesto:job"). */
+function groupSense(groupKey: string, formKey: string, senseId: string): Sense | undefined {
+  return (
+    lexicon[groupKey]?.senses.find((s) => s.id === senseId) ??
+    lexicon[formKey]?.senses.find((s) => s.id === senseId)
+  );
 }
 
 /**
- * Up to `limit` sentences for a group, chosen to show the most variety:
- * first one sentence per tense, then one per person, then the rest.
+ * Sentences for a group, chosen for variety. Verbs: one per tense, then one
+ * per person. Nouns and adjectives: one per form (singular, plural) so the
+ * words around them can be compared. Then one per meaning not shown yet.
  */
-export function groupContexts(forms: BankForm[], limit = 4): FormContext[] {
+export function groupContexts(groupKey: string, forms: BankForm[], limit = 4): FormContext[] {
   const pool: FormContext[] = [];
   for (const f of forms) {
     for (const c of contextsFor(f.key, 99)) {
-      if (!pool.some((p) => p.sentence === c.sentence)) pool.push({ ...c, formKey: f.key, form: f.form });
+      if (pool.some((p) => p.sentence === c.sentence)) continue;
+      const sense = groupSense(groupKey, f.key, c.sense);
+      pool.push({ ...c, formKey: f.key, form: f.form, gloss: sense?.gloss ?? f.en });
     }
   }
+  // Main meaning first, so singular and plural are compared with the same meaning.
+  pool.sort((a, b) => Number(a.sense !== 'default') - Number(b.sense !== 'default'));
+  const verb = forms.some((f) => f.form);
+  const passes: ((c: FormContext) => string)[] = verb
+    ? [
+        (c) => c.form?.tense ?? c.formKey,
+        (c) => `${c.form?.tense ?? c.formKey}|${c.form?.person ?? ''}`,
+        (c) => c.gloss,
+      ]
+    : [(c) => c.formKey, (c) => c.gloss];
   const picked: FormContext[] = [];
-  const passes: ((c: FormContext) => string)[] = [
-    (c) => c.form?.tense ?? c.formKey,
-    (c) => `${c.form?.tense ?? c.formKey}|${c.form?.person ?? ''}`,
-    (c) => c.sentence,
-  ];
   for (const keyOf of passes) {
     const seen = new Set(picked.map(keyOf));
     for (const c of pool) {
@@ -223,6 +251,26 @@ export function groupContexts(forms: BankForm[], limit = 4): FormContext[] {
     }
   }
   return picked;
+}
+
+/** "puestos" → "plural", for the subtitle of a noun or adjective group. */
+export function inflectionLabel(head: string, form: string): string {
+  if (form === `${head}s` || form === `${head}es` || (head.endsWith('z') && form === `${head.slice(0, -1)}ces`)) {
+    return 'plural';
+  }
+  return 'also';
+}
+
+/** Senses of a group that appear in the readings, main sense first. */
+function seenSenses(groupKey: string, forms: BankForm[]): Sense[] {
+  const out: Sense[] = [];
+  for (const f of forms) {
+    for (const c of contextsFor(f.key, 99)) {
+      const sense = groupSense(groupKey, f.key, c.sense);
+      if (sense && !out.some((s) => s.gloss === sense.gloss)) out.push(sense);
+    }
+  }
+  return out.sort((a, b) => Number(a.id !== 'default') - Number(b.id !== 'default'));
 }
 
 // ---------- The bank ----------
@@ -277,8 +325,10 @@ export interface BankGroup {
   es: string;
   en: string;
   pos: PartOfSpeech[];
-  /** Senses, for a group that is just one word */
+  /** Meanings: all of them for a word, or the ones seen in readings for a group */
   senses: Sense[];
+  /** Verb groups list each form with its own status; nouns and adjectives don't */
+  verb: boolean;
   /** Known only when every form is known, so the bank never overstates what the learner knows */
   status: Exclude<WordStatus, 'new'>;
   forms: BankForm[];
@@ -306,6 +356,7 @@ export function bankGroups(state: LearnerState): BankGroup[] {
       const e = entries[0];
       groups.push({
         ...e,
+        verb: false,
         forms: [{ key: e.key, en: e.en, status: e.status, missed: e.missed, addedAt: e.addedAt }],
         known: e.status === 'known' ? 1 : 0,
       });
@@ -331,7 +382,10 @@ export function bankGroups(state: LearnerState): BankGroup[] {
       .sort((a, b) => formOrder(a.form) - formOrder(b.form) || a.key.localeCompare(b.key, 'es'));
     const levels = [...new Set(entries.flatMap((e) => e.levels).concat(keys.flatMap((k) => contextsFor(k, 99).map((c) => c.level))))].sort();
     const known = forms.filter((f) => f.status === 'known').length;
-    const senses = head?.senses ?? entries[0].senses;
+    const verb = forms.some((f) => f.form);
+    // A group shows the meanings met in readings ("puesto": stall, and job from "puestos").
+    const seen = forms.length > 1 || forms[0]?.key !== key ? seenSenses(key, forms) : [];
+    const senses = seen.length ? seen : (head?.senses ?? entries[0].senses);
     groups.push({
       key,
       es: key,
@@ -340,6 +394,7 @@ export function bankGroups(state: LearnerState): BankGroup[] {
         ? [...new Set(head.senses.map((s) => s.pos).filter((p): p is PartOfSpeech => !!p))]
         : [...new Set(entries.flatMap((e) => e.pos))],
       senses,
+      verb,
       status: known === forms.length ? 'known' : 'learning',
       forms,
       known,

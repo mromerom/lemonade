@@ -6,10 +6,12 @@ import {
   formLabel,
   groupContexts,
   groupKeyOf,
+  inflectionLabel,
   highlightSegments,
   LEVEL_BAND_LABEL,
   levelBand,
   type BankGroup,
+  type FormContext,
   type LevelBand,
 } from '../lib/wordBank';
 import { useDismiss } from '../lib/useDismiss';
@@ -244,7 +246,7 @@ export default function WordBank() {
                     <span className={`${styles.status} ${styles[e.status]}`}>{e.status}</span>
                     <span className={styles.metaText}>
                       {[
-                        e.forms.length > 1 ? `${e.known} of ${e.forms.length} forms known` : '',
+                        e.verb && e.forms.length > 1 ? `${e.known} of ${e.forms.length} forms known` : '',
                         e.pos.join(', '),
                         e.levels.join(', '),
                       ]
@@ -320,9 +322,19 @@ function Detail({
   onStatus: (key: string, s: 'learning' | 'known') => void;
 }) {
   const { state } = useLearner();
-  const contexts = groupContexts(entry.forms);
-  // A plain word: one form, filed under itself. Otherwise list the forms.
+  const contexts = groupContexts(entry.key, entry.forms);
+  // A plain word: one form, filed under itself.
   const single = entry.forms.length === 1 && entry.forms[0].key === entry.key ? entry.forms[0] : null;
+  // Verbs list each form with its own status. Nouns and adjectives get a
+  // subtitle ("plural: puestos") and one status for all their forms.
+  const listForms = !single && entry.verb;
+  const others = entry.forms.filter((f) => f.key !== entry.key);
+  const manyMeanings = entry.senses.length > 1;
+  // "puestos, “jobs”" or "armé, yo · preterite (indefinido)"
+  const sourceLabel = (c: FormContext) =>
+    [single ? '' : c.formKey, !single && c.form ? formLabel(c.form) : '', manyMeanings ? `“${c.gloss}”` : '']
+      .filter(Boolean)
+      .join(', ');
 
   return (
     <div className={styles.card}>
@@ -331,9 +343,19 @@ function Detail({
           <p className={styles.cardTerm} lang="es">
             {entry.es}
           </p>
-          {!single && (
+          {listForms && (
             <p className={styles.cardLemma}>
               {entry.known} of {entry.forms.length} {entry.forms.length === 1 ? 'form' : 'forms'} known
+            </p>
+          )}
+          {!single && !listForms && others.length > 0 && (
+            <p className={styles.cardLemma}>
+              {others.map((f, i) => (
+                <span key={f.key}>
+                  {i > 0 && ' · '}
+                  {inflectionLabel(entry.key, f.key)}: <span lang="es">{f.key}</span>
+                </span>
+              ))}
             </p>
           )}
         </div>
@@ -346,11 +368,11 @@ function Detail({
         <p className={styles.cardGloss}>{entry.en || 'No meaning saved yet.'}</p>
       ) : (
         <ul className={styles.senses}>
-          {(single ? entry.senses : entry.senses.slice(0, 1)).map((s, i) => (
+          {(listForms ? entry.senses.slice(0, 1) : entry.senses).map((s, i) => (
             <li key={s.id}>
               <span className={i === 0 ? styles.cardGloss : styles.senseGloss}>{s.gloss}</span>
               {s.pos && <span className={styles.pos}>{s.pos}</span>}
-              {single && s.note && <span className={styles.senseNote}>{s.note}</span>}
+              {!listForms && s.note && <span className={styles.senseNote}>{s.note}</span>}
             </li>
           ))}
         </ul>
@@ -358,11 +380,15 @@ function Detail({
 
       {entry.missed && <p className={styles.missedNote}>You missed this in a reading’s questions. It will come back for review.</p>}
 
-      {single ? (
-        <StatusButtons status={single.status} label="Word status" onStatus={(s) => onStatus(single.key, s)} />
+      {!listForms ? (
+        <StatusButtons
+          status={entry.status}
+          label="Word status"
+          onStatus={(s) => entry.forms.forEach((f) => onStatus(f.key, s))}
+        />
       ) : (
         <div className={styles.cardSection}>
-          <p className={styles.cardLabel}>Forms you’ve met</p>
+          <p className={styles.cardLabel}>Forms you’ve seen</p>
           <ul className={styles.forms}>
             {entry.forms.map((f) => (
               <li key={f.key} className={styles.form}>
@@ -399,11 +425,7 @@ function Detail({
                   )}
                 </p>
                 <p className={styles.source}>
-                  {!single && c.form && (
-                    <>
-                      <span lang="es">{c.formKey}</span>, {formLabel(c.form)} ·{' '}
-                    </>
-                  )}
+                  {sourceLabel(c) && <>{sourceLabel(c)} · </>}
                   <Link to={`/read/${c.textId}${state.lessons[c.textId]?.stage === 'done' ? '?view=text' : ''}`}>
                     {c.textTitle}
                   </Link>{' '}
