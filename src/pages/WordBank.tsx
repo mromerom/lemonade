@@ -329,6 +329,7 @@ function Detail({
   // subtitle ("plural: puestos") and one status for all their forms.
   const listForms = !single && entry.verb;
   const others = entry.forms.filter((f) => f.key !== entry.key);
+  const meanings = entry.userPhrase ? [] : listForms ? entry.senses.slice(0, 1) : entry.senses;
   const manyMeanings = entry.senses.length > 1;
   // "puestos, “jobs”" or "armé, yo · preterite (indefinido)"
   const sourceLabel = (c: FormContext) =>
@@ -364,19 +365,22 @@ function Detail({
         </button>
       </div>
 
-      {entry.userPhrase ? (
-        <p className={styles.cardGloss}>{entry.en || 'No meaning saved yet.'}</p>
-      ) : (
-        <ul className={styles.senses}>
-          {(listForms ? entry.senses.slice(0, 1) : entry.senses).map((s, i) => (
-            <li key={s.id}>
-              <span className={i === 0 ? styles.cardGloss : styles.senseGloss}>{s.gloss}</span>
-              {s.pos && <span className={styles.pos}>{s.pos}</span>}
-              {!listForms && s.note && <span className={styles.senseNote}>{s.note}</span>}
-            </li>
-          ))}
-        </ul>
-      )}
+      <div className={styles.cardSection}>
+        <p className={styles.cardLabel}>{meanings.length > 1 ? 'Meanings' : 'Meaning'}</p>
+        {entry.userPhrase ? (
+          <p className={styles.cardGloss}>{entry.en || 'No meaning saved yet.'}</p>
+        ) : (
+          <ul className={styles.senses}>
+            {meanings.map((s) => (
+              <li key={s.id}>
+                <span className={styles.senseGloss}>{s.gloss}</span>
+                {s.pos && <span className={styles.pos}>{s.pos}</span>}
+                {!listForms && s.note && <span className={styles.senseNote}>{s.note}</span>}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
 
       {entry.missed && <p className={styles.missedNote}>You missed this in a reading’s questions. It will come back for review.</p>}
 
