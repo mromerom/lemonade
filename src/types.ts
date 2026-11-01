@@ -168,7 +168,10 @@ export interface Text {
 export type WordStatus = 'new' | 'learning' | 'known';
 
 export interface WordRecord {
+  /** Status of the main meaning (sense "default") */
   status: WordStatus;
+  /** Status of each other meaning, by sense id ("puestos:job" can be learning while "puestos" is known) */
+  senseStatus?: Record<string, WordStatus>;
   /** Senses of this term the learner has looked up, across all readings */
   senses?: string[];
   lookups: number;

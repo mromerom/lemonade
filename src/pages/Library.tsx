@@ -19,7 +19,7 @@ const STAGE_LABEL: Record<LessonStage, string> = {
 export default function Library() {
   const { state } = useLearner();
   const bank = bankGroups(state);
-  const learning = bank.filter((e) => e.status === 'learning').length;
+  const learning = bank.filter((e) => e.status !== 'known').length;
 
   return (
     <>

@@ -4,13 +4,14 @@ import { useLearner } from '../store/learnerStore';
 import {
   bankGroups,
   formLabel,
-  groupContexts,
+  meaningContexts,
   groupKeyOf,
   inflectionLabel,
   highlightSegments,
   LEVEL_BAND_LABEL,
   levelBand,
   type BankGroup,
+  type BankMeaning,
   type FormContext,
   type LevelBand,
 } from '../lib/wordBank';
@@ -73,7 +74,7 @@ export default function WordBank() {
         (!unknownOnly || e.status !== 'known') &&
         (types.size === 0 || e.pos.some((p) => types.has(p))) &&
         (!q ||
-          [e.es, e.en, ...e.forms.flatMap((f) => [f.key, f.en])].some((t) => t.toLocaleLowerCase().includes(q))),
+          [e.es, e.en, ...e.forms].some((t) => t.toLocaleLowerCase().includes(q))),
     );
     if (sort === 'az') {
       const lang = direction === 'es-en' ? 'es' : 'en';
@@ -123,7 +124,7 @@ export default function WordBank() {
         </Link>
         <h1 className={styles.title}>Word bank</h1>
         <p className={styles.subtitle}>
-          {all.length} words and phrases · {all.filter((e) => e.status === 'learning').length} still learning
+          {all.length} words and phrases · {all.filter((e) => e.status !== 'known').length} still learning
         </p>
       </header>
 
@@ -246,7 +247,7 @@ export default function WordBank() {
                     <span className={`${styles.status} ${styles[e.status]}`}>{e.status}</span>
                     <span className={styles.metaText}>
                       {[
-                        e.verb && e.forms.length > 1 ? `${e.known} of ${e.forms.length} forms known` : '',
+                        rowProgress(e),
                         e.pos.join(', '),
                         e.levels.join(', '),
                       ]
@@ -277,9 +278,10 @@ export default function WordBank() {
         >
           {selected ? (
             <Detail
+              key={selected.key}
               entry={selected}
               onClose={() => select(null)}
-              onStatus={(key, status) => dispatch({ type: 'setWordStatus', key, status })}
+              onStatus={(key, sense, status) => dispatch({ type: 'setWordStatus', key, sense, status })}
             />
           ) : (
             <p className={styles.panelEmpty}>Pick a word to see the sentences you met it in.</p>
@@ -288,6 +290,15 @@ export default function WordBank() {
       </div>
     </div>
   );
+}
+
+/** "2 of 4 forms known" for a verb, "1 of 2 meanings known" for a word with several meanings. */
+function rowProgress(e: BankGroup): string {
+  const saved = e.meanings.filter((m) => m.status !== 'new');
+  if (saved.length > 1) return `${saved.filter((m) => m.status === 'known').length} of ${saved.length} meanings known`;
+  const m = e.meanings[0];
+  if (e.verb && m && m.forms.length > 1) return `${m.known} of ${m.forms.length} forms known`;
+  return '';
 }
 
 function StatusButtons({
@@ -312,89 +323,36 @@ function StatusButtons({
   );
 }
 
-function Detail({
+type OnStatus = (key: string, sense: string, s: 'learning' | 'known') => void;
+
+/** What one meaning holds: its status (or each verb form's), then its example sentences. */
+function MeaningBody({
   entry,
-  onClose,
+  meaning,
   onStatus,
+  showNote,
 }: {
   entry: BankGroup;
-  onClose: () => void;
-  onStatus: (key: string, s: 'learning' | 'known') => void;
+  meaning: BankMeaning;
+  onStatus: OnStatus;
+  showNote: boolean;
 }) {
   const { state } = useLearner();
-  const contexts = groupContexts(entry.key, entry.forms);
-  // A plain word: one form, filed under itself.
-  const single = entry.forms.length === 1 && entry.forms[0].key === entry.key ? entry.forms[0] : null;
-  // Verbs list each form with its own status. Nouns and adjectives get a
-  // subtitle ("plural: puestos") and one status for all their forms.
-  const listForms = !single && entry.verb;
-  const others = entry.forms.filter((f) => f.key !== entry.key);
-  const meanings = entry.userPhrase ? [] : listForms ? entry.senses.slice(0, 1) : entry.senses;
-  const manyMeanings = entry.senses.length > 1;
-  // "puestos, “jobs”" or "armé, yo · preterite (indefinido)"
-  const sourceLabel = (c: FormContext) =>
-    [single ? '' : c.formKey, !single && c.form ? formLabel(c.form) : '', manyMeanings ? `“${c.gloss}”` : '']
-      .filter(Boolean)
-      .join(', ');
+  const contexts = meaningContexts(meaning);
+  const single = meaning.forms.length === 1 && meaning.forms[0].key === entry.key;
+  const listForms = entry.verb && !single;
+  const label = (c: FormContext) => (single ? '' : [c.formKey, c.form ? formLabel(c.form) : ''].filter(Boolean).join(', '));
 
   return (
-    <div className={styles.card}>
-      <div className={styles.cardHead}>
-        <div>
-          <p className={styles.cardTerm} lang="es">
-            {entry.es}
-          </p>
-          {listForms && (
-            <p className={styles.cardLemma}>
-              {entry.known} of {entry.forms.length} {entry.forms.length === 1 ? 'form' : 'forms'} known
-            </p>
-          )}
-          {!single && !listForms && others.length > 0 && (
-            <p className={styles.cardLemma}>
-              {others.map((f, i) => (
-                <span key={f.key}>
-                  {i > 0 && ' · '}
-                  {inflectionLabel(entry.key, f.key)}: <span lang="es">{f.key}</span>
-                </span>
-              ))}
-            </p>
-          )}
-        </div>
-        <button type="button" className={styles.close} aria-label="Close" onClick={onClose}>
-          ×
-        </button>
-      </div>
+    <>
+      {showNote && meaning.note && <p className={styles.senseNote}>{meaning.note}</p>}
+      {meaning.status === 'new' && <p className={styles.formNew}>Seen in a reading, not saved yet.</p>}
 
-      <div className={styles.cardSection}>
-        <p className={styles.cardLabel}>{meanings.length > 1 ? 'Meanings' : 'Meaning'}</p>
-        {entry.userPhrase ? (
-          <p className={styles.cardGloss}>{entry.en || 'No meaning saved yet.'}</p>
-        ) : (
-          <ul className={styles.senses}>
-            {meanings.map((s) => (
-              <li key={s.id}>
-                <span className={styles.senseGloss}>{s.gloss}</span>
-                {s.pos && <span className={styles.pos}>{s.pos}</span>}
-                {!listForms && s.note && <span className={styles.senseNote}>{s.note}</span>}
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-
-      {entry.missed && <p className={styles.missedNote}>You missed this in a reading’s questions. It will come back for review.</p>}
-
-      {!listForms ? (
-        <StatusButtons
-          status={entry.status}
-          label="Word status"
-          onStatus={(s) => entry.forms.forEach((f) => onStatus(f.key, s))}
-        />
-      ) : (
-        <div className={styles.cardSection}>
+      {listForms ? (
+        <div className={styles.subSection}>
           <p className={styles.cardLabel}>Forms you’ve seen</p>
           <ul className={styles.forms}>
-            {entry.forms.map((f) => (
+            {meaning.forms.map((f) => (
               <li key={f.key} className={styles.form}>
                 <div className={styles.formText}>
                   <span className={styles.formEs} lang="es">
@@ -409,15 +367,21 @@ function Detail({
                   small
                   status={f.status}
                   label={`Status of ${f.key}`}
-                  onStatus={(s) => onStatus(f.key, s)}
+                  onStatus={(s) => onStatus(f.key, meaning.id, s)}
                 />
               </li>
             ))}
           </ul>
         </div>
+      ) : (
+        <StatusButtons
+          status={meaning.status}
+          label={`Status of “${meaning.gloss}”`}
+          onStatus={(s) => meaning.forms.forEach((f) => onStatus(f.key, meaning.id, s))}
+        />
       )}
 
-      <div className={styles.cardSection}>
+      <div className={styles.subSection}>
         <p className={styles.cardLabel}>Where you saw it</p>
         {contexts.length ? (
           <ul className={styles.contexts}>
@@ -429,7 +393,7 @@ function Detail({
                   )}
                 </p>
                 <p className={styles.source}>
-                  {sourceLabel(c) && <>{sourceLabel(c)} · </>}
+                  {label(c) && <>{label(c)} · </>}
                   <Link to={`/read/${c.textId}${state.lessons[c.textId]?.stage === 'done' ? '?view=text' : ''}`}>
                     {c.textTitle}
                   </Link>{' '}
@@ -440,6 +404,93 @@ function Detail({
           </ul>
         ) : (
           <p className={styles.noContext}>Not in a reading yet.</p>
+        )}
+      </div>
+    </>
+  );
+}
+
+function Detail({ entry, onClose, onStatus }: { entry: BankGroup; onClose: () => void; onStatus: OnStatus }) {
+  const { meanings } = entry;
+  // Open the first meaning not known yet; the first one if all are known.
+  const [open, setOpen] = useState<string | undefined>(() => (meanings.find((m) => m.status !== 'known') ?? meanings[0])?.id);
+  const others = entry.forms.filter((f) => f !== entry.key);
+  const one = meanings.length === 1 ? meanings[0] : null;
+
+  return (
+    <div className={styles.card}>
+      <div className={styles.cardHead}>
+        <div>
+          <p className={styles.cardTerm} lang="es">
+            {entry.es}
+          </p>
+          {entry.verb
+            ? one &&
+              one.forms.length > 1 && (
+                <p className={styles.cardLemma}>
+                  {one.known} of {one.forms.length} forms known
+                </p>
+              )
+            : others.length > 0 && (
+                <p className={styles.cardLemma}>
+                  {others.map((f, i) => (
+                    <span key={f}>
+                      {i > 0 && ' · '}
+                      {inflectionLabel(entry.key, f)}: <span lang="es">{f}</span>
+                    </span>
+                  ))}
+                </p>
+              )}
+        </div>
+        <button type="button" className={styles.close} aria-label="Close" onClick={onClose}>
+          ×
+        </button>
+      </div>
+
+      {entry.missed && <p className={styles.missedNote}>You missed this in a reading’s questions. It will come back for review.</p>}
+
+      <div className={styles.cardSection}>
+        <p className={styles.cardLabel}>{meanings.length > 1 ? 'Meanings' : 'Meaning'}</p>
+        {one ? (
+          <>
+            <p className={styles.senseLine}>
+              <span className={styles.senseGloss}>{one.gloss || 'No meaning saved yet.'}</span>
+              {one.pos && <span className={styles.pos}>{one.pos}</span>}
+            </p>
+            <MeaningBody entry={entry} meaning={one} onStatus={onStatus} showNote />
+          </>
+        ) : (
+          <ul className={styles.accordion}>
+            {meanings.map((m) => {
+              const expanded = open === m.id;
+              const panelId = `meaning-${entry.key}-${m.id}`;
+              return (
+                <li key={m.id} className={styles.meaning}>
+                  <button
+                    type="button"
+                    className={styles.meaningHead}
+                    aria-expanded={expanded}
+                    aria-controls={panelId}
+                    onClick={() => setOpen(expanded ? undefined : m.id)}
+                  >
+                    <span className={styles.meaningText}>
+                      <span className={styles.senseGloss}>{m.gloss}</span>
+                      {m.pos && <span className={styles.pos}>{m.pos}</span>}
+                    </span>
+                    <span className={`${styles.status} ${styles[m.status]}`}>
+                      {m.status === 'new' ? 'not saved' : m.status}
+                    </span>
+                    <span className={styles.chevron} aria-hidden="true" />
+                  </button>
+                  {expanded && (
+                    <div id={panelId} className={styles.meaningBody}>
+                      <MeaningBody entry={entry} meaning={m} onStatus={onStatus} showNote />
+                    </div>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
         )}
       </div>
     </div>

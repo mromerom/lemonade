@@ -495,3 +495,73 @@
   padding: 0.25rem 0.5rem;
   font-size: 0.75rem;
 }
+
+.mixed {
+  background: linear-gradient(90deg, var(--learning) 50%, var(--surface-2) 50%);
+  color: var(--learning-ink);
+}
+.new {
+  background: transparent;
+  border: 1px dashed var(--border);
+  color: var(--muted);
+}
+.senseLine {
+  margin: 0;
+}
+.subSection {
+  margin-top: 0.9rem;
+}
+
+/* Several meanings: one open at a time */
+.accordion {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--border);
+}
+.meaning {
+  border-bottom: 1px solid var(--border);
+}
+.meaningHead {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.65rem 0.1rem;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.meaningHead:hover .senseGloss {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.meaningText {
+  flex: 1;
+  min-width: 0;
+}
+.chevron {
+  width: 0.5rem;
+  height: 0.5rem;
+  margin: 0 0.2rem 0.2rem 0.1rem;
+  border-right: 2px solid var(--muted);
+  border-bottom: 2px solid var(--muted);
+  transform: rotate(45deg);
+  transition: transform 0.15s ease;
+  flex-shrink: 0;
+}
+.meaningHead[aria-expanded='true'] .chevron {
+  transform: rotate(-135deg);
+  margin-bottom: -0.15rem;
+}
+.meaningBody {
+  padding: 0 0.1rem 0.9rem;
+}
+@media (prefers-reduced-motion: reduce) {
+  .chevron {
+    transition: none;
+  }
+}

@@ -5,6 +5,7 @@ import { gradeTarget } from './gradeTarget';
 import { parseMarkup, plainText, type Segment } from './markup';
 import { tokenize } from './tokenize';
 import { normalize } from './grade';
+import { isSaved, wordStatus } from './textWords';
 
 export type LevelBand = 'beginner' | 'intermediate' | 'advanced';
 
@@ -189,7 +190,7 @@ function formOrder(f?: VerbForm): number {
   return TENSES.indexOf(f.tense) * 10 + (f.person ? FORM_PERSONS.indexOf(f.person) + 1 : 0);
 }
 
-/** One form of a dictionary word, with its own status. */
+/** One form of a dictionary word, in one meaning, with its status in that meaning. */
 export interface BankForm {
   key: string;
   en: string;
@@ -197,15 +198,25 @@ export interface BankForm {
   /** "new" for forms met in a reading but not saved yet */
   status: WordStatus;
   missed: boolean;
-  addedAt: number;
 }
 
-/** A sentence for the detail panel, with the form and meaning it shows. */
+/** One meaning of a dictionary word, with the forms it was seen in. */
+export interface BankMeaning {
+  /** Sense id, shared by the forms ("puesto:job", "puestos:job") */
+  id: string;
+  gloss: string;
+  pos?: PartOfSpeech;
+  note?: string;
+  forms: BankForm[];
+  /** Known when every form is known in this meaning; "new" when none is saved yet */
+  status: WordStatus;
+  known: number;
+}
+
+/** A sentence for the detail panel, with the form it shows. */
 export interface FormContext extends Context {
   formKey: string;
   form?: VerbForm;
-  /** The meaning used in this sentence, when the word has more than one */
-  gloss: string;
 }
 
 /** The headword's sense matching a form's sense ("puestos:job" → "puesto:job"). */
@@ -217,29 +228,22 @@ function groupSense(groupKey: string, formKey: string, senseId: string): Sense |
 }
 
 /**
- * Sentences for a group, chosen for variety. Verbs: one per tense, then one
- * per person. Nouns and adjectives: one per form (singular, plural) so the
- * words around them can be compared. Then one per meaning not shown yet.
+ * Sentences for one meaning, chosen for variety. Verbs: one per tense, then
+ * one per person. Nouns and adjectives: one per form (singular, plural), so
+ * the words around them can be compared.
  */
-export function groupContexts(groupKey: string, forms: BankForm[], limit = 4): FormContext[] {
+export function meaningContexts(meaning: BankMeaning, limit = 4): FormContext[] {
   const pool: FormContext[] = [];
-  for (const f of forms) {
+  for (const f of meaning.forms) {
     for (const c of contextsFor(f.key, 99)) {
-      if (pool.some((p) => p.sentence === c.sentence)) continue;
-      const sense = groupSense(groupKey, f.key, c.sense);
-      pool.push({ ...c, formKey: f.key, form: f.form, gloss: sense?.gloss ?? f.en });
+      if (c.sense !== meaning.id || pool.some((p) => p.sentence === c.sentence)) continue;
+      pool.push({ ...c, formKey: f.key, form: f.form });
     }
   }
-  // Main meaning first, so singular and plural are compared with the same meaning.
-  pool.sort((a, b) => Number(a.sense !== 'default') - Number(b.sense !== 'default'));
-  const verb = forms.some((f) => f.form);
+  const verb = meaning.forms.some((f) => f.form);
   const passes: ((c: FormContext) => string)[] = verb
-    ? [
-        (c) => c.form?.tense ?? c.formKey,
-        (c) => `${c.form?.tense ?? c.formKey}|${c.form?.person ?? ''}`,
-        (c) => c.gloss,
-      ]
-    : [(c) => c.formKey, (c) => c.gloss];
+    ? [(c) => c.form?.tense ?? c.formKey, (c) => `${c.form?.tense ?? c.formKey}|${c.form?.person ?? ''}`]
+    : [(c) => c.formKey];
   const picked: FormContext[] = [];
   for (const keyOf of passes) {
     const seen = new Set(picked.map(keyOf));
@@ -261,27 +265,13 @@ export function inflectionLabel(head: string, form: string): string {
   return 'also';
 }
 
-/** Senses of a group that appear in the readings, main sense first. */
-function seenSenses(groupKey: string, forms: BankForm[]): Sense[] {
-  const out: Sense[] = [];
-  for (const f of forms) {
-    for (const c of contextsFor(f.key, 99)) {
-      const sense = groupSense(groupKey, f.key, c.sense);
-      if (sense && !out.some((s) => s.gloss === sense.gloss)) out.push(sense);
-    }
-  }
-  return out.sort((a, b) => Number(a.id !== 'default') - Number(b.id !== 'default'));
-}
-
-// ---------- The bank ----------
 // ---------- The bank ----------
 
+/** Saved terms, one per form, for the "recently added" row. */
 export function wordBank(state: LearnerState): BankEntry[] {
   const missed = missedTerms(state);
   const keys = new Set<string>([
-    ...Object.entries(state.words)
-      .filter(([, r]) => r.status !== 'new')
-      .map(([k]) => k),
+    ...Object.keys(state.words).filter((k) => isSaved(state, k)),
     ...missed,
     ...Object.keys(state.userPhrases ?? {}),
   ]);
@@ -295,13 +285,14 @@ export function wordBank(state: LearnerState): BankEntry[] {
     const record = state.words[key];
     const levels = [...new Set(contextsFor(key, 99).map((c) => c.level))].sort();
     const senses = entry?.senses ?? [];
+    const statuses = [record?.status, ...Object.values(record?.senseStatus ?? {})].filter((s) => s && s !== 'new');
     entries.push({
       key,
       es: userPhrase?.text ?? key,
       en: userPhrase?.gloss || senses[0]?.gloss || '—',
       senses,
       pos: userPhrase ? ['phrase'] : [...new Set(senses.map((s) => s.pos).filter((p): p is PartOfSpeech => !!p))],
-      status: record?.status === 'known' ? 'known' : 'learning',
+      status: statuses.length && statuses.every((s) => s === 'known') ? 'known' : 'learning',
       addedAt: record?.addedAt ?? userPhrase?.createdAt ?? record?.updatedAt ?? 0,
       levels,
       bands: [...new Set(levels.map(levelBand))],
@@ -319,20 +310,25 @@ export function recentEntries(state: LearnerState, n = 10): BankEntry[] {
     .slice(0, n);
 }
 
-/** A word bank row: a dictionary form and the forms of it the learner has met. */
+export type GroupStatus = 'learning' | 'known' | 'mixed';
+
+/** A word bank row: a dictionary form, its meanings, and the forms of it the learner has seen. */
 export interface BankGroup {
   key: string;
   es: string;
+  /** Every meaning, "stall; stand | job; position" */
   en: string;
   pos: PartOfSpeech[];
-  /** Meanings: all of them for a word, or the ones seen in readings for a group */
-  senses: Sense[];
+  meanings: BankMeaning[];
+  /** Every form, in any meaning */
+  forms: string[];
   /** Verb groups list each form with its own status; nouns and adjectives don't */
   verb: boolean;
-  /** Known only when every form is known, so the bank never overstates what the learner knows */
-  status: Exclude<WordStatus, 'new'>;
-  forms: BankForm[];
-  known: number;
+  /**
+   * Known only when every saved meaning is known, mixed when some are, so
+   * the bank never overstates what the learner knows.
+   */
+  status: GroupStatus;
   addedAt: number;
   levels: string[];
   bands: LevelBand[];
@@ -354,50 +350,76 @@ export function bankGroups(state: LearnerState): BankGroup[] {
     const head = lexicon[key];
     if (entries[0].userPhrase) {
       const e = entries[0];
+      const form: BankForm = { key: e.key, en: e.en, status: e.status, missed: e.missed };
       groups.push({
         ...e,
         verb: false,
-        forms: [{ key: e.key, en: e.en, status: e.status, missed: e.missed, addedAt: e.addedAt }],
-        known: e.status === 'known' ? 1 : 0,
+        forms: [e.key],
+        meanings: [{ id: 'default', gloss: e.en, forms: [form], status: e.status, known: e.status === 'known' ? 1 : 0 }],
       });
       continue;
     }
-    // Forms: the saved ones, plus forms met in a reading but not saved yet.
-    const keys = (members.get(key) ?? [key]).filter(
-      (k) => entries.some((e) => e.key === k) || standalone.has(k),
-    );
-    const forms: BankForm[] = keys
-      .map((k) => {
-        const e = entries.find((x) => x.key === k);
-        const sense = lexicon[k]?.senses[0];
-        return {
-          key: k,
-          en: sense?.gloss ?? '—',
-          form: sense?.form,
-          status: e?.status ?? state.words[k]?.status ?? 'new',
-          missed: e?.missed ?? false,
-          addedAt: e?.addedAt ?? 0,
-        };
+
+    // Each (form, meaning) pair: seen in a reading or saved by the learner.
+    const pairs = new Map<string, Set<string>>();
+    const add = (sense: string, form: string) => pairs.set(sense, (pairs.get(sense) ?? new Set()).add(form));
+    for (const k of members.get(key) ?? [key]) {
+      const saved = entries.some((e) => e.key === k);
+      if (!saved && !standalone.has(k)) continue;
+      for (const c of contextsFor(k, 99)) add(c.sense, k);
+      const record = state.words[k];
+      if (record?.status && record.status !== 'new') add('default', k);
+      for (const [sense, st] of Object.entries(record?.senseStatus ?? {})) if (st !== 'new') add(sense, k);
+    }
+
+    const meanings: BankMeaning[] = [...pairs]
+      .map(([id, formKeys]) => {
+        const first = [...formKeys][0];
+        const sense = groupSense(key, first, id);
+        const forms: BankForm[] = [...formKeys]
+          .map((k) => {
+            const s = lexicon[k]?.senses.find((x) => x.id === id);
+            return {
+              key: k,
+              en: s?.gloss ?? '—',
+              form: s?.form,
+              status: wordStatus(state, k, id),
+              missed: entries.some((e) => e.key === k && e.missed),
+            };
+          })
+          .sort((a, b) => formOrder(a.form) - formOrder(b.form) || a.key.localeCompare(b.key, 'es'));
+        const known = forms.filter((f) => f.status === 'known').length;
+        // A verb form not saved yet counts against the meaning (you don't know
+        // the tense until you know its forms). A noun's singular and plural share
+        // one status, so only the saved ones count.
+        const counted = forms.some((f) => f.form) ? forms : forms.filter((f) => f.status !== 'new');
+        const status: WordStatus = !counted.length
+          ? 'new'
+          : counted.every((f) => f.status === 'known')
+            ? 'known'
+            : 'learning';
+        return { id, gloss: sense?.gloss ?? '—', pos: sense?.pos, note: sense?.note, forms, status, known };
       })
-      .sort((a, b) => formOrder(a.form) - formOrder(b.form) || a.key.localeCompare(b.key, 'es'));
-    const levels = [...new Set(entries.flatMap((e) => e.levels).concat(keys.flatMap((k) => contextsFor(k, 99).map((c) => c.level))))].sort();
-    const known = forms.filter((f) => f.status === 'known').length;
-    const verb = forms.some((f) => f.form);
-    // A group shows the meanings met in readings ("puesto": stall, and job from "puestos").
-    const seen = forms.length > 1 || forms[0]?.key !== key ? seenSenses(key, forms) : [];
-    const senses = seen.length ? seen : (head?.senses ?? entries[0].senses);
+      .sort((a, b) => Number(a.id !== 'default') - Number(b.id !== 'default'));
+
+    const savedMeanings = meanings.filter((m) => m.status !== 'new');
+    const knownMeanings = savedMeanings.filter((m) => m.status === 'known').length;
+    const status: GroupStatus =
+      knownMeanings === savedMeanings.length ? 'known' : knownMeanings > 0 ? 'mixed' : 'learning';
+    const forms = [...new Set(meanings.flatMap((m) => m.forms.map((f) => f.key)))];
+    const levels = [...new Set(forms.flatMap((k) => contextsFor(k, 99).map((c) => c.level)))].sort();
+
     groups.push({
       key,
       es: key,
-      en: senses[0]?.gloss ?? entries[0].en,
+      en: meanings.map((m) => m.gloss).join(' | ') || (head?.senses[0]?.gloss ?? entries[0].en),
       pos: head
         ? [...new Set(head.senses.map((s) => s.pos).filter((p): p is PartOfSpeech => !!p))]
         : [...new Set(entries.flatMap((e) => e.pos))],
-      senses,
-      verb,
-      status: known === forms.length ? 'known' : 'learning',
+      meanings,
       forms,
-      known,
+      verb: meanings.some((m) => m.forms.some((f) => f.form)),
+      status,
       addedAt: Math.max(...entries.map((e) => e.addedAt)),
       levels,
       bands: [...new Set(levels.map(levelBand))],

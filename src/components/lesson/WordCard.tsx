@@ -31,7 +31,7 @@ export default function WordCard({ termKey, senseId, onClose, onAddWords }: Prop
   const [showAll, setShowAll] = useState(false);
   const entry = lookupTerm(termKey);
   const sense = senseOf(entry, senseId);
-  const status = wordStatus(state, termKey);
+  const status = wordStatus(state, termKey, sense?.id);
 
   const others = entry?.senses.filter((s) => s.id !== sense?.id) ?? [];
   const seenIds = new Set(state.words[termKey]?.senses ?? []);
@@ -106,7 +106,7 @@ export default function WordCard({ termKey, senseId, onClose, onAddWords }: Prop
               type="button"
               aria-pressed={status === s}
               className={`${styles.statusBtn} ${status === s ? styles[`pick_${s}`] : ''}`}
-              onClick={() => dispatch({ type: 'setWordStatus', key: termKey, status: s })}
+              onClick={() => dispatch({ type: 'setWordStatus', key: termKey, status: s, sense: sense?.id })}
             >
               {STATUS_LABEL[s]}
             </button>

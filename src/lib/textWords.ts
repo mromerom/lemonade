@@ -17,25 +17,45 @@ export function readingStrings(text: Text): string[] {
   return [...text.story.map((p) => p.es), ...text.retelling.paragraphs.map((p) => p.es)];
 }
 
-/** Unique trackable terms in a text: words and bracketed phrases, proper nouns excluded. */
-export function textWordKeys(text: Text): string[] {
-  const keys = new Set<string>();
+/** A term with the meaning it has at one spot in a text. */
+export interface TermUse {
+  key: string;
+  sense: string;
+}
+
+/**
+ * Unique trackable terms in a text, one per meaning ("puestos" and
+ * "puestos:job" are two): words and bracketed phrases, proper nouns excluded.
+ */
+export function textTerms(text: Text): TermUse[] {
+  const seen = new Map<string, TermUse>();
   for (const s of readingStrings(text)) {
     for (const seg of parseMarkup(s)) {
-      if (seg.kind === 'term' && !lookupTerm(seg.key)?.name) keys.add(seg.key);
+      if (seg.kind !== 'term' || lookupTerm(seg.key)?.name) continue;
+      const sense = seg.sense ?? 'default';
+      seen.set(`${seg.key}:${sense}`, { key: seg.key, sense });
     }
   }
-  return [...keys];
+  return [...seen.values()];
 }
 
 export function statusCounts(text: Text, state: LearnerState): Record<WordStatus, number> {
   const counts: Record<WordStatus, number> = { new: 0, learning: 0, known: 0 };
-  for (const key of textWordKeys(text)) counts[state.words[key]?.status ?? 'new']++;
+  for (const t of textTerms(text)) counts[wordStatus(state, t.key, t.sense)]++;
   return counts;
 }
 
-export function wordStatus(state: LearnerState, key: string): WordStatus {
-  return state.words[key]?.status ?? 'new';
+/** Status of one meaning of a term; the main meaning unless a sense is given. */
+export function wordStatus(state: LearnerState, key: string, sense = 'default'): WordStatus {
+  const record = state.words[key];
+  if (!record) return 'new';
+  return sense === 'default' ? record.status : (record.senseStatus?.[sense] ?? 'new');
+}
+
+/** Saved in any meaning. */
+export function isSaved(state: LearnerState, key: string): boolean {
+  const record = state.words[key];
+  return Boolean(record && (record.status !== 'new' || Object.values(record.senseStatus ?? {}).some((s) => s !== 'new')));
 }
 
 /** Split a paragraph into sentences (markup removed), keeping punctuation. */

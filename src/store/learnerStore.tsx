@@ -1,6 +1,6 @@
 import { lexicon } from '../content';
 import { createContext, useContext, useEffect, useReducer, type ReactNode } from 'react';
-import type { LearnerState, LessonProgress, LessonStage, ReviewItem, WordStatus } from '../types';
+import type { LearnerState, LessonProgress, LessonStage, ReviewItem, WordRecord, WordStatus } from '../types';
 
 const STORAGE_KEY = 'lemonade:learner:v2';
 const DAY = 24 * 60 * 60 * 1000;
@@ -65,12 +65,29 @@ function pruneRemovedTerms(state: LearnerState): LearnerState {
   return Object.keys(words).length === Object.keys(state.words).length ? state : { ...state, words };
 }
 
+/**
+ * Before meanings had their own status, one status covered every meaning
+ * looked up. Give each of those meanings that status.
+ */
+function splitSenseStatus(state: LearnerState): LearnerState {
+  let changed = false;
+  const words = Object.fromEntries(
+    Object.entries(state.words).map(([key, r]) => {
+      const others = (r.senses ?? []).filter((s) => s !== 'default' && !r.senseStatus?.[s]);
+      if (!others.length || r.status === 'new') return [key, r];
+      changed = true;
+      return [key, { ...r, senseStatus: { ...r.senseStatus, ...Object.fromEntries(others.map((s) => [s, r.status])) } }];
+    }),
+  );
+  return changed ? { ...state, words } : state;
+}
+
 function load(): LearnerState {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw) as LearnerState;
-      if (parsed.version === 2) return pruneRemovedTerms(parsed);
+      if (parsed.version === 2) return splitSenseStatus(pruneRemovedTerms(parsed));
     }
   } catch {
     // Storage blocked or corrupt: fall through to a fresh demo profile.
@@ -88,8 +105,8 @@ function save(state: LearnerState) {
 
 type Action =
   | { type: 'lookupWord'; key: string; sense?: string }
-  | { type: 'setWordStatus'; key: string; status: WordStatus }
-  | { type: 'markKnown'; keys: string[] }
+  | { type: 'setWordStatus'; key: string; status: WordStatus; sense?: string }
+  | { type: 'markKnown'; terms: { key: string; sense?: string }[] }
   | { type: 'startLesson'; textId: string }
   | { type: 'setStage'; textId: string; stage: LessonStage }
   | { type: 'setPreAnswer'; textId: string; targetId: string; optionId: string }
@@ -119,56 +136,50 @@ function updateLesson(
   return { ...state, lessons: { ...state.lessons, [textId]: fn(current) } };
 }
 
+function senseStatusOf(record: WordRecord | undefined, sense: string): WordStatus {
+  if (!record) return 'new';
+  return sense === 'default' ? record.status : (record.senseStatus?.[sense] ?? 'new');
+}
+
+/** A word record with one meaning's status changed. */
+function withStatus(prev: WordRecord | undefined, sense: string, status: WordStatus, now: number): WordRecord {
+  const base: WordRecord = {
+    ...prev,
+    status: prev?.status ?? 'new',
+    lookups: prev?.lookups ?? 0,
+    updatedAt: now,
+    addedAt: prev?.addedAt ?? now,
+  };
+  return sense === 'default'
+    ? { ...base, status }
+    : { ...base, senseStatus: { ...prev?.senseStatus, [sense]: status } };
+}
+
 function reducer(state: LearnerState, action: Action): LearnerState {
   const now = Date.now();
   switch (action.type) {
     case 'lookupWord': {
       const prev = state.words[action.key];
-      // Looking up a new term starts learning it (LingQ-style).
-      const status: WordStatus = !prev || prev.status === 'new' ? 'learning' : prev.status;
       const sense = action.sense ?? 'default';
       const senses = prev?.senses?.includes(sense) ? prev.senses : [...(prev?.senses ?? []), sense];
+      // Looking up a new meaning starts learning it (LingQ-style).
+      const current = senseStatusOf(prev, sense);
+      const next = withStatus(prev, sense, current === 'new' ? 'learning' : current, now);
       return {
         ...state,
-        words: {
-          ...state.words,
-          [action.key]: {
-            status,
-            senses,
-            lookups: (prev?.lookups ?? 0) + 1,
-            updatedAt: now,
-            addedAt: prev?.addedAt ?? now,
-          },
-        },
+        words: { ...state.words, [action.key]: { ...next, senses, lookups: (prev?.lookups ?? 0) + 1 } },
       };
     }
     case 'setWordStatus': {
       const prev = state.words[action.key];
       return {
         ...state,
-        words: {
-          ...state.words,
-          [action.key]: {
-            ...prev,
-            status: action.status,
-            lookups: prev?.lookups ?? 0,
-            updatedAt: now,
-            addedAt: prev?.addedAt ?? now,
-          },
-        },
+        words: { ...state.words, [action.key]: withStatus(prev, action.sense ?? 'default', action.status, now) },
       };
     }
     case 'markKnown': {
       const words = { ...state.words };
-      for (const key of action.keys) {
-        words[key] = {
-          ...words[key],
-          status: 'known',
-          lookups: words[key]?.lookups ?? 0,
-          updatedAt: now,
-          addedAt: words[key]?.addedAt ?? now,
-        };
-      }
+      for (const t of action.terms) words[t.key] = withStatus(words[t.key], t.sense ?? 'default', 'known', now);
       return { ...state, words };
     }
     case 'startLesson':

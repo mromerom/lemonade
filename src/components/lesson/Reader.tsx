@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState, type MouseEvent, type ReactNo
 import { Link } from 'react-router-dom';
 import { lookupTerm } from '../../content';
 import { parseMarkup, plainText, toSegmentRuns } from '../../lib/markup';
-import { textWordKeys, wordStatus } from '../../lib/textWords';
+import { textTerms, wordStatus } from '../../lib/textWords';
 import { useDismiss } from '../../lib/useDismiss';
 import { useLearner } from '../../store/learnerStore';
 import type { Paragraph, Text } from '../../types';
@@ -47,7 +47,7 @@ export default function Reader({ text, mode = 'lesson', onDone }: Props) {
   const [translated, setTranslated] = useState<Set<string>>(new Set());
   const [revealed, setRevealed] = useState<Set<number>>(new Set());
 
-  const newKeys = textWordKeys(text).filter((k) => wordStatus(state, k) === 'new');
+  const newTerms = textTerms(text).filter((t) => wordStatus(state, t.key, t.sense) === 'new');
 
   const close = useCallback(() => {
     setSelection(null);
@@ -105,7 +105,7 @@ export default function Reader({ text, mode = 'lesson', onDone }: Props) {
               {run.segments.map((seg, j) => {
                 if (seg.kind === 'other') return <span key={j}>{seg.text}</span>;
                 const idx = indexOf.get(seg) ?? -1;
-                const status = lookupTerm(seg.key)?.name ? 'known' : wordStatus(state, seg.key);
+                const status = lookupTerm(seg.key)?.name ? 'known' : wordStatus(state, seg.key, seg.sense);
                 const picked = selection?.block === block && selection.items.some((i) => i.idx === idx);
                 const inGroup = picked && selection!.items.length > 1;
                 return (
@@ -247,13 +247,13 @@ export default function Reader({ text, mode = 'lesson', onDone }: Props) {
         </Part>
 
         <div className={shared.actions}>
-          {newKeys.length > 0 && (
+          {newTerms.length > 0 && (
             <button
               type="button"
               className="btn btn-quiet"
-              onClick={() => dispatch({ type: 'markKnown', keys: newKeys })}
+              onClick={() => dispatch({ type: 'markKnown', terms: newTerms })}
             >
-              Mark {newKeys.length} remaining new words as known
+              Mark {newTerms.length} remaining new words as known
             </button>
           )}
           {mode === 'review' ? (
