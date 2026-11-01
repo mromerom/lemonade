@@ -27,13 +27,13 @@ Andrés tiene [treinta y dos] años y vive en Madrid. [Trabaja como] ingeniero d
 [Todas las noches], después de cenar, [echa un vistazo] a las [ofertas de empleo] en internet. Hay cientos de [puestos:job], pero ninguno [le llama la atención]. No hay [ni uno] que le emocione. Todos [le parecen] iguales: más reuniones, más pantallas, [más de lo mismo].
 > Every night, after dinner, he has a look at job listings online. There are hundreds of positions, but none of them catches his eye. Not a single one excites him. They all seem the same to him: more meetings, more screens, more of the same.
 
-[Hace un mes], un domingo, mientras [tomaba:have] un café con su amiga Marta, Andrés le contó cómo se sentía. Marta es emprendedora: [hace dos años] [montó:setup] una pyme de diseño con dos socias. —¿Y por qué no emprendes tú? —le preguntó—. [A veces] [hay que] [lanzarse a la piscina]. Si no lo intentas, nunca lo sabrás.
+[Hace un mes], un domingo, mientras [tomaba:have] un café con su amiga Marta, Andrés le contó cómo se sentía. Marta es emprendedora: [hace dos años] [montó:setup] una pyme de diseño con dos socias. —¿Y [por qué] no emprendes tú? —le preguntó—. [A veces] [hay que] [lanzarse a la piscina]. Si no lo intentas, nunca lo sabrás.
 > A month ago, one Sunday, while he was having a coffee with his friend Marta, Andrés told her how he felt. Marta is an entrepreneur: two years ago she set up a small design company with two partners. "So why don't you start a business?" she asked him. "Sometimes you have to take the plunge. If you don't try, you'll never know."
 
-[Al principio], a Andrés [le daba miedo]. ¿Y si [salía mal]? Pero [le dio vueltas] a la idea durante semanas y, [al final], [se armó de valor]. Esta mañana ha decidido [dar el paso] y [montar:setup] su propio negocio.
+[Al principio], a Andrés [le daba miedo]. ¿Y si [le salía mal]? Pero [le dio vueltas] a la idea durante semanas y, [al final], [se armó de valor]. Esta mañana ha decidido [dar el paso] y [montar:setup] su propio negocio.
 > At first, Andrés was scared. What if it went wrong? But he mulled the idea over for weeks and, in the end, he plucked up his courage. This morning he decided to take the step and set up his own business.
 
-Su idea es una plataforma para ayudar a pymes en su ciudad a vender sus productos y servicios por internet. [Por ahora], [seguirá trabajando] en su empresa y dedicará las tardes a su proyecto. No sabe si [saldrá bien], pero [por fin] tiene algo que le emociona [de verdad]. [Tiene su riesgo], pero también es muy emocionante.
+Su idea es una plataforma para ayudar a pymes en su ciudad a vender sus productos y servicios por internet. [Por ahora], [seguirá trabajando] en su empresa y dedicará las tardes a su proyecto. No sabe si [le saldrá bien], pero [por fin] tiene algo que le emociona [de verdad]. [Tiene su riesgo], pero también es muy emocionante.
 > His idea is a platform to help small businesses in his city sell their products and services online. For now, he'll keep working at his company and spend his evenings on his project. He doesn't know if it will work out, but at last he has something that really excites him. It has its risks, but it's also very exciting.
 
 ## Retelling
@@ -44,13 +44,13 @@ Tengo [treinta y dos] años y vivo en Madrid. [Trabajo como] ingeniero de softwa
 [Todas las noches], después de cenar, [echo un vistazo] a las [ofertas de empleo] en internet. Hay cientos de [puestos:job], pero ninguno [me llama la atención]. No hay [ni uno] que me emocione. Todos [me parecen] iguales: más reuniones, más pantallas, [más de lo mismo].
 > Every night, after dinner, I have a look at job listings online. There are hundreds of positions, but none of them catches my eye. Not a single one excites me. They all seem the same to me: more meetings, more screens, more of the same.
 
-[Hace un mes], un domingo, mientras [tomaba:have] un café con mi amiga Marta, le conté cómo me sentía. Marta es emprendedora: [hace dos años] [montó:setup] una pyme de diseño con dos socias. —¿Y por qué no emprendes tú? —me preguntó—. [A veces] [hay que] [lanzarse a la piscina]. Si no lo intentas, nunca lo sabrás.
+[Hace un mes], un domingo, mientras [tomaba:have] un café con mi amiga Marta, le conté cómo me sentía. Marta es emprendedora: [hace dos años] [montó:setup] una pyme de diseño con dos socias. —¿Y [por qué] no emprendes tú? —me preguntó—. [A veces] [hay que] [lanzarse a la piscina]. Si no lo intentas, nunca lo sabrás.
 > A month ago, one Sunday, while I was having a coffee with my friend Marta, I told her how I felt. Marta is an entrepreneur: two years ago she set up a small design company with two partners. "So why don't you start a business?" she asked me. "Sometimes you have to take the plunge. If you don't try, you'll never know."
 
-[Al principio], [me daba miedo]. ¿Y si [salía mal]? Pero [le di vueltas] a la idea durante semanas y, [al final], [me armé de valor]. Esta mañana he decidido [dar el paso] y [montar:setup] mi propio negocio.
+[Al principio], [me daba miedo]. ¿Y si [me salía mal]? Pero [le di vueltas] a la idea durante semanas y, [al final], [me armé de valor]. Esta mañana he decidido [dar el paso] y [montar:setup] mi propio negocio.
 > At first, I was scared. What if it went wrong? But I mulled the idea over for weeks and, in the end, I plucked up my courage. This morning I decided to take the step and set up my own business.
 
-Mi idea es una plataforma para ayudar a pymes en mi ciudad a vender sus productos y servicios por internet. [Por ahora], [seguiré trabajando] en mi empresa y dedicaré las tardes a mi proyecto. No sé si [saldrá bien], pero [por fin] tengo algo que me emociona [de verdad]. [Tiene su riesgo], pero también es muy emocionante.
+Mi idea es una plataforma para ayudar a pymes en mi ciudad a vender sus productos y servicios por internet. [Por ahora], [seguiré trabajando] en mi empresa y dedicaré las tardes a mi proyecto. No sé si [me saldrá bien], pero [por fin] tengo algo que me emociona [de verdad]. [Tiene su riesgo], pero también es muy emocionante.
 > My idea is a platform to help small businesses in my city sell their products and services online. For now, I'll keep working at my company and spend my evenings on my project. I don't know if it will work out, but at last I have something that really excites me. It has its risks, but it's also very exciting.
 
 ## Preguntas
