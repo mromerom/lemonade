@@ -1,6 +1,6 @@
 import { lexicon } from '../content';
 import { createContext, useContext, useEffect, useReducer, type ReactNode } from 'react';
-import type { LearnerState, LessonProgress, LessonStage, ReviewItem, WordRecord, WordStatus } from '../types';
+import type { LearnerState, LessonProgress, LessonStage, ReadingCheck, ReviewItem, WordRecord, WordStatus } from '../types';
 
 const STORAGE_KEY = 'lemonade:learner:v2';
 const DAY = 24 * 60 * 60 * 1000;
@@ -13,7 +13,7 @@ const DAY = 24 * 60 * 60 * 1000;
 const DEMO_KNOWN = [
   // grammar words
   'a', 'al', 'con', 'de', 'del', 'el', 'en', 'la', 'las', 'los', 'le', 'lo', 'me', 'mi', 'mis', 'se',
-  'su', 'sus', 'un', 'una', 'unas', 'y', 'que', 'qué', 'no', 'sí', 'si', 'por', 'para', 'pero',
+  'su', 'sus', 'un', 'una', 'unas', 'y', 'que', 'qué', 'no', 'si', 'por', 'para', 'pero',
   'porque', 'como', 'cómo', 'muy', 'más', 'también', 'todos', 'todas', 'mucho', 'muchos', 'yo', 'tú',
   'algo', 'nunca', 'ahora', 'hoy', 'primero', 'segundo',
   // common verbs
@@ -21,7 +21,7 @@ const DEMO_KNOWN = [
   'trabaja', 'trabajando', 'comprar', 'vender', 'ayudar',
   // everyday nouns and adjectives
   'casa', 'años', 'mes', 'meses', 'semanas', 'domingo', 'sábados', 'dos', 'tres', 'treinta', 'treinta y dos', 'sol',
-  'pan', 'café', 'madre', 'amiga', 'abuelo', 'ciudad', 'idea', 'internet', 'software', 'proyecto',
+  'pan', 'café', 'amiga', 'abuelo', 'ciudad', 'idea', 'internet', 'software', 'proyecto',
   'productos', 'servicios', 'plataforma', 'frutas', 'flores', 'naranja', 'naranjas', 'limón', 'río',
   'grande', 'pequeña', 'kilo', 'kilos', 'euros', 'trabajo',
 ];
@@ -112,6 +112,8 @@ type Action =
   | { type: 'setPreAnswer'; textId: string; targetId: string; optionId: string }
   | { type: 'setPostAnswer'; textId: string; targetId: string; answer: string }
   | { type: 'setCorrection'; textId: string; targetId: string; text: string }
+  | { type: 'setReadingAnswer'; textId: string; questionId: string; answer: string }
+  | { type: 'setReadingChecks'; textId: string; checks: Record<string, ReadingCheck> }
   | {
       type: 'completeLesson';
       textId: string;
@@ -124,7 +126,15 @@ type Action =
   | { type: 'resetAll' };
 
 function emptyLesson(): LessonProgress {
-  return { stage: 'pre', preAnswers: {}, postAnswers: {}, corrections: {}, startedAt: Date.now() };
+  return {
+    stage: 'pre',
+    preAnswers: {},
+    postAnswers: {},
+    corrections: {},
+    readingAnswers: {},
+    readingChecks: {},
+    startedAt: Date.now(),
+  };
 }
 
 function updateLesson(
@@ -200,6 +210,16 @@ function reducer(state: LearnerState, action: Action): LearnerState {
       return updateLesson(state, action.textId, (l) => ({
         ...l,
         corrections: { ...l.corrections, [action.targetId]: action.text },
+      }));
+    case 'setReadingAnswer':
+      return updateLesson(state, action.textId, (l) => ({
+        ...l,
+        readingAnswers: { ...l.readingAnswers, [action.questionId]: action.answer },
+      }));
+    case 'setReadingChecks':
+      return updateLesson(state, action.textId, (l) => ({
+        ...l,
+        readingChecks: { ...l.readingChecks, ...action.checks },
       }));
     case 'completeLesson': {
       const fresh: ReviewItem[] = action.missedTargetIds.map((targetId) => ({

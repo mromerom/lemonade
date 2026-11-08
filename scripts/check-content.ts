@@ -92,6 +92,23 @@ for (const text of texts) {
     });
   }
 
+  // Every paragraph has one question; beginner answers are a word or two.
+  const beginner = text.level.startsWith('A');
+  [...text.story, ...text.retelling.paragraphs].forEach((p, i) => {
+    const where = i < text.story.length ? `Story paragraph ${i + 1}` : `Retelling paragraph ${i - text.story.length + 1}`;
+    if (!p.question) {
+      errors.push(`${file}  ${where} has no question (Q:/A: lines under its translation)`);
+      return;
+    }
+    const words = plainText(p.question.answer.es).split(/\s+/).filter(Boolean).length;
+    if (beginner && words > 3) {
+      warnings.push(`${file}  ${where}: beginner answers should be a word or two ("${p.question.answer.es}")`);
+    }
+    if (!beginner && words > 16) {
+      warnings.push(`${file}  ${where}: keep the model answer to one short sentence (${words} words)`);
+    }
+  });
+
   // Targets must point at something in the text.
   const plainWords = new Set(
     spanishStrings(text).flatMap((s) =>

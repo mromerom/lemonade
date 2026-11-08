@@ -1,3 +1,4 @@
+import { readingQuestions } from '../../lib/textWords';
 import { useLearner } from '../../store/learnerStore';
 import type { LessonProgress, LessonStage, Target, Text } from '../../types';
 import styles from './DevBar.module.css';
@@ -35,6 +36,13 @@ export default function DevBar({ text, lesson }: { text: Text; lesson: LessonPro
   const { dispatch } = useLearner();
 
   function fillSample() {
+    // Reading questions: right, a small slip, and wrong, in turn.
+    readingQuestions(text).forEach((q, i) => {
+      const model = q.answer.es;
+      const slip = model.replace(/\b(un|una|el|la)\b/i, (a) => ({ un: 'una', una: 'un', el: 'la', la: 'el' })[a.toLowerCase()] ?? a);
+      const answer = [model, slip === model ? model.toLowerCase().replace(/[.]$/, '') : slip, 'No sé.'][i % 3];
+      dispatch({ type: 'setReadingAnswer', textId: text.id, questionId: q.id, answer });
+    });
     text.targets.forEach((t, i) => {
       const wrong = t.pre.options.find((o) => o.id !== t.pre.correctOptionId && !t.pre.alsoCorrect?.includes(o.id));
       const optionId = i % 2 === 0 ? t.pre.correctOptionId : (wrong ?? t.pre.options[0]).id;

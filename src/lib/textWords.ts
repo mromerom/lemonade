@@ -3,16 +3,17 @@ import type { LearnerState, Text, WordStatus } from '../types';
 import { parseMarkup, plainText } from './markup';
 import { tokenize } from './tokenize';
 
-/** Every Spanish string in a text (with markup): story, retelling, and Q&A. */
+/** Every marked-up Spanish string in a text: story and retelling. Questions are plain text. */
 export function spanishStrings(text: Text): string[] {
-  return [
-    ...text.story.map((p) => p.es),
-    ...text.retelling.paragraphs.map((p) => p.es),
-    ...text.qa.flatMap((q) => [q.statement.es, q.question.es, q.answer.es]),
-  ];
+  return [...text.story, ...text.retelling.paragraphs].map((p) => p.es);
 }
 
-/** Spanish strings the learner reads and taps: story and retelling (Q&A is plain text). */
+/** Every paragraph question, story first. */
+export function readingQuestions(text: Text) {
+  return [...text.story, ...text.retelling.paragraphs].flatMap((p) => (p.question ? [p.question] : []));
+}
+
+/** Spanish strings the learner reads and taps: story and retelling (questions are plain text). */
 export function readingStrings(text: Text): string[] {
   return [...text.story.map((p) => p.es), ...text.retelling.paragraphs.map((p) => p.es)];
 }

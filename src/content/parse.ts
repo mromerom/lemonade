@@ -3,7 +3,7 @@
  * lexicon.txt and texts/*.txt for the format). Pure functions with no Vite
  * dependencies, so the content checker can run them in Node.
  */
-import { FORM_PERSONS, PARTS_OF_SPEECH, TENSES, type FormPerson, type Tense, type VerbForm, type Lexicon, type LexiconEntry, type Paragraph, type PartOfSpeech, type QAItem, type Sense } from '../types';
+import { FORM_PERSONS, PARTS_OF_SPEECH, TENSES, type FormPerson, type Tense, type VerbForm, type Lexicon, type LexiconEntry, type Paragraph, type PartOfSpeech, type ReadingQuestion, type Sense, type Translated } from '../types';
 
 export interface ParseError {
   file: string;
@@ -153,7 +153,6 @@ export interface ParsedStory {
   summaryEn: string;
   story: Paragraph[];
   retelling: { narrator: string; example?: [string, string]; paragraphs: Paragraph[] };
-  qa: QAItem[];
 }
 
 interface Block {
@@ -178,38 +177,69 @@ function blocks(lines: { n: number; text: string }[]): Block[] {
   return out;
 }
 
-function paragraph(block: Block, file: string, errors: ParseError[]): Paragraph {
-  const es = block.lines.filter((l) => !l.startsWith('>')).join(' ');
-  const en = block.lines
+/**
+ * A paragraph block: Spanish lines, "> " translation lines, then optionally
+ * its question:
+ *
+ *   Q: ¿Qué compra el abuelo?     the question
+ *   > What does grandpa buy?
+ *   A: Naranjas.                  a model answer
+ *   > Oranges.
+ *   accept: unas naranjas | dos kilos de naranjas
+ */
+function paragraph(block: Block, id: string, file: string, errors: ParseError[]): Paragraph {
+  const q = block.lines.findIndex((l) => /^Q:/.test(l));
+  const body = q < 0 ? block.lines : block.lines.slice(0, q);
+  const es = body.filter((l) => !l.startsWith('>')).join(' ');
+  const en = body
     .filter((l) => l.startsWith('>'))
     .map((l) => l.slice(1).trim())
     .join(' ');
   if (!es) errors.push({ file, line: block.line, message: 'Paragraph has a translation but no Spanish' });
   if (!en) errors.push({ file, line: block.line, message: 'Paragraph has no "> " translation' });
-  return { es, en };
+  const para: Paragraph = { es, en };
+  if (q >= 0) {
+    const question = readingQuestion(block.lines.slice(q), id, file, block.line, errors);
+    if (question) para.question = question;
+  }
+  return para;
 }
 
-function qaItem(block: Block, file: string, errors: ParseError[]): QAItem | null {
-  const part = (tag: 'S' | 'Q' | 'A'): Paragraph | null => {
-    const i = block.lines.findIndex((l) => l.startsWith(`${tag}:`));
+function readingQuestion(
+  lines: string[],
+  id: string,
+  file: string,
+  line: number,
+  errors: ParseError[],
+): ReadingQuestion | null {
+  const part = (tag: 'Q' | 'A'): Translated | null => {
+    const i = lines.findIndex((l) => l.startsWith(`${tag}:`));
     if (i < 0) return null;
-    const next = block.lines[i + 1];
-    return { es: block.lines[i].slice(2).trim(), en: next?.startsWith('>') ? next.slice(1).trim() : '' };
+    const next = lines[i + 1];
+    if (!next?.startsWith('>')) errors.push({ file, line, message: `${tag}: line has no "> " translation after it` });
+    return { es: lines[i].slice(2).trim(), en: next?.startsWith('>') ? next.slice(1).trim() : '' };
   };
-  const statement = part('S');
   const question = part('Q');
   const answer = part('A');
-  if (!statement || !question || !answer) {
-    errors.push({ file, line: block.line, message: 'Each Preguntas item needs S:, Q: and A: lines' });
+  if (!question || !answer) {
+    errors.push({ file, line, message: 'A paragraph question needs a Q: line and an A: line' });
     return null;
   }
-  for (const [name, p] of [['S', statement], ['Q', question], ['A', answer]] as const) {
-    if (!p.en) errors.push({ file, line: block.line, message: `${name}: line has no "> " translation after it` });
+  const acceptLine = lines.find((l) => /^accept:/i.test(l));
+  const accept = acceptLine
+    ? acceptLine
+        .slice(acceptLine.indexOf(':') + 1)
+        .split('|')
+        .map((s) => s.trim())
+        .filter(Boolean)
+    : [];
+  for (const l of lines) {
+    if (!/^(Q:|A:|>|accept:)/i.test(l)) errors.push({ file, line, message: `Can't read "${l}" in the question` });
   }
-  return { statement, question, answer };
+  return { id, question, answer, accept };
 }
 
-const SECTIONS = { historia: 'story', retelling: 'retelling', preguntas: 'qa' } as const;
+const SECTIONS = { historia: 'story', retelling: 'retelling' } as const;
 
 export function parseStory(raw: string, file: string): { story: ParsedStory | null; errors: ParseError[] } {
   const errors: ParseError[] = [];
@@ -243,8 +273,11 @@ export function parseStory(raw: string, file: string): { story: ParsedStory | nu
     const heading = /^##\s+(.+)$/.exec(t);
     if (heading) {
       const name = heading[1].trim().toLowerCase() as keyof typeof SECTIONS;
-      if (!(name in SECTIONS)) {
-        errors.push({ file, line: l.n, message: `Unknown section "${heading[1]}". Use Historia, Retelling or Preguntas.` });
+      if (name === ('preguntas' as string)) {
+        errors.push({ file, line: l.n, message: 'There is no Preguntas section any more: put a Q:/A: question under each paragraph.' });
+        current = null;
+      } else if (!(name in SECTIONS)) {
+        errors.push({ file, line: l.n, message: `Unknown section "${heading[1]}". Use Historia or Retelling.` });
         current = null;
       } else {
         current = SECTIONS[name];
@@ -260,11 +293,8 @@ export function parseStory(raw: string, file: string): { story: ParsedStory | nu
     if (!sections[s]) errors.push({ file, line: 0, message: `Missing section for ${s}` });
   }
 
-  const story = blocks(sections.story ?? []).map((b) => paragraph(b, file, errors));
-  const retold = blocks(sections.retelling ?? []).map((b) => paragraph(b, file, errors));
-  const qa = blocks(sections.qa ?? [])
-    .map((b) => qaItem(b, file, errors))
-    .filter((q): q is QAItem => q !== null);
+  const story = blocks(sections.story ?? []).map((b, i) => paragraph(b, `story-${i}`, file, errors));
+  const retold = blocks(sections.retelling ?? []).map((b, i) => paragraph(b, `retell-${i}`, file, errors));
 
   let example: [string, string] | undefined;
   if (meta.example) {
@@ -283,7 +313,6 @@ export function parseStory(raw: string, file: string): { story: ParsedStory | nu
       summaryEn: meta.summary ?? '',
       story,
       retelling: { narrator: meta.narrator ?? '', example, paragraphs: retold },
-      qa,
     },
     errors,
   };

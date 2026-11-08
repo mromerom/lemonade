@@ -50,17 +50,31 @@ export interface LexiconEntry {
 
 export type Lexicon = Record<string, LexiconEntry>;
 
-/** Spanish text may contain markup: [le gusta] groups words, [mañana:morning] picks a sense. */
-export interface Paragraph {
+/** Spanish and its English translation. */
+export interface Translated {
   es: string;
   en: string;
 }
 
-/** One exchange in the Q&A part: a statement, a question about it, and the answer. */
-export interface QAItem {
-  statement: Paragraph;
-  question: Paragraph;
-  answer: Paragraph;
+/** Spanish text may contain markup: [le gusta] groups words, [mañana:morning] picks a sense. */
+export interface Paragraph extends Translated {
+  /** The reading question under this paragraph */
+  question?: ReadingQuestion;
+}
+
+/**
+ * A comprehension question under a paragraph, answered while reading and
+ * checked on the results step. Beginner answers are a word or two and are
+ * graded in the app; longer answers are checked by AI.
+ */
+export interface ReadingQuestion {
+  /** "story-0", "retell-2": part and paragraph index */
+  id: string;
+  question: Translated;
+  /** A model answer */
+  answer: Translated;
+  /** Other answers that count as correct (beginner levels) */
+  accept: string[];
 }
 
 export interface QuestionOption {
@@ -158,8 +172,6 @@ export interface Text {
     example?: [string, string];
     paragraphs: Paragraph[];
   };
-  /** Part 3: statements, questions and answers */
-  qa: QAItem[];
   targets: Target[];
 }
 
@@ -180,6 +192,38 @@ export interface WordRecord {
   addedAt?: number;
 }
 
+/** What a mistake in a written answer is about; the results step suggests focus areas from these. */
+export const ISSUE_CATEGORIES = [
+  'person', 'tense', 'gender', 'number', 'agreement', 'spelling', 'accent', 'word choice', 'word order',
+  'missing word', 'meaning', 'other',
+] as const;
+export type IssueCategory = (typeof ISSUE_CATEGORIES)[number];
+
+export interface AnswerIssue {
+  category: IssueCategory;
+  /** The words as the learner wrote them */
+  wrong: string;
+  /** The same words fixed */
+  right: string;
+  /** One short tip, in English */
+  tip: string;
+}
+
+/** The check of one reading-question answer. */
+export interface ReadingCheck {
+  /** The answer that was checked: a changed answer is checked again */
+  answer: string;
+  /** app: graded in the app (short answers); ai: checked by AI; self: the learner compared it themselves */
+  source: 'app' | 'ai' | 'self';
+  /** Does the answer say the right thing about the paragraph? */
+  meaning: 'correct' | 'partly' | 'incorrect';
+  issues: AnswerIssue[];
+  /** The learner's answer with the smallest fixes, when it needed any */
+  corrected?: string;
+  /** One sentence about the meaning, in English */
+  comment?: string;
+}
+
 export type LessonStage = 'pre' | 'read' | 'post' | 'compare' | 'done';
 
 export interface LessonProgress {
@@ -190,6 +234,10 @@ export interface LessonProgress {
   postAnswers: Record<string, string>;
   /** targetId -> learner's typed correction */
   corrections: Record<string, string>;
+  /** Reading question id -> typed answer; editable until the results step */
+  readingAnswers?: Record<string, string>;
+  /** Reading question id -> how the answer was checked */
+  readingChecks?: Record<string, ReadingCheck>;
   startedAt: number;
   completedAt?: number;
 }

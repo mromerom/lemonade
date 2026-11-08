@@ -290,53 +290,61 @@
   color: var(--muted);
 }
 
-.qaList {
-  /* Part 3 reads like the rest of the text: same face, size and rhythm. */
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  font-family: var(--font-read);
-  font-size: 1.3rem;
-  line-height: 1.9;
-}
-.qa {
-  padding-bottom: 1.1rem;
-  margin-bottom: 1.1rem;
-  border-bottom: 1px solid var(--border);
-}
-.qa p {
-  margin: 0;
-}
-.qaActions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.9rem;
-  margin-top: 0.35rem;
-}
-.qaActions .translateBtn {
-  margin-top: 0;
-}
-.reveal {
-  padding: 0.2rem 0.75rem;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background: transparent;
-  font-family: var(--font-ui);
-  font-size: 0.8rem;
-  font-weight: 600;
-  line-height: 1.4;
-  color: var(--text);
-  cursor: pointer;
-}
-.reveal:hover {
+/* The question under each paragraph */
+.question {
+  margin-top: 0.9rem;
+  padding: 0.75rem 0.9rem 0.9rem;
+  border-left: 3px solid var(--accent, var(--border));
   background: var(--surface-2);
+  border-radius: 0 var(--radius, 8px) var(--radius, 8px) 0;
+  font-family: var(--font-ui);
 }
-
-@media (max-width: 860px) {
-  .qaList {
-    font-size: 1.2rem;
-  }
+.questionMissing {
+  border-left-color: var(--bad);
+}
+.questionText {
+  display: block;
+  font-family: var(--font-read);
+  font-size: 1.15rem;
+  line-height: 1.5;
+}
+.questionTag {
+  display: block;
+  font-family: var(--font-ui);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.15rem;
+}
+.answer {
+  display: block;
+  width: 100%;
+  margin-top: 0.6rem;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface, #fff);
+  color: var(--text);
+  font-family: var(--font-read);
+  font-size: 1.1rem;
+}
+.answer:focus-visible {
+  outline: 2px solid var(--focus, currentColor);
+  outline-offset: 1px;
+}
+.answer[aria-invalid='true'] {
+  border-color: var(--bad);
+}
+.answer[readonly] {
+  background: transparent;
+  border-style: dashed;
+}
+.missingHint {
+  margin: 0.5rem 0 0;
+  font-size: 0.9rem;
+  color: var(--bad);
 }
 
 /* A bracketed phrase reads as one unit: one highlight, joined by an underline. */

@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useRef, useState, type MouseEvent, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { lookupTerm } from '../../content';
-import { parseMarkup, plainText, toSegmentRuns } from '../../lib/markup';
-import { textTerms, wordStatus } from '../../lib/textWords';
+import { parseMarkup, toSegmentRuns } from '../../lib/markup';
+import { readingQuestions, textTerms, wordStatus } from '../../lib/textWords';
 import { useDismiss } from '../../lib/useDismiss';
 import { useLearner } from '../../store/learnerStore';
-import type { Paragraph, Text } from '../../types';
+import type { Paragraph, ReadingQuestion, Text } from '../../types';
 import GroupCard, { type GroupItem } from './GroupCard';
 import WordCard from './WordCard';
 import shared from './shared.module.css';
@@ -45,7 +45,22 @@ export default function Reader({ text, mode = 'lesson', onDone }: Props) {
   // On touch screens there's no shift key, so the card offers an "add words" mode.
   const [adding, setAdding] = useState(false);
   const [translated, setTranslated] = useState<Set<string>>(new Set());
-  const [revealed, setRevealed] = useState<Set<number>>(new Set());
+  const [showMissing, setShowMissing] = useState(false);
+
+  const answers = state.lessons[text.id]?.readingAnswers ?? {};
+  const questions = readingQuestions(text);
+  const missing = questions.filter((q) => !answers[q.id]?.trim());
+  // Answers can be changed until the results step; reading again shows them as they were sent.
+  const locked = mode === 'review';
+
+  function finishReading() {
+    if (missing.length && !locked) {
+      setShowMissing(true);
+      document.getElementById(`answer-${missing[0].id}`)?.focus();
+      return;
+    }
+    onDone();
+  }
 
   const newTerms = textTerms(text).filter((t) => wordStatus(state, t.key, t.sense) === 'new');
 
@@ -155,6 +170,51 @@ export default function Reader({ text, mode = 'lesson', onDone }: Props) {
     );
   }
 
+  /** The question under a paragraph, with its answer box. */
+  function questionBlock(q: ReadingQuestion) {
+    const enOpen = translated.has(q.id);
+    const value = answers[q.id] ?? '';
+    const flagged = showMissing && !value.trim();
+    return (
+      <div className={`${styles.question} ${flagged ? styles.questionMissing : ''}`}>
+        <label htmlFor={`answer-${q.id}`} className={styles.questionText}>
+          <span className={styles.questionTag}>Pregunta</span>
+          {q.question.es}
+        </label>
+        <button
+          type="button"
+          className={styles.translateBtn}
+          aria-expanded={enOpen}
+          onClick={() => setTranslated((s) => toggle(s, q.id))}
+        >
+          {enOpen ? 'Hide translation' : 'Translate'}
+        </button>
+        {enOpen && (
+          <p className={styles.translation} lang="en">
+            {q.question.en}
+          </p>
+        )}
+        <input
+          id={`answer-${q.id}`}
+          className={styles.answer}
+          lang="es"
+          type="text"
+          autoComplete="off"
+          autoCapitalize="sentences"
+          spellCheck={false}
+          maxLength={200}
+          placeholder={text.level.startsWith('A') ? 'Una o dos palabras' : 'Una frase corta'}
+          value={value}
+          readOnly={locked}
+          aria-invalid={flagged || undefined}
+          onChange={(e) =>
+            dispatch({ type: 'setReadingAnswer', textId: text.id, questionId: q.id, answer: e.target.value })
+          }
+        />
+      </div>
+    );
+  }
+
   function prose(id: string, paragraphs: Paragraph[]) {
     return (
       <div className={styles.text} lang="es">
@@ -162,6 +222,7 @@ export default function Reader({ text, mode = 'lesson', onDone }: Props) {
           <div key={i} className={styles.paragraph}>
             <p>{tappable(p.es, `${id}-${i}`)}</p>
             {translateToggle(`${id}-${i}`, p.en)}
+            {p.question && questionBlock(p.question)}
           </div>
         ))}
       </div>
@@ -187,7 +248,7 @@ export default function Reader({ text, mode = 'lesson', onDone }: Props) {
           </span>
         </div>
 
-        <Part n={1} title="La historia" hint={`The story, told about ${narrator}.`}>
+        <Part n={1} title="La historia" hint={`The story, told about ${narrator}. Answer the question under each paragraph; you can look back at the text.`}>
           {prose('story', text.story)}
         </Part>
 
@@ -196,54 +257,9 @@ export default function Reader({ text, mode = 'lesson', onDone }: Props) {
           title={`${narrator} cuenta la historia`}
           hint={`The same story, told by ${narrator}. Watch how the verbs change${
             text.retelling.example ? `: “${text.retelling.example[0]}” becomes “${text.retelling.example[1]}”` : ''
-          }.`}
+          }. Here ${narrator} asks the questions, so answer with tú.`}
         >
           {prose('retell', text.retelling.paragraphs)}
-        </Part>
-
-        <Part
-          n={3}
-          title="Preguntas y respuestas"
-          hint="Answer each question in your head, then show the answer to check."
-        >
-          {/* Part of the text, set like the story, but without tap-to-translate words. */}
-          <ol className={styles.qaList} lang="es">
-            {text.qa.map((item, i) => {
-              const open = revealed.has(i);
-              const enOpen = translated.has(`qa-${i}`);
-              return (
-                <li key={i} className={styles.qa}>
-                  <p>{plainText(item.statement.es)}</p>
-                  <p>{plainText(item.question.es)}</p>
-                  {open && <p>{plainText(item.answer.es)}</p>}
-                  <div className={styles.qaActions}>
-                    <button
-                      type="button"
-                      className={styles.reveal}
-                      aria-expanded={open}
-                      onClick={() => setRevealed((s) => toggle(s, i))}
-                    >
-                      {open ? 'Hide answer' : 'Show answer'}
-                    </button>
-                    <button
-                      type="button"
-                      className={styles.translateBtn}
-                      aria-expanded={enOpen}
-                      onClick={() => setTranslated((s) => toggle(s, `qa-${i}`))}
-                    >
-                      {enOpen ? 'Hide translation' : 'Translate'}
-                    </button>
-                  </div>
-                  {enOpen && (
-                    <p className={styles.translation} lang="en">
-                      {item.statement.en} {item.question.en}
-                      {open ? ` ${item.answer.en}` : ''}
-                    </p>
-                  )}
-                </li>
-              );
-            })}
-          </ol>
         </Part>
 
         <div className={shared.actions}>
@@ -266,13 +282,22 @@ export default function Reader({ text, mode = 'lesson', onDone }: Props) {
               </button>
             </>
           ) : (
-            <button type="button" className="btn btn-primary" onClick={onDone}>
+            <button type="button" className="btn btn-primary" onClick={finishReading}>
               I'm done reading →
             </button>
           )}
         </div>
+        {mode === 'lesson' && showMissing && missing.length > 0 && (
+          <p className={styles.missingHint} role="alert">
+            Answer the {missing.length === 1 ? 'last question' : `${missing.length} questions left`} first. You can
+            change any answer until you see your results.
+          </p>
+        )}
         {mode === 'lesson' && (
-          <p className={styles.doneHint}>Next you'll type the new words and verb forms from memory, without the text.</p>
+          <p className={styles.doneHint}>
+            Next you'll type the new words and verb forms from memory, without the text. Your answers to the questions
+            are checked at the end.
+          </p>
         )}
       </div>
 

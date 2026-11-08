@@ -10,7 +10,7 @@ example: Lucía va => voy
 
 # How to write a story
 #
-# Three parts, in this order: "## Historia", "## Retelling", "## Preguntas".
+# Two parts, in this order: "## Historia", "## Retelling".
 # Paragraphs are separated by a blank line. Spanish first, then its
 # translation on lines starting with ">".
 #
@@ -20,85 +20,85 @@ example: Lucía va => voy
 # The retelling must line up with the story: same paragraphs, same
 # number of sentences in each, so sentences can be shown side by side.
 #
-# In Preguntas, each item is three lines, S: statement, Q: question,
-# A: answer, each followed by its "> " translation. Separate items with a
-# blank line. Lines starting with # are comments.
+# Each paragraph ends with its reading question, answered while reading
+# and checked on the results step:
+#
+#   Q: ¿Qué compra el abuelo?         the question, then "> " translation
+#   A: Naranjas.                       a model answer, then "> " translation
+#   accept: unas naranjas | naranja    other correct answers (beginner levels)
+#
+# Beginner (A) answers are a word or two: a noun with its article, an
+# adjective, an activity. Intermediate (B) answers are one short sentence
+# about something the paragraph implies but doesn't say, so it can't be
+# copied; most change the person, about a third also change the tense to
+# one already seen in the text. In the retelling, the narrator asks in the
+# first person ("¿Qué llevo hoy?") and the learner answers with tú.
+#
+# Lines starting with # are comments.
 
 ## Historia
 
 [Todos los sábados], Lucía va al mercado con su abuelo. El mercado está en una plaza pequeña, [cerca del] río. Hay muchos puestos de frutas, verduras, pan y flores.
 > Every Saturday, Lucía goes to the market with her grandfather. The market is in a small square, near the river. There are many stalls of fruit, vegetables, bread and flowers.
+Q: ¿Con quién va Lucía al mercado?
+> Who does Lucía go to the market with?
+A: Con su abuelo.
+> With her grandfather.
+accept: su abuelo | el abuelo | con el abuelo
 
 Hoy [hace frío], pero el sol brilla. Lucía lleva una bufanda roja. Su abuelo quiere comprar naranjas, porque mañana por la [mañana:morning] [va a] preparar un pastel para su vecina.
 > Today it's cold, but the sun is shining. Lucía is wearing a red scarf. Her grandfather wants to buy oranges, because tomorrow morning he is going to make a cake for his neighbor.
+Q: ¿Qué va a preparar el abuelo?
+> What is the grandfather going to make?
+A: Un pastel.
+> A cake.
+accept: pastel
 
 En el primer puesto, las naranjas son caras. Cuestan tres euros el kilo. [Por eso], Lucía y su abuelo van al segundo puesto. Allí, las naranjas cuestan dos euros el kilo. Compran dos kilos. Además, la vendedora le regala un limón a Lucía.
 > At the first stall, the oranges are expensive. They cost three euros a kilo. That's why Lucía and her grandfather go to the second stall. There, the oranges cost two euros a kilo. They buy two kilos. On top of that, the seller gives Lucía a lemon.
+Q: ¿Cómo son las naranjas en el primer puesto?
+> What are the oranges like at the first stall?
+A: Caras.
+> Expensive.
+accept: son caras | muy caras
 
 Después, compran pan y unas flores amarillas. [Más tarde], vuelven a casa. Lucía está contenta. A Lucía [le gusta] mucho el mercado.
 > Afterward, they buy bread and some yellow flowers. Later, they go back home. Lucía is happy. Lucía really likes the market.
-
+Q: ¿Qué compran después de las naranjas?
+> What do they buy after the oranges?
+A: Pan y flores.
+> Bread and flowers.
+accept: pan y unas flores | flores y pan | unas flores y pan
 ## Retelling
 
 [Todos los sábados], voy al mercado con mi abuelo. El mercado está en una plaza pequeña, [cerca del] río. Hay muchos puestos de frutas, verduras, pan y flores.
 > Every Saturday, I go to the market with my grandfather. The market is in a small square, near the river. There are many stalls of fruit, vegetables, bread and flowers.
+Q: ¿Qué día de la semana voy al mercado?
+> What day of the week do I go to the market?
+A: Los sábados.
+> On Saturdays.
+accept: el sábado | sábados | sábado | todos los sábados
 
 Hoy [hace frío], pero el sol brilla. Llevo una bufanda roja. Mi abuelo quiere comprar naranjas, porque mañana por la [mañana:morning] [va a] preparar un pastel para su vecina.
 > Today it's cold, but the sun is shining. I'm wearing a red scarf. My grandfather wants to buy oranges, because tomorrow morning he is going to make a cake for his neighbor.
+Q: ¿Qué llevo hoy?
+> What am I wearing today?
+A: Una bufanda roja.
+> A red scarf.
+accept: una bufanda | llevas una bufanda roja
 
 En el primer puesto, las naranjas son caras. Cuestan tres euros el kilo. [Por eso], mi abuelo y yo vamos al segundo puesto. Allí, las naranjas cuestan dos euros el kilo. Compramos dos kilos. Además, la vendedora me regala un limón.
 > At the first stall, the oranges are expensive. They cost three euros a kilo. That's why my grandfather and I go to the second stall. There, the oranges cost two euros a kilo. We buy two kilos. On top of that, the seller gives me a lemon.
+Q: ¿Qué me regala la vendedora?
+> What does the seller give me?
+A: Un limón.
+> A lemon.
+accept: limón | te regala un limón
 
 Después, compramos pan y unas flores amarillas. [Más tarde], volvemos a casa. Estoy contenta. [Me gusta] mucho el mercado.
 > Afterward, we buy bread and some yellow flowers. Later, we go back home. I'm happy. I really like the market.
-
-## Preguntas
-
-S: Lucía va al mercado con su abuelo.
-> Lucía goes to the market with her grandfather.
-Q: ¿Lucía va al mercado con su madre?
-> Does Lucía go to the market with her mother?
-A: No, Lucía no va al mercado con su madre. Va con su abuelo.
-> No, Lucía doesn't go to the market with her mother. She goes with her grandfather.
-
-S: Hoy [hace frío]. Lucía lleva una bufanda roja.
-> Today it's cold. Lucía is wearing a red scarf.
-Q: ¿Lucía lleva una bufanda roja?
-> Is Lucía wearing a red scarf?
-A: Sí, Lucía lleva una bufanda roja, porque [hace frío].
-> Yes, Lucía is wearing a red scarf, because it's cold.
-
-S: En el primer puesto, las naranjas son caras.
-> At the first stall, the oranges are expensive.
-Q: ¿Las naranjas son baratas en el primer puesto?
-> Are the oranges cheap at the first stall?
-A: No, las naranjas no son baratas en el primer puesto. Son caras: cuestan tres euros el kilo.
-> No, the oranges aren't cheap at the first stall. They're expensive: they cost three euros a kilo.
-
-S: Lucía y su abuelo van al segundo puesto.
-> Lucía and her grandfather go to the second stall.
-Q: ¿Compran naranjas en el segundo puesto?
-> Do they buy oranges at the second stall?
-A: Sí, compran dos kilos de naranjas en el segundo puesto.
-> Yes, they buy two kilos of oranges at the second stall.
-
-S: La vendedora le regala un limón a Lucía.
-> The seller gives Lucía a lemon.
-Q: ¿La vendedora le regala una naranja a Lucía?
-> Does the seller give Lucía an orange?
-A: No, la vendedora no le regala una naranja. Le regala un limón.
-> No, the seller doesn't give her an orange. She gives her a lemon.
-
-S: Primero compran naranjas. Después, compran pan y flores.
-> First they buy oranges. Afterward, they buy bread and flowers.
-Q: ¿Compran pan antes de comprar naranjas?
-> Do they buy bread before buying oranges?
-A: No, no compran pan antes. Compran pan después de comprar naranjas.
-> No, they don't buy bread before. They buy bread after buying oranges.
-
-S: [Más tarde], vuelven a casa. Lucía está contenta.
-> Later, they go back home. Lucía is happy.
-Q: ¿Lucía está contenta?
-> Is Lucía happy?
-A: Sí, Lucía está contenta. [Le gusta] mucho el mercado.
-> Yes, Lucía is happy. She really likes the market.
+Q: ¿Cómo estoy al final del día?
+> How am I at the end of the day?
+A: Contenta.
+> Happy.
+accept: estás contenta | muy contenta | feliz | estás feliz

@@ -175,10 +175,6 @@ lanzarse a la piscina
   form: infinitive
   note: Literally "to throw oneself into the pool". In Spain you'll also hear "tirarse a la piscina".
   words: lanzarse, a, la, piscina
-de momento
-  gloss: for now; for the time being
-  pos: phrase
-  words: de, momento
 por fin
   gloss: at last; finally
   pos: phrase
@@ -187,14 +183,6 @@ de verdad
   gloss: really; truly
   pos: phrase
   words: de, verdad
-le gustan
-  gloss: he likes; she likes (more than one thing)
-  pos: phrase
-  form: present
-  lemma: gustar
-  note: Plural because the things liked are plural: "le gustan las ofertas".
-  words: le, gustan
-
 ni uno
   gloss: not a single one
   pos: phrase
@@ -360,15 +348,6 @@ amarillas
   gloss: yellow
   pos: adjective
   lemma: amarillo
-  note: feminine plural
-antes
-  gloss: before
-  pos: adverb
-  note: "antes de" + infinitive = before ...ing
-baratas
-  gloss: cheap
-  pos: adjective
-  lemma: barato
   note: feminine plural
 brilla
   gloss: shines
@@ -541,9 +520,6 @@ lucía
   gloss: Lucía
   pos: name
   name: yes
-madre
-  gloss: mother
-  pos: noun
 mañana
   gloss: tomorrow
   pos: adverb
@@ -671,9 +647,6 @@ sábados
   gloss: Saturdays
   pos: noun
   lemma: sábado
-sí
-  gloss: yes
-  pos: adverb
 tarde
   gloss: late
   pos: adverb
@@ -829,12 +802,6 @@ dedicaré
   form: yo, future
   lemma: dedicar
   note: yo, future
-deja
-  gloss: leaves; quits
-  pos: verb
-  form: él/ella, present
-  lemma: dejar
-  note: "dejar el trabajo" = to quit your job
 desde
   gloss: since; from
   pos: preposition
@@ -897,9 +864,6 @@ empresa
   gloss: company; business
   pos: noun
   note: Compare "negocio": any business, even a shop or a bar. "Empresa" is a company or firm.
-enseguida
-  gloss: right away; at once
-  pos: adverb
 es
   gloss: is
   pos: verb
@@ -919,12 +883,6 @@ final
 grande
   gloss: big; large
   pos: adjective
-gustan
-  gloss: please
-  pos: verb
-  form: ellos/ellas, present
-  lemma: gustar
-  note: ellos/ellas, present. "Le gustan" = he likes them.
 ha
   gloss: has
   pos: verb
@@ -1001,9 +959,6 @@ mis
 mismo
   gloss: same
   pos: adjective
-momento
-  gloss: moment
-  pos: noun
 montar
   gloss: to ride; to get on
   pos: verb
@@ -1050,9 +1005,6 @@ piscina
   pos: noun
 principio
   gloss: beginning
-  pos: noun
-profesor
-  gloss: teacher
   pos: noun
 proyecto
   gloss: project
@@ -1204,12 +1156,6 @@ vender
 verdad
   gloss: truth
   pos: noun
-ve
-  gloss: sees
-  pos: verb
-  form: él/ella, present
-  lemma: ver
-  note: él/ella, present
 vistazo
   gloss: glance; look
   pos: noun
@@ -1281,12 +1227,6 @@ dar
   gloss: to give
   pos: verb
   form: infinitive
-decidió
-  gloss: decided
-  pos: verb
-  form: él/ella, preterite
-  lemma: decidir
-  note: él/ella, indefinido
 di
   gloss: I gave
   pos: verb
@@ -1480,10 +1420,6 @@ decidir
   gloss: to decide
   pos: verb
   form: infinitive
-dejar
-  gloss: to leave; to quit
-  pos: verb
-  form: infinitive
 echar
   gloss: to throw; to put
   pos: verb
@@ -1522,10 +1458,6 @@ tener
   form: infinitive
 trabajar
   gloss: to work
-  pos: verb
-  form: infinitive
-ver
-  gloss: to see
   pos: verb
   form: infinitive
 vivir
