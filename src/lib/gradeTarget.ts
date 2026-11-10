@@ -88,23 +88,20 @@ export function optionsLang(target: Target): 'es' | 'en' {
 }
 
 /**
- * A note on the picked option: its own note (why a trap is wrong, or what to
- * know about a correct variant), or for wrong verb forms, which person or
- * tense the picked form belongs to.
+ * The picked option's own note: why a trap is wrong, or what to know about a
+ * correct variant. (The correct option's note is shown as "why it's right".)
  */
 export function distractorNote(target: Target, option: QuestionOption | undefined): string | null {
-  // The correct option's note is shown separately, as "why it's right".
   if (!option || option.id === target.pre.correctOptionId) return null;
-  // Traps and also-correct variants can carry their own note.
-  if (option.note) return option.note;
-  if (isCorrectOption(target, option.id)) return null;
-  if (target.kind === 'form') {
-    const match = (Object.entries(target.forms) as [Person, string][]).find(
-      ([, form]) => normalize(form) === normalize(option.text),
-    );
-    if (match) return `«${option.text}» is the ${match[0]} form. With ${target.person}, it's «${targetAnswer(target)}».`;
-    const tense = target.wrongForms?.[normalize(option.text)];
-    if (tense) return `«${option.text}» is the ${tense}. Here it's «${targetAnswer(target)}».`;
-  }
-  return null;
+  return option.note ?? null;
+}
+
+/** For a wrong verb form picked before reading: which person or tense it is ("él/ella form", "present"). */
+export function optionTag(target: Target, option: QuestionOption | undefined): string | null {
+  if (!option || target.kind !== 'form' || isCorrectOption(target, option.id)) return null;
+  const match = (Object.entries(target.forms) as [Person, string][]).find(
+    ([, form]) => normalize(form) === normalize(option.text),
+  );
+  if (match) return `${match[0]} form`;
+  return target.wrongForms?.[normalize(option.text)] ?? null;
 }

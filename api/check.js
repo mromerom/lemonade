@@ -152,6 +152,19 @@ function plainText(es) {
   return es.replace(BRACKET, "$1");
 }
 
+// src/lib/nounGender.ts
+var NOT_FEMININE = ["d\xEDa", "mapa", "problema", "idioma", "sistema", "tema", "planeta", "clima", "programa"];
+var NOT_MASCULINE = ["mano", "foto", "moto", "radio"];
+function nounHint(noun) {
+  if (!noun) return "";
+  const n = noun.replace(/s$/, "");
+  if (NOT_FEMININE.includes(n)) return ` \xAB${n}\xBB ends in -a but is masculine: one of the exceptions.`;
+  if (NOT_MASCULINE.includes(n)) return ` \xAB${n}\xBB ends in -o but is feminine: one of the exceptions.`;
+  if (n.endsWith("a")) return " Rule of thumb: nouns ending in -a are almost always feminine.";
+  if (n.endsWith("o")) return " Rule of thumb: nouns ending in -o are almost always masculine.";
+  return "";
+}
+
 // server/check.ts
 var MODEL = "claude-haiku-5-5";
 var MAX_ANSWER = 200;
@@ -181,16 +194,33 @@ function itemsFor(story, answers) {
   );
 }
 function systemPrompt(story) {
-  return `You check answers written by learners of Castilian Spanish (Spain), level ${story.level}, to reading-comprehension questions about a short story. Each question is about one paragraph, and the learner could see it while answering.
+  return `You check answers written by learners of Castilian Spanish (Spain), level ${story.level}, to reading-comprehension questions about a short story. Each question is about one paragraph, and the learner could see it while answering. You check two things only: whether the answer understands the paragraph, and whether its Spanish is grammatical. Be strict about those and nothing else.
 
-How to judge:
-- meaning: "correct" if the answer is true according to the paragraph and answers the question, even when worded differently from the model answer. "partly" if it is on the right track but misses the key point, or adds something the paragraph contradicts. "incorrect" if it doesn't answer the question or says something the paragraph contradicts. The model answer is one good answer, not the only one.
-- In the retelling, ${story.retelling.narrator} asks the questions about themself, so the learner should answer to them with t\xFA (te, tu, verbs ending in -s). Answering about them with \xE9l/ella is a "person" issue, not a meaning issue.
-- issues: only real mistakes in the learner's Spanish (person, tense, gender, number, agreement, spelling, accent, word choice, word order, missing word). Don't flag: a missing capital letter or final full stop, a missing "\xBF", Castilian usage, informal but correct Spanish, or a shorter answer than the model's. If the meaning is wrong, add one issue with category "meaning" whose "right" is the key fact from the paragraph.
-- wrong/right: the few words involved, as the learner wrote them and fixed.
-- tip: the rule behind the fix, in plain English, at most 15 words, for a learner at ${story.level}.
-- corrected: the learner's answer with the smallest fixes, keeping their words. Empty if there is nothing to fix.
-- comment: at most 20 words of English about the meaning, speaking to the learner as "you". Encouraging and specific, never just "Great job". Empty when the meaning is correct and there are no issues.`;
+Never report, correct or mention:
+- capital letters (a sentence starting in lowercase is fine), punctuation, missing \xBF or \xA1, or a missing final full stop;
+- Castilian usage, informal but correct Spanish, or style you would phrase differently;
+- an answer being shorter or simpler than the model answer.
+
+meaning:
+- "correct": true according to the paragraph and answers the question, even if worded differently from the model answer. The model answer is one good answer, not the only one.
+- "partly": on the right track, but misses the key point or adds something the paragraph contradicts.
+- "incorrect": doesn't answer the question, or says something the paragraph contradicts.
+- In the retelling, ${story.retelling.narrator} asks about themself, so the learner should answer to them with t\xFA (te, tu, verbs ending in -s). Answering about them with \xE9l/ella is a "person" issue, not a meaning issue.
+
+issues: only real mistakes in the learner's Spanish. Never add an issue for meaning (explain meaning in comment). Pick the category by what is actually wrong:
+- "spelling": letters inside one word are wrong (b/v, missing or extra h, ll/y, c/z/s, a missing or swapped letter). Not articles, not gender.
+- "accent": only a written accent is missing or wrong.
+- "gender": an article or adjective has the wrong gender for its noun ("el piscina", "a el piscina", "un casa", "contento" for a woman). For gender, end the tip with a rule of thumb when it helps: most nouns ending in -a are feminine and most ending in -o are masculine; if the noun is an exception (el d\xEDa, el problema, el mapa, la mano, la foto), say so instead.
+- "number": singular/plural mismatch. "agreement": other mismatches between words that go together.
+- "person": the verb's person is wrong. "tense": the tense or mood is wrong.
+- "word choice": a real word used with the wrong meaning. "word order", "missing word": as named.
+For each issue, "wrong" and "right" are just the few words involved, as written and fixed. "tip" is the rule behind the fix, in plain English, at most 20 words, for a learner at ${story.level}.
+
+corrected: the learner's answer with the smallest fixes for the issues listed, keeping their words. Empty when there are no issues.
+
+alternative: only when meaning is "correct": one other natural way to answer, using words from the paragraph, at level ${story.level}. It must be clearly different from both the learner's answer and the model answer (not the same sentence with small changes), one short clause, no semicolons. Empty otherwise.
+
+comment: at most 20 words of English about the meaning, speaking to the learner as "you": what they understood, or what the paragraph actually tells us. Specific, never just "Great job". Empty when the meaning is correct and there are no issues.`;
 }
 function userPrompt(items) {
   return items.map(
@@ -229,29 +259,48 @@ var TOOL = {
               }
             },
             corrected: { type: "string" },
+            alternative: { type: "string" },
             comment: { type: "string" }
           },
-          required: ["id", "meaning", "issues", "corrected", "comment"]
+          required: ["id", "meaning", "issues", "corrected", "alternative", "comment"]
         }
       }
     },
     required: ["checks"]
   }
 };
+var CHECK_VERSION = 2;
+var bare = (s) => s.toLocaleLowerCase("es").replace(/[^\p{L}\p{N}\s]/gu, " ").replace(/\s+/g, " ").trim();
+var ARTICLES = /* @__PURE__ */ new Set(["el", "la", "los", "las", "un", "una", "unos", "unas", "al", "del", "lo"]);
+function articleOnly(wrong, right) {
+  const w = bare(wrong).split(" ");
+  const r = bare(right).split(" ");
+  const diff = (a, b) => a.filter((x) => !b.includes(x));
+  const changed = [...diff(w, r), ...diff(r, w)];
+  return changed.length > 0 && changed.every((x) => ARTICLES.has(x));
+}
 function cleanChecks(raw, items) {
   const list = raw?.checks ?? [];
-  const ids = new Set(items.map((i) => i.id));
   const categories = new Set(ISSUE_CATEGORIES);
   const out = {};
   for (const c of list) {
-    if (!ids.has(c.id) || !["correct", "partly", "incorrect"].includes(c.meaning)) continue;
-    const answer = items.find((i) => i.id === c.id).answer;
+    const item = items.find((i) => i.id === c.id);
+    if (!item || !["correct", "partly", "incorrect"].includes(c.meaning)) continue;
+    const issues = (c.issues ?? []).filter((i) => categories.has(i.category) && i.category !== "meaning").filter((i) => bare(i.wrong) !== bare(i.right)).map((i) => {
+      const category = i.category === "spelling" && articleOnly(i.wrong, i.right) ? "gender" : i.category;
+      const noun = bare(i.right).split(" ").pop();
+      const tip = category === "gender" && !/-a\b|-o\b|rule of thumb|exception/i.test(i.tip) ? `${i.tip.trim()}${nounHint(noun)}` : i.tip;
+      return { category, wrong: i.wrong, right: i.right, tip: tip.slice(0, 260) };
+    }).slice(0, 4);
+    const corrected = issues.length && c.corrected && bare(c.corrected) !== bare(item.answer) ? c.corrected : void 0;
+    const alternative = c.meaning === "correct" && c.alternative && ![item.answer, item.model, corrected ?? ""].some((s) => bare(s) === bare(c.alternative)) ? c.alternative : void 0;
     out[c.id] = {
       meaning: c.meaning,
-      issues: (c.issues ?? []).filter((i) => categories.has(i.category)).slice(0, 4).map((i) => ({ category: i.category, wrong: i.wrong, right: i.right, tip: i.tip.slice(0, 160) })),
-      // A "correction" identical to the answer isn't one.
-      corrected: c.corrected && c.corrected.trim() !== answer ? c.corrected.slice(0, 300) : void 0,
-      comment: c.comment?.slice(0, 200) || void 0
+      issues,
+      corrected: corrected?.slice(0, 300),
+      alternative: alternative?.slice(0, 200),
+      comment: c.comment?.slice(0, 200) || void 0,
+      v: CHECK_VERSION
     };
   }
   return out;
@@ -295,6 +344,7 @@ async function POST(request) {
   return json({ checks: cleanChecks(tool?.input, items) });
 }
 export {
+  CHECK_VERSION,
   POST,
   cleanChecks,
   itemsFor,

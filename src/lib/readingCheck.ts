@@ -1,5 +1,6 @@
 import type { AnswerIssue, ReadingCheck, ReadingQuestion, Text } from '../types';
 import { gradeAnswer, normalize, stripAccents } from './grade';
+import { nounHint } from './nounGender';
 import { readingQuestions } from './textWords';
 
 /**
@@ -30,6 +31,8 @@ const NUMBER_PAIRS = [
   ['una', 'unas'],
 ];
 
+const ARTICLES = new Set(GENDER_PAIRS.flat());
+
 const pairIn = (pairs: string[][], a: string, b: string) => pairs.some(([x, y]) => (a === x && b === y) || (a === y && b === x));
 
 /** How two words differ when they're the same word with another gender or number, else null. */
@@ -49,9 +52,10 @@ function inflectionSlip(typed: string, right: string): 'gender' | 'number' | nul
 }
 
 const SLIP_TIPS = {
-  gender: (right: string) => `Match the gender: «${right}».`,
+  gender: (right: string, noun?: string) => `Match the gender: «${right}».${nounHint(noun)}`,
   number: (right: string) => `Match singular or plural: «${right}».`,
 };
+
 
 /** Grade a short (beginner) answer against the model answer and the accepted answers. */
 export function checkShort(q: ReadingQuestion, answer: string): ReadingCheck {
@@ -72,7 +76,14 @@ export function checkShort(q: ReadingQuestion, answer: string): ReadingCheck {
       if (w === right[i]) return;
       const slip = inflectionSlip(w, right[i]);
       if (!slip) explained = false;
-      else issues.push({ category: slip, wrong: w, right: right[i], tip: SLIP_TIPS[slip](right[i]) });
+      else
+        issues.push({
+          category: slip,
+          wrong: w,
+          right: right[i],
+          // For an article, the noun after it decides the gender.
+          tip: SLIP_TIPS[slip](right[i], ARTICLES.has(right[i]) ? right[i + 1] : undefined),
+        });
     });
     if (explained && issues.length) {
       return { ...base, meaning: 'correct', issues, corrected: right.join(' ') };
@@ -111,10 +122,20 @@ export function checkShort(q: ReadingQuestion, answer: string): ReadingCheck {
   }
 }
 
-/** A check is still good if it was made for the answer as it is now. */
+/** Must match CHECK_VERSION in server/check.ts: AI checks from an older version are made again. */
+export const AI_CHECK_VERSION = 2;
+
+/** A check is still good if it was made for the answer as it is now (and, for AI checks, by the current check). */
 export function isCurrent(check: ReadingCheck | undefined, answer: string): check is ReadingCheck {
-  return Boolean(check && normalize(check.answer) === normalize(answer));
+  return Boolean(
+    check &&
+      normalize(check.answer) === normalize(answer) &&
+      (check.source !== 'ai' || check.v === AI_CHECK_VERSION),
+  );
 }
+
+/** Same words, ignoring capitals and punctuation. */
+export const sameWords = (a: string, b: string) => normalize(a) === normalize(b);
 
 /** Right meaning, and no mistakes other than accents. */
 export function isCorrectCheck(check: ReadingCheck | undefined): boolean {

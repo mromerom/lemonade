@@ -70,6 +70,23 @@ export const SPELLING_CONFUSIONS: SpellingConfusion[] = [
     replaceWith: 'z',
   },
   {
+    // H is silent, so learners drop it (arto for harto, ablar for hablar).
+    // Not the H of CH, which is a sound of its own.
+    id: 'missing-h',
+    label: 'h',
+    explain: "H is silent in Spanish, but it's still written. This word has an H.",
+    site: /(?<!c)h/g,
+    replaceWith: '',
+  },
+  {
+    // …or add one where there's none (hera for era). Only at the start of a word.
+    id: 'extra-h',
+    label: 'h',
+    explain: 'H is silent in Spanish, so it’s easy to add one by mistake. This word has no H.',
+    site: /(?<=^|\s)(?=[aeiouáéíóú])/g,
+    replaceWith: 'h',
+  },
+  {
     id: 'missing-dieresis',
     label: 'ü',
     explain: 'This word needs ü so the U is pronounced between G and E or I (as in pingüino).',

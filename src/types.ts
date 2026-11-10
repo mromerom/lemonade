@@ -222,6 +222,10 @@ export interface ReadingCheck {
   corrected?: string;
   /** One sentence about the meaning, in English */
   comment?: string;
+  /** Another way to answer, different from the learner's and the model answer (AI checks) */
+  alternative?: string;
+  /** Version of the AI check that made this; older checks are made again */
+  v?: number;
 }
 
 export type LessonStage = 'pre' | 'read' | 'post' | 'compare' | 'done';

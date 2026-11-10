@@ -66,7 +66,7 @@ export interface Focus {
 }
 
 export function focusAreas(
-  checks: (ReadingCheck | undefined)[],
+  checks: { check: ReadingCheck | undefined; model: string }[],
   words: { target: Target; grade: TargetGrade; typed: string }[],
   limit = 3,
 ): Focus[] {
@@ -78,13 +78,13 @@ export function focusAreas(
     found.set(area, f);
   };
 
-  for (const c of checks) {
+  for (const { check: c, model } of checks) {
     if (!c) continue;
     for (const issue of c.issues) {
       const area = FROM_CATEGORY[issue.category];
       if (area) add(area, issue.right ? { wrong: issue.wrong, right: issue.right } : undefined);
     }
-    if (c.meaning !== 'correct' && !c.issues.some((i) => i.category === 'meaning')) add('meaning');
+    if (c.meaning !== 'correct') add('meaning', { wrong: c.answer, right: model });
   }
 
   for (const { target, grade, typed } of words) {
@@ -97,8 +97,10 @@ export function focusAreas(
         add('accent', example);
         break;
       case 'spelling':
-      case 'typo':
         add('spelling', example);
+        break;
+      case 'typo':
+        // A slip of the fingers, not something to study.
         break;
       case 'form':
         add(grade.usedPerson ? 'person' : 'tense', example);

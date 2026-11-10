@@ -491,3 +491,69 @@
   margin: 0.3rem 0 0;
   padding-left: 1.1rem;
 }
+
+/* Tags for what's off in an answer */
+.tags {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-left: 0.25rem;
+}
+.tag {
+  padding: 0.05rem 0.45rem;
+  border-radius: 4px;
+  border: 1px solid currentColor;
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+.tagBad {
+  color: var(--bad);
+}
+.tagWarn {
+  color: var(--warn);
+}
+.answers dd {
+  flex-wrap: wrap;
+}
+.answerNote {
+  margin: 0.35rem 0 0;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+/* A mistake and its fix */
+.wrongRight {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  font-family: var(--font-read);
+}
+.wrongLine,
+.rightLine {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+}
+.wrIcon {
+  flex: none;
+  width: 1rem;
+  font-family: var(--font-ui);
+  font-weight: 700;
+  text-align: center;
+}
+.wrongLine .wrIcon {
+  color: var(--bad);
+}
+.rightLine .wrIcon {
+  color: var(--good);
+}
+.focusExamples {
+  display: flex !important;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.5rem;
+  margin-top: 0.35rem;
+  color: var(--text) !important;
+}

@@ -1,20 +1,28 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { isSlip, normalize, VERDICT_LABEL, type Verdict } from '../../lib/grade';
+import { normalize } from '../../lib/grade';
 import {
   correctNote,
   distractorNote,
   gradeTarget,
   isCorrectOption,
   optionsLang,
-  targetAnswer,
+  optionTag,
   targetLabel,
   type TargetGrade,
 } from '../../lib/gradeTarget';
 import { findEvidence } from '../../lib/textWords';
 import { focusAreas, recommendText } from '../../lib/focus';
 import { plainText } from '../../lib/markup';
-import { checkedInApp, checkShort, fetchAiChecks, isCorrectCheck, isCurrent, needsAiCheck } from '../../lib/readingCheck';
+import {
+  checkedInApp,
+  checkShort,
+  fetchAiChecks,
+  isCorrectCheck,
+  isCurrent,
+  needsAiCheck,
+  sameWords,
+} from '../../lib/readingCheck';
 import { tokenize } from '../../lib/tokenize';
 import { useLearner } from '../../store/learnerStore';
 import type { LessonProgress, Paragraph, QuestionOption, ReadingCheck, ReadingQuestion, Target, Text } from '../../types';
@@ -29,25 +37,40 @@ interface Props {
   lesson: LessonProgress;
 }
 
-function explain(target: Target, grade: TargetGrade, typed: string): string {
+/**
+ * A wrong-form label can be a whole note: "present ("I decide"). The decision
+ * already happened this morning". The tag shows just "present"; the rest is
+ * shown as a note under the answer.
+ */
+function shortTense(label?: string): string {
+  return label?.split(/[.(:]/)[0].trim() ?? '';
+}
+function tenseNote(label?: string): string | null {
+  if (!label) return null;
+  // What's left after the tag: 'present ("I decide"). The decision…' → '"I decide". The decision…'
+  const rest = label
+    .trim()
+    .slice(shortTense(label).length)
+    .replace(/^\s*\((.*?)\)/, '$1')
+    .replace(/^[\s.:]+/, '')
+    .trim();
+  return rest ? rest.replace(/([^.!?])$/, '$1.') : null;
+}
+
+/** Short labels for what's off in a typed answer: shown as tags under it. */
+function answerTags(grade: TargetGrade): { text: string; bad: boolean }[] {
   switch (grade.verdict) {
-    case 'correct':
-      return '';
     case 'accent':
-      return 'You remembered the right word. Just the accent marks are off.';
-    case 'spelling':
-      return 'You remembered the right word. The spelling tripped you up.';
+      return [{ text: 'accent', bad: false }];
     case 'typo':
-      return 'You remembered the right word, but it looks mistyped.';
+      return [{ text: 'typo', bad: false }];
+    case 'spelling':
+      // Common mix-ups (b/v, h, ll/y…) are real spelling mistakes, so they're marked wrong.
+      return [...new Set(grade.confusions.map((c) => c.label))].map((text) => ({ text, bad: true }));
     case 'form':
-      if (target.kind === 'form' && grade.usedPerson) {
-        return `«${typed}» is the ${grade.usedPerson} form. With ${target.person}, it's «${targetAnswer(target)}».`;
-      }
-      if (grade.usedTense) return `«${typed}» is the ${grade.usedTense}. Here it's «${targetAnswer(target)}».`;
-      return 'Right verb, wrong form.';
-    case 'incorrect':
-      if (grade.trapNote) return grade.trapNote;
-      return typed ? "This one didn't stick yet." : 'No answer yet. Have another look at it below.';
+      return [{ text: grade.usedPerson ? `${grade.usedPerson} form` : shortTense(grade.usedTense) || 'wrong form', bad: true }];
+    default:
+      return [];
   }
 }
 
@@ -147,7 +170,7 @@ export default function Comparison({ text, lesson }: Props) {
   const firstWord = readingSlides.length;
 
   const focus = focusAreas(
-    readingChecks,
+    questions.map((q, i) => ({ check: readingChecks[i], model: q.answer.es })),
     rows.map((r) => ({ target: r.t, grade: r.grade, typed: r.typed })),
   );
   const recommended = focus.length === 0 ? recommendText(state, text) : null;
@@ -273,15 +296,7 @@ export default function Comparison({ text, lesson }: Props) {
                       {f.examples.length > 0 && (
                         <span className={styles.focusExamples}>
                           {f.examples.map((e, i) => (
-                            <span key={i} lang="es">
-                              {i > 0 && ' · '}
-                              {e.wrong && (
-                                <>
-                                  <s>{e.wrong}</s> →{' '}
-                                </>
-                              )}
-                              {e.right}
-                            </span>
+                            <WrongRight key={i} wrong={e.wrong} right={e.right} />
                           ))}
                         </span>
                       )}
@@ -398,6 +413,11 @@ function ReadingSlide({
   const { q } = slide;
   const correct = isCorrectCheck(check);
   const slip = check && !correct && check.meaning === 'correct';
+  // When the answer is right, show a different way to say it: the AI's
+  // alternative, or the model answer if it isn't what the learner wrote.
+  const other = correct
+    ? (check?.alternative ?? (sameWords(q.answer.es, answer) ? null : q.answer.es))
+    : q.answer.es;
 
   return (
     <div className={shared.question}>
@@ -476,10 +496,8 @@ function ReadingSlide({
             <ul className={styles.issues}>
               {check.issues.map((issue, i) => (
                 <li key={i}>
-                  <span className={styles.confusionTag}>{issue.category}</span>
-                  <span lang="es">
-                    <s>{issue.wrong}</s> → <strong>{issue.right}</strong>
-                  </span>
+                  <span className={`${styles.tag} ${styles.tagBad}`}>{issue.category}</span>
+                  <WrongRight wrong={issue.wrong} right={issue.right} />
                   <span className={styles.issueTip}>{issue.tip}</span>
                 </li>
               ))}
@@ -492,10 +510,10 @@ function ReadingSlide({
               <span lang="es">{check.corrected}</span>
             </p>
           )}
-          {check.source !== 'self' && (
+          {check.source !== 'self' && other && (
             <p className={styles.guessNote}>
               <span className={styles.guessNoteLabel}>{correct ? 'Another way to say it' : 'A model answer'}</span>
-              <span lang="es">{q.answer.es}</span>
+              <span lang="es">{other}</span>
             </p>
           )}
         </>
@@ -517,8 +535,52 @@ type Row = {
   corrected: boolean;
 };
 
+/** A mistake and its fix, marked ✗ and ✓ (no strikethrough, so both stay readable). */
+function WrongRight({ wrong, right }: { wrong: string; right: string }) {
+  return (
+    <span className={styles.wrongRight} lang="es">
+      {wrong && (
+        <span className={styles.wrongLine}>
+          <span className={styles.wrIcon} aria-label="wrong">
+            ✗
+          </span>
+          {wrong}
+        </span>
+      )}
+      <span className={styles.rightLine}>
+        <span className={styles.wrIcon} aria-label="right">
+          ✓
+        </span>
+        {right}
+      </span>
+    </span>
+  );
+}
+
+function Tags({ tags }: { tags: { text: string; bad: boolean }[] }) {
+  if (!tags.length) return null;
+  return (
+    <span className={styles.tags}>
+      {tags.map((tag) => (
+        <span key={tag.text} className={`${styles.tag} ${tag.bad ? styles.tagBad : styles.tagWarn}`}>
+          {tag.text}
+        </span>
+      ))}
+    </span>
+  );
+}
+
+/**
+ * One word or verb form: each answer with a tag for what's off, then one
+ * explanation of the right answer (instead of three notes saying the same).
+ */
 function WordSlide({ text, row: r, n, finished }: { text: Text; row: Row; n: number; finished: boolean }) {
   const { dispatch } = useLearner();
+  const guessLabel = optionTag(r.t, r.guess);
+  const guessTag = guessLabel && (r.t.kind === 'form' && guessLabel.endsWith(' form') ? guessLabel : shortTense(guessLabel));
+  const guessTenseNote = guessLabel && !guessLabel.endsWith(' form') ? tenseNote(guessLabel) : null;
+  const typedTenseNote = r.grade.verdict === 'form' && !r.grade.usedPerson ? tenseNote(r.grade.usedTense) : null;
+  const slip = r.grade.verdict === 'accent' || r.grade.verdict === 'typo';
   return (
     <div className={shared.question}>
       <TargetPrompt target={r.t} prompt={r.t.post.prompt} index={n} />
@@ -530,28 +592,31 @@ function WordSlide({ text, row: r, n, finished }: { text: Text; row: Row; n: num
           <dd>
             <Mark ok={r.guessedRight} />
             <span lang={optionsLang(r.t)}>{r.guess?.text ?? '—'}</span>
+            <Tags tags={guessTag ? [{ text: guessTag, bad: true }] : []} />
           </dd>
+          {r.guessNote && <p className={styles.answerNote}>{r.guessNote}</p>}
+          {guessTenseNote && !r.guessNote && <p className={styles.answerNote}>{guessTenseNote}</p>}
         </div>
         <div>
           <dt>From memory</dt>
           <dd>
-            <Mark ok={r.grade.verdict === 'correct'} partial={isSlip(r.grade.verdict)} />
+            <Mark ok={r.grade.verdict === 'correct'} partial={slip} />
             <span lang="es">{r.typed || <em className={styles.blank}>left blank</em>}</span>
+            <Tags tags={answerTags(r.grade)} />
           </dd>
+          {r.grade.trapNote && <p className={styles.answerNote}>{r.grade.trapNote}</p>}
+          {typedTenseNote && <p className={styles.answerNote}>{typedTenseNote}</p>}
+          {r.confusions.map((c) => (
+            <p key={c.id} className={styles.answerNote}>
+              {c.explain}
+            </p>
+          ))}
+          {r.grade.verdict === 'typo' && (
+            <p className={styles.answerNote}>You remembered the word; a letter or two slipped.</p>
+          )}
         </div>
       </dl>
 
-      {r.guessNote && (
-        <p className={styles.guessNote}>
-          <span className={styles.guessNoteLabel}>{r.guessedRight ? 'Good to know' : 'About your guess'}</span>
-          {r.guessNote}
-        </p>
-      )}
-
-      <p className={`${styles.verdict} ${styles[verdictClass(r.grade.verdict)]}`}>
-        {VERDICT_LABEL[r.grade.verdict]}
-        {r.grade.verdict !== 'correct' && <span>. {explain(r.t, r.grade, r.typed)}</span>}
-      </p>
       {r.why && (
         <p className={styles.guessNote}>
           <span className={styles.guessNoteLabel}>
@@ -565,16 +630,6 @@ function WordSlide({ text, row: r, n, finished }: { text: Text; row: Row; n: num
           <span className={styles.guessNoteLabel}>Good to know</span>
           {r.grade.variantNote}
         </p>
-      )}
-      {r.confusions.length > 0 && (
-        <ul className={styles.confusions}>
-          {r.confusions.map((c) => (
-            <li key={c.id}>
-              <span className={styles.confusionTag}>{c.label}</span>
-              {c.explain}
-            </li>
-          ))}
-        </ul>
       )}
 
       {r.grade.verdict !== 'correct' && (
@@ -590,10 +645,6 @@ function WordSlide({ text, row: r, n, finished }: { text: Text; row: Row; n: num
       )}
     </div>
   );
-}
-
-function verdictClass(v: Verdict): string {
-  return v === 'form' ? 'incorrect' : v;
 }
 
 function Mark({ ok, partial }: { ok: boolean; partial?: boolean }) {
