@@ -186,7 +186,6 @@ export async function POST(request: Request): Promise<Response> {
     body: JSON.stringify({
       model: MODEL,
       max_tokens: 400 + 250 * items.length,
-      temperature: 0,
       system: systemPrompt(story),
       tools: [TOOL],
       tool_choice: { type: 'tool', name: TOOL.name },
