@@ -2,7 +2,7 @@ import react from '@vitejs/plugin-react'
 import { defineConfig, loadEnv, type Plugin } from 'vite'
 
 /**
- * Serves api/check.ts during `npm run dev`, the way Vercel serves it in
+ * Serves server/check.ts during `npm run dev`, the way Vercel serves it in
  * production. Put ANTHROPIC_API_KEY in .env.local to try the AI check locally.
  */
 function devApi(): Plugin {
@@ -19,7 +19,7 @@ function devApi(): Plugin {
         }
         const chunks: Buffer[] = []
         for await (const chunk of req) chunks.push(chunk as Buffer)
-        const mod = await server.ssrLoadModule('/api/check.ts')
+        const mod = await server.ssrLoadModule('/server/check.ts')
         const response: Response = await mod.POST(
           new Request('http://localhost/api/check', {
             method: 'POST',

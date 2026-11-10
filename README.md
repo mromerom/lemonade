@@ -57,7 +57,7 @@ Stack: Vite, React, TypeScript, CSS Modules, React Router. Deployed on Vercel. `
 
 ### AI check
 
-`api/check.ts` is a Vercel function that checks sentence answers with Claude (Haiku), one call per reading. The browser sends only the reading's id and the answers; the paragraphs, questions and model answers are read from the story files on the server, so the endpoint can't be used for anything else. The model must answer through a fixed schema (meaning: correct, partly or incorrect; issues by category with a tip; a minimally corrected answer), and results are saved with the lesson, so an answer is only checked again if it changes.
+`server/check.ts` (bundled into `api/check.js` by `npm run build:api`, part of `npm run build`) is a Vercel function that checks sentence answers with Claude (Haiku), one call per reading. The browser sends only the reading's id and the answers; the paragraphs, questions and model answers are read from the story files on the server, so the endpoint can't be used for anything else. The model must answer through a fixed schema (meaning: correct, partly or incorrect; issues by category with a tip; a minimally corrected answer), and results are saved with the lesson, so an answer is only checked again if it changes.
 
 It needs an Anthropic API key:
 

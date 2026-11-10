@@ -1,6 +1,13 @@
 {
   "functions": {
-    "api/check.ts": { "includeFiles": "src/content/texts/**" }
+    "api/check.js": {
+      "includeFiles": "src/content/texts/**"
+    }
   },
-  "rewrites": [{ "source": "/((?!api/).*)", "destination": "/index.html" }]
+  "rewrites": [
+    {
+      "source": "/((?!api/).*)",
+      "destination": "/index.html"
+    }
+  ]
 }

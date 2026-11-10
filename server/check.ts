@@ -6,6 +6,11 @@
  * questions and model answers come from the story files here on the server,
  * so the endpoint can't be used as a general-purpose chatbot.
  *
+ * Vercel runs api/check.js, a single-file bundle of this file made by
+ * `npm run build:api` (part of `npm run build`): Vercel compiles functions
+ * file by file without bundling, and Node can't resolve the app's
+ * extensionless imports that way. Commit api/check.js after changing this.
+ *
  * Needs the ANTHROPIC_API_KEY environment variable (Vercel project settings,
  * or .env.local for `npm run dev`). Without it the endpoint answers 503 and
  * the app falls back to letting the learner compare answers themselves.

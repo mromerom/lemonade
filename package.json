@@ -5,11 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npm run check:content && tsc -b && vite build",
+    "build": "npm run build:api && npm run check:content && tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview",
     "build:preview": "npm run check:content && tsc -b && vite build --base ./ --outDir dist-preview",
-    "check:content": "tsx --import ./scripts/register-raw.mjs scripts/check-content.ts"
+    "check:content": "tsx --import ./scripts/register-raw.mjs scripts/check-content.ts",
+    "build:api": "esbuild server/check.ts --bundle --platform=node --format=esm --target=node22 --outfile=api/check.js --log-level=warning --banner:js=\"// Generated from server/check.ts by npm run build:api. Don't edit this file.\""
   },
   "dependencies": {
     "react": "^19.3.1",
@@ -21,6 +22,7 @@
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.2",
+    "esbuild": "0.28.2",
     "oxlint": "^1.88.0",
     "tsx": "^4.23.15",
     "typescript": "~6.0.3",
