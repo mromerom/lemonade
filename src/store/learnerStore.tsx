@@ -1,6 +1,17 @@
 import { lexicon } from '../content';
 import { createContext, useContext, useEffect, useReducer, type ReactNode } from 'react';
-import type { LearnerState, LessonProgress, LessonStage, ReadingCheck, ReviewItem, WordRecord, WordStatus } from '../types';
+import type {
+  LearnerState,
+  LessonProgress,
+  LessonStage,
+  ReadingCheck,
+  ReviewItem,
+  TranslationCheck,
+  WordRecord,
+  WordStatus,
+  WritingSet,
+} from '../types';
+import { isRightTranslation } from '../lib/writing';
 
 const STORAGE_KEY = 'lemonade:learner:v2';
 const DAY = 24 * 60 * 60 * 1000;
@@ -123,6 +134,13 @@ type Action =
     }
   | { type: 'restartLesson'; textId: string }
   | { type: 'savePhrase'; key: string; text: string; gloss: string; words: string[] }
+  | { type: 'startWritingSet'; set: WritingSet }
+  | { type: 'setWritingEnglish'; setId: string; index: number; english: string }
+  | { type: 'startTranslating'; setId: string }
+  | { type: 'addTranslationAttempt'; setId: string; index: number; spanish: string }
+  | { type: 'setTranslationCheck'; setId: string; index: number; check?: TranslationCheck; failed?: boolean }
+  | { type: 'nextTranslation'; setId: string }
+  | { type: 'resolveProofread'; id: string }
   | { type: 'resetAll' };
 
 function emptyLesson(): LessonProgress {
@@ -163,6 +181,11 @@ function withStatus(prev: WordRecord | undefined, sense: string, status: WordSta
   return sense === 'default'
     ? { ...base, status }
     : { ...base, senseStatus: { ...prev?.senseStatus, [sense]: status } };
+}
+
+function updateSet(state: LearnerState, setId: string, fn: (s: WritingSet) => WritingSet): LearnerState {
+  const writing = state.writing ?? { sets: [], usedPrompts: [] };
+  return { ...state, writing: { ...writing, sets: writing.sets.map((s) => (s.id === setId ? fn(s) : s)) } };
 }
 
 function reducer(state: LearnerState, action: Action): LearnerState {
@@ -270,6 +293,52 @@ function reducer(state: LearnerState, action: Action): LearnerState {
           },
         },
       };
+    }
+    case 'startWritingSet': {
+      const writing = state.writing ?? { sets: [], usedPrompts: [] };
+      return {
+        ...state,
+        writing: {
+          sets: [...writing.sets, action.set],
+          usedPrompts: [...new Set([...writing.usedPrompts, ...action.set.items.map((i) => i.prompt)])],
+        },
+      };
+    }
+    case 'setWritingEnglish':
+      return updateSet(state, action.setId, (s) => ({
+        ...s,
+        items: s.items.map((it, i) => (i === action.index ? { ...it, english: action.english } : it)),
+      }));
+    case 'startTranslating':
+      return updateSet(state, action.setId, (s) => ({ ...s, stage: 'translate', queue: s.items.map((_, i) => i), pos: 0 }));
+    case 'addTranslationAttempt':
+      return updateSet(state, action.setId, (s) => ({
+        ...s,
+        items: s.items.map((it, i) =>
+          i === action.index ? { ...it, attempts: [...it.attempts, { spanish: action.spanish, at: now }] } : it,
+        ),
+      }));
+    case 'setTranslationCheck':
+      return updateSet(state, action.setId, (s) => {
+        const item = s.items[action.index];
+        const attempts = item.attempts.map((a, i) =>
+          i === item.attempts.length - 1 ? { ...a, check: action.check, failed: action.failed } : a,
+        );
+        // A first attempt that went wrong comes back once, after the others.
+        const retry = attempts.length === 1 && action.check && !isRightTranslation(action.check);
+        return {
+          ...s,
+          items: s.items.map((it, i) => (i === action.index ? { ...it, attempts } : it)),
+          queue: retry && !s.queue.slice(s.pos + 1).includes(action.index) ? [...s.queue, action.index] : s.queue,
+        };
+      });
+    case 'nextTranslation':
+      return updateSet(state, action.setId, (s) =>
+        s.pos + 1 >= s.queue.length ? { ...s, pos: s.queue.length, stage: 'done', completedAt: now } : { ...s, pos: s.pos + 1 },
+      );
+    case 'resolveProofread': {
+      const resolved = state.proofread?.resolved ?? [];
+      return resolved.includes(action.id) ? state : { ...state, proofread: { resolved: [...resolved, action.id] } };
     }
     case 'resetAll':
       return createDemoState();

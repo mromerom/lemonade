@@ -1,0 +1,223 @@
+.page {
+  max-width: 760px;
+}
+.crumb {
+  margin: 0 0 1rem;
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+.head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.h1 {
+  margin: 0;
+  font-family: var(--font-read);
+  font-size: 1.8rem;
+}
+.h2 {
+  margin: 0 0 0.6rem;
+  font-size: 1.1rem;
+}
+.progress {
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+.lead {
+  margin: 0.4rem 0 1rem;
+  color: var(--muted);
+}
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.4rem 1.25rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.mine {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--accent-strong);
+}
+
+/* The sentence: words are tappable, fixes are typed in place */
+.sentence {
+  margin: 0;
+  font-family: var(--font-read);
+  font-size: 1.5rem;
+  line-height: 2.1;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.word {
+  border-radius: 4px;
+  cursor: pointer;
+  touch-action: none;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+.word:hover {
+  background: var(--surface-2);
+  box-shadow: 0 0 0 2px var(--surface-2);
+}
+.word:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 1px;
+}
+.dragging,
+.dragging:hover {
+  background: var(--learning);
+  box-shadow: 0 0 0 2px var(--learning);
+}
+.field {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.1rem;
+  vertical-align: baseline;
+}
+.fieldInput {
+  min-width: 2ch;
+  max-width: 100%;
+  padding: 0 0.3rem;
+  border: 0;
+  border-bottom: 2px solid var(--accent-strong);
+  border-radius: 4px 4px 0 0;
+  background: var(--surface-2);
+  color: var(--text);
+  font: inherit;
+  line-height: 1.5;
+}
+.fieldInput::placeholder {
+  color: var(--muted);
+  opacity: 0.75;
+}
+.fieldInput:focus::placeholder {
+  color: transparent;
+}
+.fieldInput:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 1px;
+}
+.undo {
+  padding: 0 0.25rem;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font-family: var(--font-ui);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.undo:hover {
+  color: var(--text);
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+.hint {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+  text-align: right;
+}
+
+/* Feedback */
+.feedback {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+.verdict {
+  margin: 0;
+  padding: 0.6rem 0.8rem;
+  border-radius: 8px;
+}
+.good {
+  color: var(--good);
+}
+.warn {
+  color: var(--warn);
+}
+.bad {
+  color: var(--bad);
+}
+.verdict.good {
+  background: var(--good-bg);
+}
+.verdict.warn {
+  background: var(--warn-bg);
+}
+.verdict.bad {
+  background: var(--bad-bg);
+}
+.lines {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.lines dt {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.lines dd {
+  margin: 0.15rem 0 0;
+}
+.sentenceSmall {
+  font-family: var(--font-read);
+  font-size: 1.2rem;
+  line-height: 1.6;
+}
+.mistake {
+  padding: 0 0.1em;
+  border-radius: 3px;
+  background: var(--bad-bg);
+  color: var(--bad);
+}
+.found {
+  background: transparent;
+  text-decoration: underline wavy var(--bad);
+  text-underline-offset: 4px;
+}
+.legend {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.note {
+  margin: 0;
+}
+
+/* End of a round */
+.summary {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.summary .lead {
+  margin: 0;
+}
+.focusBox {
+  padding: 1.1rem 1.25rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+@media (max-width: 600px) {
+  .sentence {
+    font-size: 1.3rem;
+  }
+}

@@ -24,6 +24,9 @@ export default function Layout() {
           <span aria-hidden="true">lemoNade</span>
         </Link>
         <div className={styles.right}>
+          <NavLink to="/exercises" className={({ isActive }) => `${styles.nav} ${isActive ? styles.navActive : ''}`}>
+            Exercises
+          </NavLink>
           <NavLink to="/words" className={({ isActive }) => `${styles.nav} ${isActive ? styles.navActive : ''}`}>
             Word bank
           </NavLink>
@@ -41,7 +44,7 @@ export default function Layout() {
             <>
               <span className={styles.profile}>{state.profile.name}</span>
               <button type="button" className="btn btn-quiet" onClick={() => setConfirming(true)}>
-                Reset demo
+                Reset<span className={styles.long}> demo</span>
               </button>
             </>
           )}

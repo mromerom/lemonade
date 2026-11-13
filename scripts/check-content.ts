@@ -10,6 +10,7 @@ import { texts } from '../src/data/texts';
 import { parseMarkup, plainText } from '../src/lib/markup';
 import { findEvidence, sentences, spanishStrings } from '../src/lib/textWords';
 import { tokenize } from '../src/lib/tokenize';
+import { exerciseErrors, proofreadSeeds } from '../src/content/exercises';
 
 const errors: string[] = [];
 const warnings: string[] = [];
@@ -19,6 +20,14 @@ const { lexicon, errors: lexErrors } = parseLexicon(lexRaw);
 for (const e of lexErrors) errors.push(`lexicon.txt:${e.line}  ${e.message}`);
 
 // Phrase entries: each word must exist, with the named sense.
+// ---------- Exercises ----------
+for (const e of exerciseErrors) errors.push(`${e.file}${e.line ? `:${e.line}` : ''}  ${e.message}`);
+const seen = new Set<string>();
+for (const p of proofreadSeeds) {
+  if (seen.has(p.sentence)) errors.push(`exercises/proofread.txt  "${p.sentence}" appears twice`);
+  seen.add(p.sentence);
+}
+
 for (const entry of Object.values(lexicon)) {
   for (const w of entry.words ?? []) {
     const part = lexicon[w.word];

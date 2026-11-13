@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { FocusList, WrongRight } from '../Feedback';
 import { Link } from 'react-router-dom';
 import { normalize } from '../../lib/grade';
 import {
@@ -289,20 +290,7 @@ export default function Comparison({ text, lesson }: Props) {
                 <h3 className={styles.focusTitle}>
                   {focus.length === 1 ? 'One thing to focus on' : `${focus.length} things to focus on`}
                 </h3>
-                <ul className={styles.focusList}>
-                  {focus.map((f) => (
-                    <li key={f.area}>
-                      <strong>{f.title}.</strong> {f.body}
-                      {f.examples.length > 0 && (
-                        <span className={styles.focusExamples}>
-                          {f.examples.map((e, i) => (
-                            <WrongRight key={i} wrong={e.wrong} right={e.right} />
-                          ))}
-                        </span>
-                      )}
-                    </li>
-                  ))}
-                </ul>
+                <FocusList focus={focus} />
               </div>
             ) : (
               <div className={styles.focus}>
@@ -534,28 +522,6 @@ type Row = {
   correction: string;
   corrected: boolean;
 };
-
-/** A mistake and its fix, marked ✗ and ✓ (no strikethrough, so both stay readable). */
-function WrongRight({ wrong, right }: { wrong: string; right: string }) {
-  return (
-    <span className={styles.wrongRight} lang="es">
-      {wrong && (
-        <span className={styles.wrongLine}>
-          <span className={styles.wrIcon} aria-label="wrong">
-            ✗
-          </span>
-          {wrong}
-        </span>
-      )}
-      <span className={styles.rightLine}>
-        <span className={styles.wrIcon} aria-label="right">
-          ✓
-        </span>
-        {right}
-      </span>
-    </span>
-  );
-}
 
 function Tags({ tags }: { tags: { text: string; bad: boolean }[] }) {
   if (!tags.length) return null;

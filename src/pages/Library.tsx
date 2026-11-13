@@ -2,7 +2,9 @@ import { Link } from 'react-router-dom';
 import Collapsible from '../components/Collapsible';
 import RecentWords from '../components/RecentWords';
 import { texts } from '../data/texts';
+import { poolSize } from '../lib/proofread';
 import { statusCounts } from '../lib/textWords';
+import { currentSet } from '../lib/writing';
 import { bankGroups } from '../lib/wordBank';
 import { useLearner } from '../store/learnerStore';
 import type { LessonStage } from '../types';
@@ -20,6 +22,8 @@ export default function Library() {
   const { state } = useLearner();
   const bank = bankGroups(state);
   const learning = bank.filter((e) => e.status !== 'known').length;
+  const proofread = poolSize(state).total;
+  const writing = currentSet(state);
 
   return (
     <>
@@ -75,6 +79,28 @@ export default function Library() {
               );
             })}
             <li className={`${styles.card} ${styles.placeholder}`}>More readings coming soon.</li>
+          </ul>
+        </Collapsible>
+
+        <Collapsible
+          id="exercises"
+          title="Exercises"
+          summary={`Write and translate${writing ? ' (in progress)' : ''} · Proofread (${proofread} sentences)`}
+          actions={
+            <Link to="/exercises" className="btn">
+              Open exercises
+            </Link>
+          }
+        >
+          <ul className={styles.exerciseLinks}>
+            <li>
+              <Link to="/exercises/write">{writing ? 'Continue your writing set' : 'Write and translate'}</Link>
+              <span>Five sentences about your life, in English and then in Spanish.</span>
+            </li>
+            <li>
+              <Link to="/exercises/proofread">Proofread</Link>
+              <span>Find and fix the mistakes, some of them your own.</span>
+            </li>
           </ul>
         </Collapsible>
 

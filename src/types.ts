@@ -194,7 +194,7 @@ export interface WordRecord {
 
 /** What a mistake in a written answer is about; the results step suggests focus areas from these. */
 export const ISSUE_CATEGORIES = [
-  'person', 'tense', 'gender', 'number', 'agreement', 'spelling', 'accent', 'word choice', 'word order',
+  'person', 'tense', 'ser/estar', 'gender', 'number', 'agreement', 'spelling', 'accent', 'word choice', 'word order',
   'missing word', 'meaning', 'other',
 ] as const;
 export type IssueCategory = (typeof ISSUE_CATEGORIES)[number];
@@ -226,6 +226,57 @@ export interface ReadingCheck {
   alternative?: string;
   /** Version of the AI check that made this; older checks are made again */
   v?: number;
+}
+
+/** The AI check of one translation in the writing exercise. */
+export interface TranslationCheck {
+  meaning: 'correct' | 'partly' | 'incorrect';
+  issues: AnswerIssue[];
+  corrected?: string;
+  /** A natural translation, different from the learner's */
+  alternative?: string;
+  comment?: string;
+}
+
+export interface TranslationAttempt {
+  spanish: string;
+  check?: TranslationCheck;
+  /** The check couldn't be reached */
+  failed?: boolean;
+  at: number;
+}
+
+export interface WritingItem {
+  prompt: string;
+  english: string;
+  attempts: TranslationAttempt[];
+}
+
+/** One round of the writing exercise: five prompts, written in English, then translated. */
+export interface WritingSet {
+  id: string;
+  /** Topic id from prompts.txt, or "mixed" */
+  topic: string;
+  addon?: string;
+  createdAt: number;
+  stage: 'write' | 'translate' | 'done';
+  items: WritingItem[];
+  /** Translation turns, as item indices: each item once, then each one that went wrong once more */
+  queue: number[];
+  /** Index into queue of the current turn */
+  pos: number;
+  completedAt?: number;
+}
+
+export interface WritingState {
+  sets: WritingSet[];
+  /** Prompts already given, so new sets get new ones */
+  usedPrompts: string[];
+}
+
+export interface ProofreadState {
+  /** Sentences fixed (or rightly left alone): they don't come back */
+  resolved: string[];
 }
 
 export type LessonStage = 'pre' | 'read' | 'post' | 'compare' | 'done';
@@ -273,4 +324,6 @@ export interface LearnerState {
   reviewQueue: ReviewItem[];
   /** Phrases the learner grouped themselves, keyed like words (lowercase text) */
   userPhrases?: Record<string, UserPhrase>;
+  writing?: WritingState;
+  proofread?: ProofreadState;
 }

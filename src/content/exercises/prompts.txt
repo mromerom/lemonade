@@ -1,0 +1,105 @@
+# Writing prompts
+#
+# The writing exercise picks five prompts for one topic. The learner writes a
+# sentence in English for each, then translates it into Spanish.
+#
+#   ## topic <id>           a main topic
+#   title: ...              shown in the topic picker
+#   about: ...              one line on what it practises
+#   - Write about ...       one prompt per line, in English
+#
+#   ## addon <id>           a small extra, added to every prompt of a set
+#   title: ...
+#   about: ...
+#   twist: ...              the line added under each prompt
+#
+# Write prompts that make the English sentence use the topic (a prompt for
+# "Past tenses" should make the learner write in the past), that anyone can
+# answer from their own life, and that fit in one sentence. When a topic runs
+# out of prompts the learner hasn't seen, the AI writes more in the same style.
+# Lines starting with # are comments.
+
+## topic present
+title: Everyday present
+about: Regular and irregular verbs in the present: what you do, like and have.
+- Write about what you usually do on a weekday morning.
+- Write about a hobby you have and how often you do it.
+- Write about what someone you know does for work.
+- Write about a food you like and why you like it.
+- Write about where you live and who you live with.
+- Write about a place you go to relax.
+- Write about something you're learning right now.
+- Write about a typical evening at home.
+
+## topic past
+title: Past tenses
+about: What happened (indefinido) and what things were like (imperfecto).
+- Write about something you did last weekend.
+- Write about what your bedroom was like when you were a child.
+- Write about a trip you took and one thing that happened on it.
+- Write about what you used to do after school as a kid.
+- Write about the last meal you cooked or ate out.
+- Write about a day you remember: what the weather was like and what you did.
+- Write about how you met a good friend.
+- Write about what you were doing when you heard some good news.
+
+## topic future
+title: Future forms
+about: Plans with ir a + infinitive, and the future tense (viviré, será).
+- Write about what you're going to do this weekend.
+- Write about where you think you will live in ten years.
+- Write about something you're going to learn next year.
+- Write about what you'll cook the next time you have friends over.
+- Write about what the weather will be like tomorrow and what you'll do.
+- Write about a trip you're planning.
+- Write about what you're going to do after this exercise.
+- Write about a goal you will reach this year.
+
+## topic hypothetical
+title: Hypotheticals
+about: What you would do (condicional) and what would happen if… (si + imperfect subjunctive).
+- Write about what you would do with a completely free day.
+- Write about where you would live if you could live anywhere.
+- Write about what you would do if you won some money.
+- Write about something you would change about your job or studies.
+- Write about a skill you would like to have, and what you would do with it.
+- Write about what you would cook for a famous guest.
+- Write about what you would do if it snowed all week.
+- Write about who you would invite to dinner if you could invite anyone.
+
+## topic serestar
+title: Ser vs estar
+about: Ser for what something is like, estar for where it is and how it is right now.
+- Write about someone you know: what they're like, and how they are today.
+- Write about your favourite café: where it is and what it's like.
+- Write about how you feel today and why.
+- Write about your city: what it's like and where it is.
+- Write about a friend's job and where they are right now.
+- Write about a room in your home and the state it's in today.
+- Write about a dish you like: what it is and how it tastes.
+- Write about an event you're going to: where it is and what it's for.
+
+## addon gender
+title: Gender of nouns
+about: El or la, un or una: the gender that comes with each noun.
+twist: Mention at least two things or places.
+
+## addon adjectives
+title: Adjective endings
+about: Adjectives take the gender and number of their noun: una casa pequeña, unos días largos.
+twist: Describe someone or something with two adjectives.
+
+## addon accents
+title: Accent marks
+about: Where the tilde goes, and when it changes the word (tomo, tomó).
+twist: Include a word with an accent, like también, más, café or a past form like comí.
+
+## addon family
+title: Family words
+about: Hermano, abuela, primos: words for the people in your family.
+twist: Mention someone in your family.
+
+## addon irregular
+title: Irregular verbs
+about: The verbs that don't follow the pattern: tener, ir, hacer, decir, poder.
+twist: Use one of these verbs: have, go, make or do, say, be able to.

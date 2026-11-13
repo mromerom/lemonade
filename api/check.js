@@ -4,10 +4,60 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
+// src/content/exercisesParse.ts
+function lines(source) {
+  return source.split("\n").map((text, i) => ({ text: text.trim(), n: i + 1 })).filter((l) => !l.text.startsWith("#") || l.text.startsWith("## "));
+}
+function parsePrompts(source, file = "exercises/prompts.txt") {
+  const topics = [];
+  const addons = [];
+  const errors = [];
+  let current = null;
+  for (const { text, n } of lines(source)) {
+    if (!text) continue;
+    const head = /^## (topic|addon) ([a-z-]+)$/.exec(text);
+    if (head) {
+      if (head[1] === "topic") {
+        const v = { id: head[2], title: "", about: "", prompts: [] };
+        topics.push(v);
+        current = { kind: "topic", v };
+      } else {
+        const v = { id: head[2], title: "", about: "", twist: "" };
+        addons.push(v);
+        current = { kind: "addon", v };
+      }
+      continue;
+    }
+    if (!current) {
+      errors.push({ file, line: n, message: `Text before the first "## topic" or "## addon": ${text}` });
+      continue;
+    }
+    if (text.startsWith("- ") && current.kind === "topic") {
+      current.v.prompts.push(text.slice(2).trim());
+      continue;
+    }
+    const field = /^(title|about|twist):\s*(.*)$/.exec(text);
+    if (field && !(field[1] === "twist" && current.kind === "topic")) {
+      current.v[field[1]] = field[2];
+      continue;
+    }
+    errors.push({ file, line: n, message: `Can't read "${text}"` });
+  }
+  for (const t of topics) {
+    if (!t.title) errors.push({ file, line: 0, message: `Topic "${t.id}" has no title` });
+    if (t.prompts.length < 5) errors.push({ file, line: 0, message: `Topic "${t.id}" needs at least 5 prompts` });
+  }
+  for (const a of addons) {
+    if (!a.title || !a.twist) errors.push({ file, line: 0, message: `Add-on "${a.id}" needs a title and a twist` });
+  }
+  return { topics, addons, errors };
+}
+
 // src/types.ts
 var ISSUE_CATEGORIES = [
   "person",
   "tense",
+  "ser/estar",
   "gender",
   "number",
   "agreement",
@@ -21,10 +71,10 @@ var ISSUE_CATEGORIES = [
 ];
 
 // src/content/parse.ts
-function blocks(lines) {
+function blocks(lines2) {
   const out = [];
   let current = null;
-  for (const { n, text } of lines) {
+  for (const { n, text } of lines2) {
     if (!text.trim()) {
       current = null;
       continue;
@@ -51,13 +101,13 @@ function paragraph(block, id, file, errors) {
   }
   return para;
 }
-function readingQuestion(lines, id, file, line, errors) {
+function readingQuestion(lines2, id, file, line, errors) {
   const part = (tag) => {
-    const i = lines.findIndex((l) => l.startsWith(`${tag}:`));
+    const i = lines2.findIndex((l) => l.startsWith(`${tag}:`));
     if (i < 0) return null;
-    const next = lines[i + 1];
+    const next = lines2[i + 1];
     if (!next?.startsWith(">")) errors.push({ file, line, message: `${tag}: line has no "> " translation after it` });
-    return { es: lines[i].slice(2).trim(), en: next?.startsWith(">") ? next.slice(1).trim() : "" };
+    return { es: lines2[i].slice(2).trim(), en: next?.startsWith(">") ? next.slice(1).trim() : "" };
   };
   const question = part("Q");
   const answer = part("A");
@@ -65,9 +115,9 @@ function readingQuestion(lines, id, file, line, errors) {
     errors.push({ file, line, message: "A paragraph question needs a Q: line and an A: line" });
     return null;
   }
-  const acceptLine = lines.find((l) => /^accept:/i.test(l));
+  const acceptLine = lines2.find((l) => /^accept:/i.test(l));
   const accept = acceptLine ? acceptLine.slice(acceptLine.indexOf(":") + 1).split("|").map((s) => s.trim()).filter(Boolean) : [];
-  for (const l of lines) {
+  for (const l of lines2) {
     if (!/^(Q:|A:|>|accept:)/i.test(l)) errors.push({ file, line, message: `Can't read "${l}" in the question` });
   }
   return { id, question, answer, accept };
@@ -212,7 +262,7 @@ issues: only real mistakes in the learner's Spanish. Never add an issue for mean
 - "accent": only a written accent is missing or wrong.
 - "gender": an article or adjective has the wrong gender for its noun ("el piscina", "a el piscina", "un casa", "contento" for a woman). For gender, end the tip with a rule of thumb when it helps: most nouns ending in -a are feminine and most ending in -o are masculine; if the noun is an exception (el d\xEDa, el problema, el mapa, la mano, la foto), say so instead.
 - "number": singular/plural mismatch. "agreement": other mismatches between words that go together.
-- "person": the verb's person is wrong. "tense": the tense or mood is wrong.
+- "person": the verb's person is wrong. "tense": the tense or mood is wrong. "ser/estar": ser where estar is needed, or the other way round.
 - "word choice": a real word used with the wrong meaning. "word order", "missing word": as named.
 For each issue, "wrong" and "right" are just the few words involved, as written and fixed. "tip" is the rule behind the fix, in plain English, at most 20 words, for a learner at ${story.level}.
 
@@ -279,21 +329,21 @@ function articleOnly(wrong, right) {
   const changed = [...diff(w, r), ...diff(r, w)];
   return changed.length > 0 && changed.every((x) => ARTICLES.has(x));
 }
-function cleanChecks(raw, items) {
+function cleanChecks(raw, items, options = {}) {
   const list = raw?.checks ?? [];
   const categories = new Set(ISSUE_CATEGORIES);
   const out = {};
   for (const c of list) {
     const item = items.find((i) => i.id === c.id);
     if (!item || !["correct", "partly", "incorrect"].includes(c.meaning)) continue;
-    const issues = (c.issues ?? []).filter((i) => categories.has(i.category) && i.category !== "meaning").filter((i) => bare(i.wrong) !== bare(i.right)).map((i) => {
+    const issues = (c.issues ?? []).filter((i) => categories.has(i.category) && (options.keepMeaning || i.category !== "meaning")).filter((i) => bare(i.wrong) !== bare(i.right)).map((i) => {
       const category = i.category === "spelling" && articleOnly(i.wrong, i.right) ? "gender" : i.category;
       const noun = bare(i.right).split(" ").pop();
       const tip = category === "gender" && !/-a\b|-o\b|rule of thumb|exception/i.test(i.tip) ? `${i.tip.trim()}${nounHint(noun)}` : i.tip;
       return { category, wrong: i.wrong, right: i.right, tip: tip.slice(0, 260) };
     }).slice(0, 4);
     const corrected = issues.length && c.corrected && bare(c.corrected) !== bare(item.answer) ? c.corrected : void 0;
-    const alternative = c.meaning === "correct" && c.alternative && ![item.answer, item.model, corrected ?? ""].some((s) => bare(s) === bare(c.alternative)) ? c.alternative : void 0;
+    const alternative = (c.meaning === "correct" || options.keepMeaning) && c.alternative && ![item.answer, item.model, corrected ?? ""].some((s) => bare(s) === bare(c.alternative)) ? c.alternative : void 0;
     out[c.id] = {
       meaning: c.meaning,
       issues,
@@ -306,19 +356,7 @@ function cleanChecks(raw, items) {
   return out;
 }
 var json = (body, status = 200) => new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json" } });
-async function POST(request) {
-  const key = process.env.ANTHROPIC_API_KEY;
-  if (!key) return json({ error: "The AI check is not set up (no ANTHROPIC_API_KEY)." }, 503);
-  let body;
-  try {
-    body = await request.json();
-  } catch {
-    return json({ error: "Send JSON." }, 400);
-  }
-  const story = body.textId ? loadStories().get(body.textId) : void 0;
-  if (!story || typeof body.answers !== "object" || !body.answers) return json({ error: "Unknown text." }, 400);
-  const items = itemsFor(story, body.answers);
-  if (!items.length) return json({ checks: {} });
+async function callClaude(key, system, user, tool, maxTokens) {
   const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: {
@@ -328,20 +366,140 @@ async function POST(request) {
     },
     body: JSON.stringify({
       model: MODEL,
-      max_tokens: 400 + 250 * items.length,
-      system: systemPrompt(story),
-      tools: [TOOL],
-      tool_choice: { type: "tool", name: TOOL.name },
-      messages: [{ role: "user", content: userPrompt(items) }]
+      max_tokens: maxTokens,
+      system,
+      tools: [tool],
+      tool_choice: { type: "tool", name: tool.name },
+      messages: [{ role: "user", content: user }]
     })
   });
   if (!res.ok) {
     console.error("Anthropic API error", res.status, await res.text());
-    return json({ error: "The AI check failed." }, 502);
+    throw json({ error: "The AI check failed." }, 502);
   }
   const data = await res.json();
-  const tool = data.content.find((c) => c.type === "tool_use");
-  return json({ checks: cleanChecks(tool?.input, items) });
+  return data.content.find((c) => c.type === "tool_use")?.input;
+}
+async function POST(request) {
+  const key = process.env.ANTHROPIC_API_KEY;
+  if (!key) return json({ error: "The AI check is not set up (no ANTHROPIC_API_KEY)." }, 503);
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return json({ error: "Send JSON." }, 400);
+  }
+  try {
+    if (body.mode === "translation") return await checkTranslation(key, body);
+    if (body.mode === "prompts") return await writePrompts(key, body);
+    return await checkReading(key, body);
+  } catch (e) {
+    if (e instanceof Response) return e;
+    throw e;
+  }
+}
+async function checkReading(key, body) {
+  const story = body.textId ? loadStories().get(body.textId) : void 0;
+  if (!story || typeof body.answers !== "object" || !body.answers) return json({ error: "Unknown text." }, 400);
+  const items = itemsFor(story, body.answers);
+  if (!items.length) return json({ checks: {} });
+  const input = await callClaude(key, systemPrompt(story), userPrompt(items), TOOL, 400 + 250 * items.length);
+  return json({ checks: cleanChecks(input, items) });
+}
+var writing = null;
+function loadWriting() {
+  writing ??= parsePrompts(readFileSync(join(process.cwd(), "src/content/exercises/prompts.txt"), "utf8"));
+  return writing;
+}
+function translationPrompt(topic, addon) {
+  return `You check a translation into Castilian Spanish (Spain). A learner of Spanish wrote a sentence about their own life in English, then translated it. You check whether the Spanish says what the English says, and whether it is grammatical. Be strict about those and nothing else.
+${topic ? `
+This set practises ${topic.title}: ${topic.about} Look closely at that, but report every real mistake.` : ""}${addon ? `
+It also practises ${addon.title}: ${addon.about}` : ""}
+
+Never report, correct or mention: capital letters, punctuation, missing \xBF or \xA1, or a missing final full stop; Castilian usage, informal but correct Spanish, or style you would phrase differently. The English may be informal or slightly ungrammatical; translate its intended meaning and never correct the English.
+
+meaning:
+- "correct": the Spanish says what the English means, even if it's not word for word.
+- "partly": most of it, but part of the meaning is missing, changed or unclear.
+- "incorrect": it says something different, or can't be understood.
+
+issues: only real mistakes in the Spanish. Categories:
+- "spelling": letters inside one word are wrong (b/v, missing or extra h, ll/y, c/z/s, a missing or swapped letter). Not articles, not gender.
+- "accent": only a written accent is missing or wrong.
+- "gender": an article or adjective has the wrong gender for its noun. End the tip with the -a/-o rule of thumb when it helps, or name the exception (el d\xEDa, el problema, la mano).
+- "number", "agreement", "person", "tense" (tense or mood, including si + imperfect subjunctive), "ser/estar", "word choice" (a real word with the wrong meaning, or an English word or false friend), "word order", "missing word".
+- "meaning": a part of the English that the Spanish leaves out or changes. Use it only when the grammar is fine but the meaning isn't.
+For each issue, "wrong" and "right" are just the few words involved; "tip" is the rule behind the fix, in plain English, at most 20 words.
+
+corrected: the learner's Spanish with the smallest fixes for the issues, keeping their words. Empty when there are no issues.
+alternative: a natural Castilian translation of the English, clearly different from the learner's and from corrected. Empty if the learner's is already the most natural way.
+comment: at most 20 words of English to the learner as "you": what they did well or the main thing to fix. Specific, never just "Great job".`;
+}
+var TRANSLATION_TOOL = {
+  name: "report_translation",
+  description: "Report the check of the translation.",
+  input_schema: {
+    type: "object",
+    properties: {
+      meaning: { type: "string", enum: ["correct", "partly", "incorrect"] },
+      issues: TOOL.input_schema.properties.checks.items.properties.issues,
+      corrected: { type: "string" },
+      alternative: { type: "string" },
+      comment: { type: "string" }
+    },
+    required: ["meaning", "issues", "corrected", "alternative", "comment"]
+  }
+};
+async function checkTranslation(key, body) {
+  const english = body.english?.trim().slice(0, 240);
+  const spanish = body.spanish?.trim().slice(0, 300);
+  if (!english || !spanish) return json({ error: "Send english and spanish." }, 400);
+  const { topics, addons } = loadWriting();
+  const topic = topics.find((t) => t.id === body.topic);
+  const addon = addons.find((a) => a.id === body.addon);
+  const input = await callClaude(
+    key,
+    translationPrompt(topic, addon),
+    `<english>${english.replace(/</g, "\u2039")}</english>
+<spanish>${spanish.replace(/</g, "\u2039")}</spanish>`,
+    TRANSLATION_TOOL,
+    900
+  );
+  const item = { id: "t", part: "story", paragraph: "", question: "", model: "", answer: spanish };
+  const cleaned = cleanChecks({ checks: input ? [{ ...input, id: "t" }] : [] }, [item], { keepMeaning: true }).t;
+  if (!cleaned) return json({ error: "The AI check failed." }, 502);
+  return json({ check: cleaned });
+}
+var PROMPTS_TOOL = {
+  name: "write_prompts",
+  description: "Return the new writing prompts.",
+  input_schema: {
+    type: "object",
+    properties: { prompts: { type: "array", items: { type: "string" } } },
+    required: ["prompts"]
+  }
+};
+async function writePrompts(key, body) {
+  const topic = loadWriting().topics.find((t) => t.id === body.topic);
+  if (!topic) return json({ error: "Unknown topic." }, 400);
+  const count = Math.min(Math.max(body.count ?? 5, 1), 5);
+  const avoid = (body.avoid ?? []).slice(0, 60).map((s) => String(s).slice(0, 160));
+  const input = await callClaude(
+    key,
+    `You write short writing prompts, in English, for an adult learning Spanish. The learner answers each prompt with one sentence about their own life in English, then translates it into Spanish. These prompts practise ${topic.title}: ${topic.about} Each prompt must make the English answer use that (a prompt for the past makes them write in the past). Each one starts with "Write about", fits on one line (under 100 characters), can be answered by anyone from their own life, and is different from the examples and from every prompt in the avoid list.`,
+    `Examples:
+${topic.prompts.map((p) => `- ${p}`).join("\n")}
+
+Avoid:
+${avoid.map((p) => `- ${p}`).join("\n") || "(none)"}
+
+Write ${count} new prompts.`,
+    PROMPTS_TOOL,
+    600
+  );
+  const prompts = (Array.isArray(input?.prompts) ? input.prompts : []).filter((p) => typeof p === "string" && /^Write about /.test(p) && p.length <= 140).filter((p) => !avoid.includes(p) && !topic.prompts.includes(p)).slice(0, count);
+  return json({ prompts });
 }
 export {
   CHECK_VERSION,
@@ -349,5 +507,6 @@ export {
   cleanChecks,
   itemsFor,
   systemPrompt,
+  translationPrompt,
   userPrompt
 };

@@ -17,6 +17,7 @@
  */
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { parsePrompts, type WritingAddon, type WritingTopic } from '../src/content/exercisesParse';
 import { parseStory, type ParsedStory } from '../src/content/parse';
 import { plainText } from '../src/lib/markup';
 import { nounHint } from '../src/lib/nounGender';
@@ -86,7 +87,7 @@ issues: only real mistakes in the learner's Spanish. Never add an issue for mean
 - "accent": only a written accent is missing or wrong.
 - "gender": an article or adjective has the wrong gender for its noun ("el piscina", "a el piscina", "un casa", "contento" for a woman). For gender, end the tip with a rule of thumb when it helps: most nouns ending in -a are feminine and most ending in -o are masculine; if the noun is an exception (el día, el problema, el mapa, la mano, la foto), say so instead.
 - "number": singular/plural mismatch. "agreement": other mismatches between words that go together.
-- "person": the verb's person is wrong. "tense": the tense or mood is wrong.
+- "person": the verb's person is wrong. "tense": the tense or mood is wrong. "ser/estar": ser where estar is needed, or the other way round.
 - "word choice": a real word used with the wrong meaning. "word order", "missing word": as named.
 For each issue, "wrong" and "right" are just the few words involved, as written and fixed. "tip" is the rule behind the fix, in plain English, at most 20 words, for a learner at ${story.level}.
 
@@ -181,7 +182,7 @@ function articleOnly(wrong: string, right: string): boolean {
  * capitalization or punctuation "fixes", meaning issues, a "correction" or
  * "alternative" that is really the same sentence.
  */
-export function cleanChecks(raw: unknown, items: Item[]) {
+export function cleanChecks(raw: unknown, items: Item[], options: { keepMeaning?: boolean } = {}) {
   const list = (raw as { checks?: RawCheck[] })?.checks ?? [];
   const categories = new Set<string>(ISSUE_CATEGORIES);
   const out: Record<string, unknown> = {};
@@ -189,7 +190,7 @@ export function cleanChecks(raw: unknown, items: Item[]) {
     const item = items.find((i) => i.id === c.id);
     if (!item || !['correct', 'partly', 'incorrect'].includes(c.meaning)) continue;
     const issues = (c.issues ?? [])
-      .filter((i) => categories.has(i.category) && i.category !== 'meaning')
+      .filter((i) => categories.has(i.category) && (options.keepMeaning || i.category !== 'meaning'))
       .filter((i) => bare(i.wrong) !== bare(i.right))
       .map((i) => {
         const category = i.category === 'spelling' && articleOnly(i.wrong, i.right) ? 'gender' : i.category;
@@ -204,7 +205,7 @@ export function cleanChecks(raw: unknown, items: Item[]) {
       .slice(0, 4);
     const corrected = issues.length && c.corrected && bare(c.corrected) !== bare(item.answer) ? c.corrected : undefined;
     const alternative =
-      c.meaning === 'correct' &&
+      (c.meaning === 'correct' || options.keepMeaning) &&
       c.alternative &&
       ![item.answer, item.model, corrected ?? ''].some((s) => bare(s) === bare(c.alternative!))
         ? c.alternative
@@ -226,21 +227,8 @@ export function cleanChecks(raw: unknown, items: Item[]) {
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } });
 
-export async function POST(request: Request): Promise<Response> {
-  const key = process.env.ANTHROPIC_API_KEY;
-  if (!key) return json({ error: 'The AI check is not set up (no ANTHROPIC_API_KEY).' }, 503);
-
-  let body: { textId?: string; answers?: Record<string, string> };
-  try {
-    body = await request.json();
-  } catch {
-    return json({ error: 'Send JSON.' }, 400);
-  }
-  const story = body.textId ? loadStories().get(body.textId) : undefined;
-  if (!story || typeof body.answers !== 'object' || !body.answers) return json({ error: 'Unknown text.' }, 400);
-  const items = itemsFor(story, body.answers);
-  if (!items.length) return json({ checks: {} });
-
+/** One Claude call that must answer through `tool`; returns the tool's input. */
+async function callClaude(key: string, system: string, user: string, tool: typeof TOOL, maxTokens: number) {
   const res = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
@@ -250,18 +238,168 @@ export async function POST(request: Request): Promise<Response> {
     },
     body: JSON.stringify({
       model: MODEL,
-      max_tokens: 400 + 250 * items.length,
-      system: systemPrompt(story),
-      tools: [TOOL],
-      tool_choice: { type: 'tool', name: TOOL.name },
-      messages: [{ role: 'user', content: userPrompt(items) }],
+      max_tokens: maxTokens,
+      system,
+      tools: [tool],
+      tool_choice: { type: 'tool', name: tool.name },
+      messages: [{ role: 'user', content: user }],
     }),
   });
   if (!res.ok) {
     console.error('Anthropic API error', res.status, await res.text());
-    return json({ error: 'The AI check failed.' }, 502);
+    throw json({ error: 'The AI check failed.' }, 502);
   }
   const data = (await res.json()) as { content: { type: string; input?: unknown }[] };
-  const tool = data.content.find((c) => c.type === 'tool_use');
-  return json({ checks: cleanChecks(tool?.input, items) });
+  return data.content.find((c) => c.type === 'tool_use')?.input;
+}
+
+type Body = {
+  mode?: 'reading' | 'translation' | 'prompts';
+  textId?: string;
+  answers?: Record<string, string>;
+} & TranslationRequest &
+  PromptsRequest;
+
+export async function POST(request: Request): Promise<Response> {
+  const key = process.env.ANTHROPIC_API_KEY;
+  if (!key) return json({ error: 'The AI check is not set up (no ANTHROPIC_API_KEY).' }, 503);
+
+  let body: Body;
+  try {
+    body = await request.json();
+  } catch {
+    return json({ error: 'Send JSON.' }, 400);
+  }
+  try {
+    if (body.mode === 'translation') return await checkTranslation(key, body);
+    if (body.mode === 'prompts') return await writePrompts(key, body);
+    return await checkReading(key, body);
+  } catch (e) {
+    if (e instanceof Response) return e;
+    throw e;
+  }
+}
+
+async function checkReading(key: string, body: Body): Promise<Response> {
+  const story = body.textId ? loadStories().get(body.textId) : undefined;
+  if (!story || typeof body.answers !== 'object' || !body.answers) return json({ error: 'Unknown text.' }, 400);
+  const items = itemsFor(story, body.answers);
+  if (!items.length) return json({ checks: {} });
+  const input = await callClaude(key, systemPrompt(story), userPrompt(items), TOOL, 400 + 250 * items.length);
+  return json({ checks: cleanChecks(input, items) });
+}
+
+// ---------- Writing exercise: translations ----------
+
+let writing: ReturnType<typeof parsePrompts> | null = null;
+
+function loadWriting() {
+  writing ??= parsePrompts(readFileSync(join(process.cwd(), 'src/content/exercises/prompts.txt'), 'utf8'));
+  return writing;
+}
+
+interface TranslationRequest {
+  topic?: string;
+  addon?: string;
+  english?: string;
+  spanish?: string;
+}
+
+export function translationPrompt(topic?: WritingTopic, addon?: WritingAddon): string {
+  return `You check a translation into Castilian Spanish (Spain). A learner of Spanish wrote a sentence about their own life in English, then translated it. You check whether the Spanish says what the English says, and whether it is grammatical. Be strict about those and nothing else.
+${topic ? `
+This set practises ${topic.title}: ${topic.about} Look closely at that, but report every real mistake.` : ''}${addon ? `
+It also practises ${addon.title}: ${addon.about}` : ''}
+
+Never report, correct or mention: capital letters, punctuation, missing ¿ or ¡, or a missing final full stop; Castilian usage, informal but correct Spanish, or style you would phrase differently. The English may be informal or slightly ungrammatical; translate its intended meaning and never correct the English.
+
+meaning:
+- "correct": the Spanish says what the English means, even if it's not word for word.
+- "partly": most of it, but part of the meaning is missing, changed or unclear.
+- "incorrect": it says something different, or can't be understood.
+
+issues: only real mistakes in the Spanish. Categories:
+- "spelling": letters inside one word are wrong (b/v, missing or extra h, ll/y, c/z/s, a missing or swapped letter). Not articles, not gender.
+- "accent": only a written accent is missing or wrong.
+- "gender": an article or adjective has the wrong gender for its noun. End the tip with the -a/-o rule of thumb when it helps, or name the exception (el día, el problema, la mano).
+- "number", "agreement", "person", "tense" (tense or mood, including si + imperfect subjunctive), "ser/estar", "word choice" (a real word with the wrong meaning, or an English word or false friend), "word order", "missing word".
+- "meaning": a part of the English that the Spanish leaves out or changes. Use it only when the grammar is fine but the meaning isn't.
+For each issue, "wrong" and "right" are just the few words involved; "tip" is the rule behind the fix, in plain English, at most 20 words.
+
+corrected: the learner's Spanish with the smallest fixes for the issues, keeping their words. Empty when there are no issues.
+alternative: a natural Castilian translation of the English, clearly different from the learner's and from corrected. Empty if the learner's is already the most natural way.
+comment: at most 20 words of English to the learner as "you": what they did well or the main thing to fix. Specific, never just "Great job".`;
+}
+
+const TRANSLATION_TOOL = {
+  name: 'report_translation',
+  description: 'Report the check of the translation.',
+  input_schema: {
+    type: 'object',
+    properties: {
+      meaning: { type: 'string', enum: ['correct', 'partly', 'incorrect'] },
+      issues: TOOL.input_schema.properties.checks.items.properties.issues,
+      corrected: { type: 'string' },
+      alternative: { type: 'string' },
+      comment: { type: 'string' },
+    },
+    required: ['meaning', 'issues', 'corrected', 'alternative', 'comment'],
+  },
+} as unknown as typeof TOOL;
+
+async function checkTranslation(key: string, body: Body): Promise<Response> {
+  const english = body.english?.trim().slice(0, 240);
+  const spanish = body.spanish?.trim().slice(0, 300);
+  if (!english || !spanish) return json({ error: 'Send english and spanish.' }, 400);
+  const { topics, addons } = loadWriting();
+  const topic = topics.find((t) => t.id === body.topic);
+  const addon = addons.find((a) => a.id === body.addon);
+  const input = (await callClaude(
+    key,
+    translationPrompt(topic, addon),
+    `<english>${english.replace(/</g, '‹')}</english>\n<spanish>${spanish.replace(/</g, '‹')}</spanish>`,
+    TRANSLATION_TOOL,
+    900,
+  )) as RawCheck | undefined;
+  const item: Item = { id: 't', part: 'story', paragraph: '', question: '', model: '', answer: spanish };
+  const cleaned = cleanChecks({ checks: input ? [{ ...input, id: 't' }] : [] }, [item], { keepMeaning: true }).t;
+  if (!cleaned) return json({ error: 'The AI check failed.' }, 502);
+  return json({ check: cleaned });
+}
+
+// ---------- Writing exercise: more prompts when a topic runs out ----------
+
+interface PromptsRequest {
+  topic?: string;
+  count?: number;
+  avoid?: string[];
+}
+
+const PROMPTS_TOOL = {
+  name: 'write_prompts',
+  description: 'Return the new writing prompts.',
+  input_schema: {
+    type: 'object',
+    properties: { prompts: { type: 'array', items: { type: 'string' } } },
+    required: ['prompts'],
+  },
+} as unknown as typeof TOOL;
+
+async function writePrompts(key: string, body: Body): Promise<Response> {
+  const topic = loadWriting().topics.find((t) => t.id === body.topic);
+  if (!topic) return json({ error: 'Unknown topic.' }, 400);
+  const count = Math.min(Math.max(body.count ?? 5, 1), 5);
+  const avoid = (body.avoid ?? []).slice(0, 60).map((s) => String(s).slice(0, 160));
+  const input = (await callClaude(
+    key,
+    `You write short writing prompts, in English, for an adult learning Spanish. The learner answers each prompt with one sentence about their own life in English, then translates it into Spanish. These prompts practise ${topic.title}: ${topic.about} Each prompt must make the English answer use that (a prompt for the past makes them write in the past). Each one starts with "Write about", fits on one line (under 100 characters), can be answered by anyone from their own life, and is different from the examples and from every prompt in the avoid list.`,
+    `Examples:\n${topic.prompts.map((p) => `- ${p}`).join('\n')}\n\nAvoid:\n${avoid.map((p) => `- ${p}`).join('\n') || '(none)'}\n\nWrite ${count} new prompts.`,
+    PROMPTS_TOOL,
+    600,
+  )) as { prompts?: unknown } | undefined;
+  const prompts = (Array.isArray(input?.prompts) ? input.prompts : [])
+    .filter((p): p is string => typeof p === 'string' && /^Write about /.test(p) && p.length <= 140)
+    .filter((p) => !avoid.includes(p) && !topic.prompts.includes(p))
+    .slice(0, count);
+  return json({ prompts });
 }

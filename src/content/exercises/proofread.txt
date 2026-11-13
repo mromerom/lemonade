@@ -1,0 +1,98 @@
+# Proofread sentences
+#
+# The learner reads a sentence, taps or drags over the words that are wrong,
+# fixes them in place, and submits. Some sentences have no mistake: then the
+# right answer is "No mistake". Sentences the learner wrote themselves (wrong
+# translations and reading answers) are mixed in too.
+#
+# Each sentence is a block, separated by a blank line:
+#
+#   Mi hermana es muy alto y simpática.      the sentence as shown
+#   fix: Mi hermana es muy alta y simpática. the corrected sentence; add more
+#                                            fix: lines if there's more than
+#                                            one good fix
+#   note: ...                                why, in English
+#   area: agreement                          what the mistake is about
+#
+# A sentence with no mistake has "correct" instead of fix: lines, and its
+# note says why it's right. Mistakes should be ones learners really make, and
+# a sentence can have more than one. Castilian Spanish. Areas: gender,
+# agreement, number, person, tense, ser-estar, accent, spelling, missing-word.
+# Lines starting with # are comments.
+
+Mi hermana es muy alto y simpática.
+fix: Mi hermana es muy alta y simpática.
+note: «Alto» describes «mi hermana», so it takes the feminine ending: alta, like simpática.
+area: agreement
+
+Ayer fui al mercado con mi abuelo.
+correct
+note: «Fui» is the indefinido of ir for yo: one finished trip, yesterday.
+
+Mañana voy a comprar naranjas en la mercado.
+fix: Mañana voy a comprar naranjas en el mercado.
+note: «Mercado» is masculine: el mercado. Most nouns ending in -o are.
+area: gender
+
+El problema es que no tengo tiempo.
+correct
+note: «Problema» ends in -a but is masculine: el problema. It's one of the exceptions.
+
+Soy de Irlanda, pero ahora soy en Madrid.
+fix: Soy de Irlanda, pero ahora estoy en Madrid.
+note: Where someone is takes estar: estoy en Madrid. Where they're from takes ser: soy de Irlanda.
+area: ser-estar
+
+Si tendría dinero, viajaría a Japón.
+fix: Si tuviera dinero, viajaría a Japón.
+fix: Si tuviese dinero, viajaría a Japón.
+note: After «si» for something unlikely, use the imperfect subjunctive (tuviera), never the conditional. The conditional goes in the other half: viajaría.
+area: tense
+
+Mis padres vive en una casa pequeña.
+fix: Mis padres viven en una casa pequeña.
+note: «Mis padres» is ellos, so the verb is viven.
+area: person
+
+Me gusta mucho las flores amarillas.
+fix: Me gustan mucho las flores amarillas.
+note: With gustar, the verb agrees with what is liked. «Las flores» is plural: me gustan.
+area: number
+
+El año que viene voy aprender a cocinar.
+fix: El año que viene voy a aprender a cocinar.
+note: Plans are ir a + infinitive: voy a aprender. The «a» is easy to lose in speech, but it's always written.
+area: missing-word
+
+Cuando era pequeña, iba a la playa todos los veranos.
+correct
+note: The imperfecto (era, iba) is right for what someone was like and used to do.
+
+Mi amiga está profesora en un colegio.
+fix: Mi amiga es profesora en un colegio.
+note: Jobs take ser: es profesora. Estar is for where she is or how she is right now.
+area: ser-estar
+
+Ayer comi pan con tomate en una cafetería.
+fix: Ayer comí pan con tomate en una cafetería.
+note: The yo form of the indefinido ends in a stressed -í: comí. Without the accent, it doesn't exist as a word.
+area: accent
+
+Ella es muy contento hoy.
+fix: Ella está muy contenta hoy.
+note: Two mistakes: how someone feels today takes estar (está), and the adjective agrees with ella (contenta).
+area: ser-estar
+
+Hay mucha gente en la plaza los sábados.
+correct
+note: «Gente» is feminine and singular in Spanish, so it's mucha gente and the verb would be singular too.
+
+Cuando llegué a casa, mi hermano estaba viendo la tele.
+correct
+note: The indefinido (llegué) for what happened, and estar + gerund in the imperfecto (estaba viendo) for what was going on.
+
+Ayer yo tuve una idea muy buena y la escribo en un cuaderno.
+fix: Ayer tuve una idea muy buena y la escribí en un cuaderno.
+fix: Ayer yo tuve una idea muy buena y la escribí en un cuaderno.
+note: The writing happened yesterday too, so it's the indefinido: escribí. («Yo» isn't wrong, just not needed: tuve already says who.)
+area: tense
