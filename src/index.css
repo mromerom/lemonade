@@ -92,6 +92,16 @@
 }
 
 html,
+/* Links in running text: text color with an accent underline, not browser blue. */
+a {
+  color: inherit;
+  text-decoration-color: var(--accent-strong);
+  text-underline-offset: 0.18em;
+}
+a:hover {
+  text-decoration-thickness: 2px;
+}
+
 body {
   margin: 0;
   background: var(--bg);

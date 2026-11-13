@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from 'react';
 import { Link } from 'react-router-dom';
+import BackLink from '../components/BackLink';
 import { FocusList } from '../components/Feedback';
 import { areaFor, focusCollector } from '../lib/focus';
 import {
@@ -46,9 +47,7 @@ export default function Proofread() {
 
   return (
     <div className={styles.page}>
-      <p className={styles.crumb}>
-        <Link to="/exercises">Exercises</Link> / Proofread
-      </p>
+      <BackLink to="/exercises" label="Exercises" />
       {!finished ? (
         <>
           <div className={styles.head}>

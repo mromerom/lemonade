@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import BackLink from '../components/BackLink';
 import { poolSize } from '../lib/proofread';
 import { addonById, currentSet, topicById } from '../lib/writing';
 import { useLearner } from '../store/learnerStore';
@@ -14,6 +15,7 @@ export default function Exercises() {
   return (
     <div className={styles.page}>
       <section className={styles.intro}>
+        <BackLink />
         <h1>Exercises</h1>
         <p>Practice outside the readings: write about your own life, and proofread sentences, some of them your own.</p>
       </section>

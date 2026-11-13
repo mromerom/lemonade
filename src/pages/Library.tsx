@@ -94,12 +94,18 @@ export default function Library() {
         >
           <ul className={styles.exerciseLinks}>
             <li>
-              <Link to="/exercises/write">{writing ? 'Continue your writing set' : 'Write and translate'}</Link>
-              <span>Five sentences about your life, in English and then in Spanish.</span>
+              <Link to="/exercises/write" className={styles.exerciseCard}>
+                <span className={styles.exerciseTitle}>
+                  {writing ? 'Continue your writing set' : 'Write and translate'}
+                </span>
+                <span className={styles.exerciseAbout}>Five sentences about your life, in English and then in Spanish.</span>
+              </Link>
             </li>
             <li>
-              <Link to="/exercises/proofread">Proofread</Link>
-              <span>Find and fix the mistakes, some of them your own.</span>
+              <Link to="/exercises/proofread" className={styles.exerciseCard}>
+                <span className={styles.exerciseTitle}>Proofread</span>
+                <span className={styles.exerciseAbout}>Find and fix the mistakes, some of them your own.</span>
+              </Link>
             </li>
           </ul>
         </Collapsible>

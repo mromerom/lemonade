@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
+import BackLink from '../components/BackLink';
 import { useLearner } from '../store/learnerStore';
 import {
   bankGroups,
@@ -119,9 +120,7 @@ export default function WordBank() {
   return (
     <div className={styles.page}>
       <header className={styles.head}>
-        <Link to="/" className={styles.back}>
-          ← Home
-        </Link>
+        <BackLink />
         <h1 className={styles.title}>Word bank</h1>
         <p className={styles.subtitle}>
           {all.length} words and phrases · {all.filter((e) => e.status !== 'known').length} still learning

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import BackLink from '../components/BackLink';
 import { FocusList, IssueList, Tag } from '../components/Feedback';
 import { addons, topics } from '../content/exercises';
 import {
@@ -35,9 +36,7 @@ export default function Writing() {
 
   return (
     <div className={styles.page}>
-      <p className={styles.crumb}>
-        <Link to="/exercises">Exercises</Link> / Write and translate
-      </p>
+      <BackLink to="/exercises" label="Exercises" />
       {!set ? (
         <Setup initialTopic={params.get('topic') ?? undefined} initialAddon={params.get('addon') ?? undefined} />
       ) : set.stage === 'write' ? (

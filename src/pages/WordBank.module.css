@@ -9,16 +9,6 @@
   flex-direction: column;
   gap: 0.25rem;
 }
-.back {
-  align-self: flex-start;
-  font-size: 0.875rem;
-  color: var(--muted);
-  text-decoration: none;
-  margin-bottom: 0.4rem;
-}
-.back:hover {
-  color: var(--text);
-}
 .title {
   font-family: var(--font-read);
   font-size: 2rem;

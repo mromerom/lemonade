@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
-import { Link, Navigate, useParams, useSearchParams } from 'react-router-dom';
+import { Navigate, useParams, useSearchParams } from 'react-router-dom';
+import BackLink from '../components/BackLink';
 import { getText } from '../data/texts';
 import { useLearner } from '../store/learnerStore';
 import type { LessonStage } from '../types';
@@ -43,9 +44,7 @@ export default function Lesson() {
   return (
     <article className={styles.lesson}>
       <header className={styles.header}>
-        <Link to="/" className={styles.back}>
-          ← Library
-        </Link>
+        <BackLink />
         <h1 lang="es" className={styles.title}>
           {text.title}
         </h1>
