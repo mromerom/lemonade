@@ -1,3 +1,4 @@
+import type { Conjugation, HintTense } from './lib/tenses';
 // ---------- Content ----------
 
 /** One meaning of a word or phrase. The first sense of an entry has id "default". */
@@ -207,6 +208,11 @@ export interface AnswerIssue {
   right: string;
   /** One short tip, in English */
   tip: string;
+  /** Writing exercise: guidance for the second try that doesn't give the fix */
+  hint?: string;
+  /** Writing exercise, tense issues: the tense needed and its conjugation table */
+  tense?: HintTense;
+  conjugation?: Conjugation;
 }
 
 /** The check of one reading-question answer. */
@@ -230,6 +236,8 @@ export interface ReadingCheck {
 
 /** The AI check of one translation in the writing exercise. */
 export interface TranslationCheck {
+  /** The sentence structure to follow, for the second try ("article + noun + adjective…") */
+  pattern?: string;
   meaning: 'correct' | 'partly' | 'incorrect';
   issues: AnswerIssue[];
   corrected?: string;

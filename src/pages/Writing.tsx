@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { Link, Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import BackLink from '../components/BackLink';
-import { FocusList, IssueList, Tag } from '../components/Feedback';
+import { FocusList, IssueList } from '../components/Feedback';
+import { HintList } from '../components/Hints';
+import { givesAway } from '../lib/hints';
 import TestingBar, { TestButton } from '../components/TestingBar';
 import { sampleFor, sampleForEnglish } from '../dev/writingSamples';
 import { addons, topics } from '../content/exercises';
@@ -220,7 +222,7 @@ const VERDICT: Record<TranslationCheck['meaning'], string> = {
 };
 
 /** The check of one translation: verdict, mistakes, the fixed sentence and another way to say it. */
-function TranslationFeedback({ check, showFixes = true }: { check: TranslationCheck; showFixes?: boolean }) {
+function TranslationFeedback({ check }: { check: TranslationCheck }) {
   const right = isRightTranslation(check);
   const slip = !right && check.meaning === 'correct';
   return (
@@ -229,29 +231,35 @@ function TranslationFeedback({ check, showFixes = true }: { check: TranslationCh
         <strong>{right ? 'Right' : slip ? 'Right meaning, with mistakes' : VERDICT[check.meaning]}</strong>
         {check.comment && <span>. {check.comment}</span>}
       </p>
-      {showFixes ? (
-        <IssueList issues={check.issues} />
-      ) : (
-        <ul className={styles.hints}>
-          {check.issues.map((issue, i) => (
-            <li key={i}>
-              <Tag text={issue.category} bad={issue.category !== 'accent'} /> {issue.tip}
-            </li>
-          ))}
-        </ul>
-      )}
-      {showFixes && check.corrected && (
+      <IssueList issues={check.issues} />
+      {check.corrected && (
         <p className={styles.note}>
           <span className={styles.noteLabel}>Your sentence, fixed</span>
           <span lang="es">{check.corrected}</span>
         </p>
       )}
-      {showFixes && check.alternative && (
+      {check.alternative && (
         <p className={styles.note}>
           <span className={styles.noteLabel}>Another way to say it</span>
           <span lang="es">{check.alternative}</span>
         </p>
       )}
+    </div>
+  );
+}
+
+/** First try wrong: what's off and what to think about, without the fix. */
+function FirstTryHints({ check }: { check: TranslationCheck }) {
+  const slip = check.meaning === 'correct';
+  // The comment can name the fix; leave it out if it does.
+  const comment = check.comment && !givesAway(check.comment, check.issues) ? check.comment : null;
+  return (
+    <div className={styles.feedback}>
+      <p className={`${styles.verdict} ${slip ? styles.warn : styles.bad}`}>
+        <strong>{slip ? 'Right meaning, with mistakes' : VERDICT[check.meaning]}</strong>
+        {comment && <span>. {comment}</span>}
+      </p>
+      <HintList check={check} />
     </div>
   );
 }
@@ -323,7 +331,7 @@ function TranslateStage({ set }: { set: WritingSet }) {
             <p lang="es" className={styles.attempt}>
               {item.attempts[0].spanish}
             </p>
-            <TranslationFeedback check={item.attempts[0].check} showFixes={false} />
+            <HintList check={item.attempts[0].check} />
           </div>
         )}
 
@@ -363,6 +371,9 @@ function TranslateStage({ set }: { set: WritingSet }) {
             </p>
             {checking || (!turn.check && !turn.failed) ? (
               <p className={styles.checking}>Checking…</p>
+            ) : turn.check && !retry && !isRightTranslation(turn.check) ? (
+              // Wrong on the first try: hints only, so the second try is the learner's own work.
+              <FirstTryHints check={turn.check} />
             ) : turn.check ? (
               <TranslationFeedback check={turn.check} />
             ) : (
@@ -377,6 +388,9 @@ function TranslateStage({ set }: { set: WritingSet }) {
             )}
             {turn.check && !retry && !isRightTranslation(turn.check) && (
               <p className={styles.comesBack}>This one will come back for a second try at the end.</p>
+            )}
+            {turn.check && retry && !isRightTranslation(turn.check) && (
+              <p className={styles.comesBack}>This sentence will come back in Proofread, so you can fix it there.</p>
             )}
           </>
         )}

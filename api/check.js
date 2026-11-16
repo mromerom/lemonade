@@ -215,6 +215,21 @@ function nounHint(noun) {
   return "";
 }
 
+// src/lib/tenses.ts
+var HINT_TENSES = [
+  "present",
+  "preterite",
+  "imperfect",
+  "present perfect",
+  "pluperfect",
+  "future",
+  "conditional",
+  "present subjunctive",
+  "imperfect subjunctive",
+  "imperative"
+];
+var TABLE_PERSONS = ["yo", "t\xFA", "\xE9l/ella", "nosotros", "vosotros", "ellos/ellas"];
+
 // server/check.ts
 var MODEL = "claude-haiku-5-5";
 var MAX_ANSWER = 200;
@@ -434,8 +449,16 @@ For each issue, "wrong" and "right" are just the few words involved; "tip" is th
 
 corrected: the learner's Spanish with the smallest fixes for the issues, keeping their words. Empty when there are no issues.
 alternative: a natural Castilian translation of the English, clearly different from the learner's and from corrected. Empty if the learner's is already the most natural way.
-comment: at most 20 words of English to the learner as "you": what they did well or the main thing to fix. Specific, never just "Great job".`;
+comment: at most 20 words of English to the learner as "you": what they did well or the main thing to fix. Specific, never just "Great job".
+
+The learner gets a second try at wrong translations, guided only by hints, so the hints must make them think, never hand them the answer:
+- hint (each issue): at most 25 words of English that point at the problem without giving the fix. Never write the right word, form or ending, and never write "use \u2026" followed by the answer. Name what's wrong and what to think about. For a tense issue, say which tense they used and roughly what it means in English ("\xABiba\xBB is the imperfecto, roughly 'was going' or 'used to go'"), and why that doesn't fit; the tense they need is shown separately. For gender: which noun to check, and how to tell its gender. For ser/estar: what kind of thing is being said (a location, a state, a characteristic).
+- tense (each issue): for a tense issue, the tense the sentence needs; otherwise "". 
+- verb (each issue): for a tense issue, the infinitive of the verb that needs to change (estar, ir\u2026); otherwise "".
+- forms (each issue): for a tense issue, that verb in that tense for yo, t\xFA, \xE9l/ella, nosotros, vosotros, ellos/ellas (Castilian, vosotros included); otherwise leave every person "".
+- pattern (whole sentence): when it helps, the structure the sentence should follow, in grammar terms and without the learner's words, at most 25 words: "definite article + noun + adjective + verb + preposition + place", or "for where something is: estar + en + place". Empty if the structure isn't the problem.`;
 }
+var personForms = Object.fromEntries(TABLE_PERSONS.map((p) => [p, { type: "string" }]));
 var TRANSLATION_TOOL = {
   name: "report_translation",
   description: "Report the check of the translation.",
@@ -443,14 +466,46 @@ var TRANSLATION_TOOL = {
     type: "object",
     properties: {
       meaning: { type: "string", enum: ["correct", "partly", "incorrect"] },
-      issues: TOOL.input_schema.properties.checks.items.properties.issues,
+      issues: {
+        type: "array",
+        items: {
+          type: "object",
+          properties: {
+            category: { type: "string", enum: [...ISSUE_CATEGORIES] },
+            wrong: { type: "string" },
+            right: { type: "string" },
+            tip: { type: "string" },
+            hint: { type: "string" },
+            tense: { type: "string", enum: ["", ...HINT_TENSES] },
+            verb: { type: "string" },
+            forms: { type: "object", properties: personForms, required: [...TABLE_PERSONS] }
+          },
+          required: ["category", "wrong", "right", "tip", "hint", "tense", "verb", "forms"]
+        }
+      },
       corrected: { type: "string" },
       alternative: { type: "string" },
-      comment: { type: "string" }
+      comment: { type: "string" },
+      pattern: { type: "string" }
     },
-    required: ["meaning", "issues", "corrected", "alternative", "comment"]
+    required: ["meaning", "issues", "corrected", "alternative", "comment", "pattern"]
   }
 };
+function cleanHints(raw, kept) {
+  const rights = (raw.issues ?? []).map((i) => bare(i.right)).filter((r) => r.length >= 2);
+  const givesAway = (s) => rights.some((r) => ` ${bare(s)} `.includes(` ${r} `));
+  const hints = kept.map((k) => {
+    const src = (raw.issues ?? []).find((i) => i.wrong === k.wrong && i.right === k.right);
+    if (!src) return {};
+    const hint = src.hint && !givesAway(src.hint) ? src.hint.slice(0, 220) : void 0;
+    const tense = HINT_TENSES.includes(src.tense ?? "") ? src.tense : void 0;
+    const forms = src.forms && TABLE_PERSONS.every((p) => typeof src.forms[p] === "string" && src.forms[p].trim()) ? src.forms : void 0;
+    const conjugation = tense && src.verb && forms ? { verb: src.verb.trim().toLocaleLowerCase("es").slice(0, 30), tense, forms } : void 0;
+    return { hint, tense, conjugation };
+  });
+  const pattern = raw.pattern && !givesAway(raw.pattern) ? raw.pattern.slice(0, 200) : void 0;
+  return { hints, pattern };
+}
 async function checkTranslation(key, body) {
   const english = body.english?.trim().slice(0, 240);
   const spanish = body.spanish?.trim().slice(0, 300);
@@ -469,7 +524,10 @@ async function checkTranslation(key, body) {
   const item = { id: "t", part: "story", paragraph: "", question: "", model: "", answer: spanish };
   const cleaned = cleanChecks({ checks: input ? [{ ...input, id: "t" }] : [] }, [item], { keepMeaning: true }).t;
   if (!cleaned) return json({ error: "The AI check failed." }, 502);
-  return json({ check: cleaned });
+  const { hints, pattern } = cleanHints(input, cleaned.issues);
+  return json({
+    check: { ...cleaned, issues: cleaned.issues.map((i, k) => ({ ...i, ...hints[k] })), pattern }
+  });
 }
 var PROMPTS_TOOL = {
   name: "write_prompts",
@@ -505,6 +563,7 @@ export {
   CHECK_VERSION,
   POST,
   cleanChecks,
+  cleanHints,
   itemsFor,
   systemPrompt,
   translationPrompt,

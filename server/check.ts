@@ -21,6 +21,7 @@ import { parsePrompts, type WritingAddon, type WritingTopic } from '../src/conte
 import { parseStory, type ParsedStory } from '../src/content/parse';
 import { plainText } from '../src/lib/markup';
 import { nounHint } from '../src/lib/nounGender';
+import { HINT_TENSES, TABLE_PERSONS, type HintTense } from '../src/lib/tenses';
 import { ISSUE_CATEGORIES, type Paragraph } from '../src/types';
 
 const MODEL = 'claude-haiku-5-5';
@@ -328,8 +329,17 @@ For each issue, "wrong" and "right" are just the few words involved; "tip" is th
 
 corrected: the learner's Spanish with the smallest fixes for the issues, keeping their words. Empty when there are no issues.
 alternative: a natural Castilian translation of the English, clearly different from the learner's and from corrected. Empty if the learner's is already the most natural way.
-comment: at most 20 words of English to the learner as "you": what they did well or the main thing to fix. Specific, never just "Great job".`;
+comment: at most 20 words of English to the learner as "you": what they did well or the main thing to fix. Specific, never just "Great job".
+
+The learner gets a second try at wrong translations, guided only by hints, so the hints must make them think, never hand them the answer:
+- hint (each issue): at most 25 words of English that point at the problem without giving the fix. Never write the right word, form or ending, and never write "use …" followed by the answer. Name what's wrong and what to think about. For a tense issue, say which tense they used and roughly what it means in English ("«iba» is the imperfecto, roughly 'was going' or 'used to go'"), and why that doesn't fit; the tense they need is shown separately. For gender: which noun to check, and how to tell its gender. For ser/estar: what kind of thing is being said (a location, a state, a characteristic).
+- tense (each issue): for a tense issue, the tense the sentence needs; otherwise "". 
+- verb (each issue): for a tense issue, the infinitive of the verb that needs to change (estar, ir…); otherwise "".
+- forms (each issue): for a tense issue, that verb in that tense for yo, tú, él/ella, nosotros, vosotros, ellos/ellas (Castilian, vosotros included); otherwise leave every person "".
+- pattern (whole sentence): when it helps, the structure the sentence should follow, in grammar terms and without the learner's words, at most 25 words: "definite article + noun + adjective + verb + preposition + place", or "for where something is: estar + en + place". Empty if the structure isn't the problem.`;
 }
+
+const personForms = Object.fromEntries(TABLE_PERSONS.map((p) => [p, { type: 'string' }]));
 
 const TRANSLATION_TOOL = {
   name: 'report_translation',
@@ -338,14 +348,63 @@ const TRANSLATION_TOOL = {
     type: 'object',
     properties: {
       meaning: { type: 'string', enum: ['correct', 'partly', 'incorrect'] },
-      issues: TOOL.input_schema.properties.checks.items.properties.issues,
+      issues: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            category: { type: 'string', enum: [...ISSUE_CATEGORIES] },
+            wrong: { type: 'string' },
+            right: { type: 'string' },
+            tip: { type: 'string' },
+            hint: { type: 'string' },
+            tense: { type: 'string', enum: ['', ...HINT_TENSES] },
+            verb: { type: 'string' },
+            forms: { type: 'object', properties: personForms, required: [...TABLE_PERSONS] },
+          },
+          required: ['category', 'wrong', 'right', 'tip', 'hint', 'tense', 'verb', 'forms'],
+        },
+      },
       corrected: { type: 'string' },
       alternative: { type: 'string' },
       comment: { type: 'string' },
+      pattern: { type: 'string' },
     },
-    required: ['meaning', 'issues', 'corrected', 'alternative', 'comment'],
+    required: ['meaning', 'issues', 'corrected', 'alternative', 'comment', 'pattern'],
   },
 } as unknown as typeof TOOL;
+
+interface RawHintIssue {
+  category: string;
+  wrong: string;
+  right: string;
+  hint?: string;
+  tense?: string;
+  verb?: string;
+  forms?: Record<string, string>;
+}
+
+/**
+ * The second-try guidance, kept only if it doesn't give the answer away: a
+ * hint that contains the fix is dropped (the app shows a general one), and so
+ * is a pattern that contains any of the fixed words.
+ */
+export function cleanHints(raw: { issues?: RawHintIssue[]; pattern?: string }, kept: { wrong: string; right: string }[]) {
+  const rights = (raw.issues ?? []).map((i) => bare(i.right)).filter((r) => r.length >= 2);
+  const givesAway = (s: string) => rights.some((r) => ` ${bare(s)} `.includes(` ${r} `));
+  const hints = kept.map((k) => {
+    const src = (raw.issues ?? []).find((i) => i.wrong === k.wrong && i.right === k.right);
+    if (!src) return {};
+    const hint = src.hint && !givesAway(src.hint) ? src.hint.slice(0, 220) : undefined;
+    const tense = (HINT_TENSES as readonly string[]).includes(src.tense ?? '') ? (src.tense as HintTense) : undefined;
+    const forms = src.forms && TABLE_PERSONS.every((p) => typeof src.forms![p] === 'string' && src.forms![p].trim()) ? src.forms : undefined;
+    const conjugation =
+      tense && src.verb && forms ? { verb: src.verb.trim().toLocaleLowerCase('es').slice(0, 30), tense, forms } : undefined;
+    return { hint, tense, conjugation };
+  });
+  const pattern = raw.pattern && !givesAway(raw.pattern) ? raw.pattern.slice(0, 200) : undefined;
+  return { hints, pattern };
+}
 
 async function checkTranslation(key: string, body: Body): Promise<Response> {
   const english = body.english?.trim().slice(0, 240);
@@ -362,9 +421,14 @@ async function checkTranslation(key: string, body: Body): Promise<Response> {
     900,
   )) as RawCheck | undefined;
   const item: Item = { id: 't', part: 'story', paragraph: '', question: '', model: '', answer: spanish };
-  const cleaned = cleanChecks({ checks: input ? [{ ...input, id: 't' }] : [] }, [item], { keepMeaning: true }).t;
+  const cleaned = cleanChecks({ checks: input ? [{ ...input, id: 't' }] : [] }, [item], { keepMeaning: true }).t as
+    | { issues: { wrong: string; right: string }[] }
+    | undefined;
   if (!cleaned) return json({ error: 'The AI check failed.' }, 502);
-  return json({ check: cleaned });
+  const { hints, pattern } = cleanHints(input as { issues?: RawHintIssue[]; pattern?: string }, cleaned.issues);
+  return json({
+    check: { ...cleaned, issues: cleaned.issues.map((i, k) => ({ ...i, ...hints[k] })), pattern },
+  });
 }
 
 // ---------- Writing exercise: more prompts when a topic runs out ----------

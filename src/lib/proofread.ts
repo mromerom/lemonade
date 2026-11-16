@@ -32,12 +32,13 @@ export function ownSentences(state: LearnerState): ProofreadItem[] {
   const own: ProofreadItem[] = [];
   for (const set of state.writing?.sets ?? []) {
     set.items.forEach((item, i) => {
-      const first = item.attempts[0];
-      const c = first?.check;
-      if (!c || isRightTranslation(c) || !c.corrected) return;
+      // Only translations still wrong after the second try (a right second try fixed it).
+      const last = item.attempts[item.attempts.length - 1];
+      const c = last?.check;
+      if (set.stage !== 'done' || !c || isRightTranslation(c) || !c.corrected) return;
       own.push({
         id: `w:${set.id}:${i}`,
-        sentence: first.spanish,
+        sentence: last.spanish,
         fixes: [c.corrected],
         note: c.issues.map((x) => x.tip).join(' '),
         area: c.issues[0]?.category,
