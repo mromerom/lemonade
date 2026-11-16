@@ -36,3 +36,10 @@
   border-color: var(--text);
   color: var(--bg);
 }
+.btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.note {
+  color: var(--muted);
+}

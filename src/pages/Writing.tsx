@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Link, Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import BackLink from '../components/BackLink';
 import { FocusList, IssueList, Tag } from '../components/Feedback';
+import TestingBar, { TestButton } from '../components/TestingBar';
+import { sampleFor, sampleForEnglish } from '../dev/writingSamples';
 import { addons, topics } from '../content/exercises';
 import {
   addonById,
@@ -157,6 +159,17 @@ function WriteStage({ set }: { set: WritingSet }) {
       <p className={styles.kicker}>{setLabel(set)} · Step 1 of 2</p>
       <h1 className={styles.h1}>Write about your life, in English</h1>
       <p className={styles.lead}>One sentence for each prompt. Keep them short: you’ll translate them next.</p>
+      <TestingBar>
+        <TestButton
+          onClick={() =>
+            set.items.forEach((item, i) =>
+              dispatch({ type: 'setWritingEnglish', setId: set.id, index: i, english: sampleFor(item.prompt).en }),
+            )
+          }
+        >
+          Fill sample sentences
+        </TestButton>
+      </TestingBar>
       <ol className={styles.prompts}>
         {set.items.map((item, i) => (
           <li key={i} className={styles.promptCard}>
@@ -252,6 +265,8 @@ function TranslateStage({ set }: { set: WritingSet }) {
   const retry = set.pos >= set.items.length;
   const turn = retry ? item.attempts[1] : item.attempts[0];
   const retries = set.queue.length - set.items.length;
+  // Testing tools: translations for the sample English sentences.
+  const sample = sampleForEnglish(item.english);
 
   async function runCheck(spanish: string) {
     setChecking(true);
@@ -287,6 +302,14 @@ function TranslateStage({ set }: { set: WritingSet }) {
         {retry ? `Second try, ${set.pos - set.items.length + 1} of ${retries}` : `Sentence ${set.pos + 1} of ${set.items.length}`}
       </p>
       <h1 className={styles.h1}>Translate it into Spanish</h1>
+      <TestingBar note={sample ? undefined : 'Filling works for the sample sentences only.'}>
+        <TestButton disabled={!sample || Boolean(turn)} onClick={() => setDraft(sample!.es)}>
+          Fill the right translation
+        </TestButton>
+        <TestButton disabled={!sample || Boolean(turn)} onClick={() => setDraft(sample!.wrong)}>
+          Fill one with a mistake
+        </TestButton>
+      </TestingBar>
 
       <div className={styles.translateCard}>
         <p className={styles.promptSmall}>{item.prompt}</p>

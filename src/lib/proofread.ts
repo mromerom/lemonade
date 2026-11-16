@@ -238,3 +238,70 @@ export function bestFix(item: ProofreadItem, result: string): string | undefined
   const score = (f: string) => changedWords(result, f).size;
   return [...item.fixes].sort((a, b) => score(a) - score(b))[0];
 }
+
+// ---------- Testing tools ----------
+
+/**
+ * The edits that turn the sentence into its nearest fix: each run of changed
+ * words becomes one field with the fixed words. A word only added in the fix
+ * joins the word before it ("voy aprender" → field "voy" typed "voy a").
+ */
+export function fixEdits(item: ProofreadItem, tokens: Token[]): Edit[] {
+  if (!item.fixes.length) return [];
+  const fix = [...item.fixes].sort((a, b) => changedWords(item.sentence, a).size - changedWords(item.sentence, b).size)[0];
+  const wordTokens = tokens.map((t, i) => (t.kind === 'word' ? i : -1)).filter((i) => i >= 0);
+  const fixWords = tokenize(fix).filter((t) => t.kind === 'word').map((t) => t.text);
+  const a = words(item.sentence);
+  const b = words(fix);
+  const L = Array.from({ length: a.length + 1 }, () => new Array<number>(b.length + 1).fill(0));
+  for (let i = a.length - 1; i >= 0; i--)
+    for (let j = b.length - 1; j >= 0; j--) L[i][j] = a[i] === b[j] ? L[i + 1][j + 1] + 1 : Math.max(L[i + 1][j], L[i][j + 1]);
+
+  const edits: Edit[] = [];
+  let group: { from: number[]; to: number[] } | null = null;
+  const flush = (nextKept: number) => {
+    if (!group) return;
+    let { from, to } = group;
+    if (!from.length) {
+      // Only additions: attach them to the word before (or after, at the start).
+      const anchor = from.length ? from[0] : Math.max(0, nextKept - 1);
+      from = [anchor];
+      to = anchor < nextKept ? [to[0] - 1, ...to].filter((x) => x >= 0) : [...to, to[to.length - 1] + 1];
+    }
+    edits.push({
+      start: wordTokens[Math.min(...from)],
+      end: wordTokens[Math.max(...from)],
+      text: to.map((j) => fixWords[j]).join(' '),
+    });
+    group = null;
+  };
+  let i = 0;
+  let j = 0;
+  while (i < a.length || j < b.length) {
+    if (i < a.length && j < b.length && a[i] === b[j]) {
+      flush(i);
+      i++;
+      j++;
+      continue;
+    }
+    group ??= { from: [], to: [] };
+    if (i < a.length && j < b.length && L[i + 1][j + 1] === L[i][j]) {
+      group.from.push(i++);
+      group.to.push(j++);
+    } else if (j < b.length && (i >= a.length || L[i][j + 1] >= L[i + 1][j])) group.to.push(j++);
+    else group.from.push(i++);
+  }
+  flush(i);
+  return edits;
+}
+
+/** A wrong attempt, for testing: "fixes" a word that was fine. */
+export function wrongEdits(item: ProofreadItem, tokens: Token[]): Edit[] {
+  const spans = mistakeSpans(item).flat();
+  const wordTokens = tokens.map((t, i) => (t.kind === 'word' ? i : -1)).filter((i) => i >= 0);
+  const candidates = wordTokens.map((t, w) => ({ t, w })).filter(({ w }) => !spans.includes(w));
+  const pick = candidates.sort((x, y) => tokens[y.t].text.length - tokens[x.t].text.length)[0];
+  if (!pick) return [];
+  const word = tokens[pick.t].text;
+  return [{ start: pick.t, end: pick.t, text: word.endsWith('s') ? word.slice(0, -1) : `${word}s` }];
+}

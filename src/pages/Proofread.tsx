@@ -2,14 +2,17 @@ import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } fr
 import { Link } from 'react-router-dom';
 import BackLink from '../components/BackLink';
 import { FocusList } from '../components/Feedback';
+import TestingBar, { TestButton } from '../components/TestingBar';
 import { areaFor, focusCollector } from '../lib/focus';
 import {
   bestFix,
   buildRound,
+  fixEdits,
   gradeProofread,
   mistakeSpans,
   resolves,
   tokenize,
+  wrongEdits,
   type Edit,
   type ProofreadItem,
   type ProofreadResult,
@@ -261,6 +264,12 @@ function Sentence({
           <p className={styles.sentence} lang="es">
             {parts}
           </p>
+          <TestingBar note={item.fixes.length ? undefined : 'No mistake in this one.'}>
+            <TestButton disabled={!item.fixes.length} onClick={() => setEdits(fixEdits(item, tokens))}>
+              Fill the right fix
+            </TestButton>
+            <TestButton onClick={() => setEdits(wrongEdits(item, tokens))}>Fill a wrong fix</TestButton>
+          </TestingBar>
           <div className={styles.actions}>
             <button type="button" className="btn btn-quiet" onClick={() => onResult(gradeProofread(item, tokens, 'no-mistake'))}>
               No mistake
