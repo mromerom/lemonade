@@ -1,8 +1,10 @@
 import { proofreadSeeds } from '../content/exercises';
-import type { LearnerState } from '../types';
+import type { LearnerState, Target, Text } from '../types';
+import { correctNote, gradeTarget, targetAnswer } from './gradeTarget';
+import { plainText } from './markup';
 import { normalize, stripAccents } from './grade';
 import { isCorrectCheck } from './readingCheck';
-import { readingQuestions } from './textWords';
+import { findEvidence, readingQuestions } from './textWords';
 import { texts } from '../data/texts';
 import { isRightTranslation } from './writing';
 
@@ -58,7 +60,58 @@ export function ownSentences(state: LearnerState): ProofreadItem[] {
       });
     }
   }
+  // Missed words and verb forms from finished readings: the sentence from the
+  // reading with the learner's answer in it.
+  for (const text of texts) {
+    const lesson = state.lessons[text.id];
+    if (lesson?.stage !== 'done') continue;
+    for (const t of text.targets) {
+      const typed = lesson.postAnswers[t.id]?.trim();
+      if (!typed) continue;
+      const grade = gradeTarget(t, typed);
+      if (grade.verdict === 'correct') continue;
+      const sentence = sentenceWithAnswer(text, t, typed);
+      if (!sentence) continue;
+      own.push({
+        id: `t:${text.id}:${t.id}`,
+        sentence: sentence.wrong,
+        fixes: [sentence.right],
+        note: correctNote(t)?.note ?? `Here it’s «${targetAnswer(t)}».`,
+        area:
+          grade.verdict === 'form'
+            ? grade.usedPerson
+              ? 'person'
+              : 'tense'
+            : grade.verdict === 'accent'
+              ? 'accent'
+              : grade.verdict === 'spelling' || grade.verdict === 'typo'
+                ? 'spelling'
+                : t.kind === 'form'
+                  ? 'tense'
+                  : 'word choice',
+        mine: { from: `your answer in «${text.title}»` },
+      });
+    }
+  }
   return own;
+}
+
+/** A sentence from the reading with the answer in it, and the same sentence with the learner's answer instead. */
+export function sentenceWithAnswer(text: Text, target: Target, typed: string): { right: string; wrong: string } | null {
+  const evidence = findEvidence(text, target.match, target.evidenceHint);
+  const answer = targetAnswer(target);
+  const pattern = new RegExp(`(^|[^\\p{L}])(${answer.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})(?=$|[^\\p{L}])`, 'iu');
+  for (const s of [evidence?.retelling, evidence?.story]) {
+    if (!s) continue;
+    const right = plainText(s);
+    const m = pattern.exec(right);
+    if (!m) continue;
+    const at = m.index + m[1].length;
+    // Keep a capital letter if the answer starts the sentence.
+    const replacement = at === 0 ? typed.charAt(0).toLocaleUpperCase('es') + typed.slice(1) : typed;
+    return { right, wrong: right.slice(0, at) + replacement + right.slice(at + m[2].length) };
+  }
+  return null;
 }
 
 /**

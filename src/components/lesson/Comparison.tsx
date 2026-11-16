@@ -14,6 +14,7 @@ import {
 } from '../../lib/gradeTarget';
 import { findEvidence } from '../../lib/textWords';
 import { focusAreas, recommendText } from '../../lib/focus';
+import { sentenceWithAnswer } from '../../lib/proofread';
 import { plainText } from '../../lib/markup';
 import {
   checkedInApp,
@@ -28,7 +29,6 @@ import { tokenize } from '../../lib/tokenize';
 import { useLearner } from '../../store/learnerStore';
 import type { LessonProgress, Paragraph, QuestionOption, ReadingCheck, ReadingQuestion, Target, Text } from '../../types';
 import { targetTerm } from '../../lib/wordBank';
-import CorrectionField from './CorrectionField';
 import TargetPrompt from './TargetPrompt';
 import shared from './shared.module.css';
 import styles from './Comparison.module.css';
@@ -144,18 +144,15 @@ export default function Comparison({ text, lesson }: Props) {
     const grade = gradeTarget(t, typed);
     // One explanation per kind of mix-up, even if it happened twice.
     const confusions = [...new Map(grade.confusions.map((c) => [c.id, c])).values()];
-    const correction = lesson.corrections[t.id] ?? '';
-    const corrected = grade.verdict === 'correct' || gradeTarget(t, correction).verdict === 'correct';
     // When the typed answer repeats the guess, the verdict (and its note) covers both.
     const sameAnswer = guess && normalize(guess.text) === normalize(typed);
     const guessNote = sameAnswer ? null : distractorNote(t, guess);
     const why = correctNote(t);
-    return { t, guess, guessedRight, guessNote, why, typed, grade, confusions, correction, corrected };
+    return { t, guess, guessedRight, guessNote, why, typed, grade, confusions };
   });
 
   const before = rows.filter((r) => r.guessedRight).length;
   const after = rows.filter((r) => r.grade.verdict === 'correct').length;
-  const pending = rows.filter((r) => !r.corrected).length;
 
   // ---------- Slides ----------
 
@@ -254,7 +251,7 @@ export default function Comparison({ text, lesson }: Props) {
           />
         )}
 
-        {slide.kind === 'word' && <WordSlide text={text} row={rows[slide.n]} n={slide.n} finished={finished} />}
+        {slide.kind === 'word' && <WordSlide text={text} row={rows[slide.n]} n={slide.n} />}
 
         {slide.kind === 'summary' && (
           <div className={styles.summarySlide}>
@@ -306,7 +303,7 @@ export default function Comparison({ text, lesson }: Props) {
               </div>
             )}
 
-            {!finished && (pending > 0 || selfPending > 0 || aiState === 'checking') && (
+            {!finished && (selfPending > 0 || aiState === 'checking') && (
               <div className={shared.note}>
                 <div>
                   <p className={shared.noteTitle}>Before you finish</p>
@@ -316,19 +313,6 @@ export default function Comparison({ text, lesson }: Props) {
                       <li>
                         Compare {selfPending} of your answers with the model answer.{' '}
                         <button type="button" className={styles.linkBtn} onClick={() => go(firstPendingSelf())}>
-                          Go to the first one
-                        </button>
-                      </li>
-                    )}
-                    {pending > 0 && (
-                      <li>
-                        Type out {pending} correct {pending === 1 ? 'answer' : 'answers'}: writing it yourself does more
-                        than reading it.{' '}
-                        <button
-                          type="button"
-                          className={styles.linkBtn}
-                          onClick={() => go(firstWord + rows.findIndex((r) => !r.corrected))}
-                        >
                           Go to the first one
                         </button>
                       </li>
@@ -366,7 +350,7 @@ export default function Comparison({ text, lesson }: Props) {
           <button
             type="button"
             className="btn btn-primary"
-            disabled={pending > 0 || selfPending > 0 || aiState === 'checking'}
+            disabled={selfPending > 0 || aiState === 'checking'}
             onClick={finish}
           >
             Finish reading
@@ -519,8 +503,6 @@ type Row = {
   typed: string;
   grade: TargetGrade;
   confusions: TargetGrade['confusions'];
-  correction: string;
-  corrected: boolean;
 };
 
 function Tags({ tags }: { tags: { text: string; bad: boolean }[] }) {
@@ -540,8 +522,7 @@ function Tags({ tags }: { tags: { text: string; bad: boolean }[] }) {
  * One word or verb form: each answer with a tag for what's off, then one
  * explanation of the right answer (instead of three notes saying the same).
  */
-function WordSlide({ text, row: r, n, finished }: { text: Text; row: Row; n: number; finished: boolean }) {
-  const { dispatch } = useLearner();
+function WordSlide({ text, row: r, n }: { text: Text; row: Row; n: number }) {
   const guessLabel = optionTag(r.t, r.guess);
   const guessTag = guessLabel && (r.t.kind === 'form' && guessLabel.endsWith(' form') ? guessLabel : shortTense(guessLabel));
   const guessTenseNote = guessLabel && !guessLabel.endsWith(' form') ? tenseNote(guessLabel) : null;
@@ -601,12 +582,9 @@ function WordSlide({ text, row: r, n, finished }: { text: Text; row: Row; n: num
       {r.grade.verdict !== 'correct' && (
         <>
           <EvidenceBlock text={text} target={r.t} />
-          <CorrectionField
-            target={r.t}
-            saved={r.corrected ? r.correction : ''}
-            disabled={finished}
-            onCorrect={(value) => dispatch({ type: 'setCorrection', textId: text.id, targetId: r.t.id, text: value })}
-          />
+          {r.typed && sentenceWithAnswer(text, r.t, r.typed) && (
+            <p className={styles.proofreadNote}>This one will come back in Proofread, in its sentence from the reading.</p>
+          )}
         </>
       )}
     </div>

@@ -557,3 +557,9 @@
   margin-top: 0.35rem;
   color: var(--text) !important;
 }
+
+.proofreadNote {
+  margin: 0.6rem 0 0;
+  font-size: 0.875rem;
+  color: var(--muted);
+}
