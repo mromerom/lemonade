@@ -6,6 +6,7 @@ import type {
   LessonStage,
   ReadingCheck,
   ReviewItem,
+  KeyWord,
   TranslationCheck,
   WordRecord,
   WordStatus,
@@ -71,7 +72,7 @@ function createDemoState(): LearnerState {
  */
 function pruneRemovedTerms(state: LearnerState): LearnerState {
   const words = Object.fromEntries(
-    Object.entries(state.words).filter(([key]) => lexicon[key] || state.userPhrases?.[key]),
+    Object.entries(state.words).filter(([key]) => lexicon[key] || state.userPhrases?.[key] || state.userWords?.[key]),
   );
   return Object.keys(words).length === Object.keys(state.words).length ? state : { ...state, words };
 }
@@ -141,6 +142,8 @@ type Action =
   | { type: 'setTranslationCheck'; setId: string; index: number; check?: TranslationCheck; failed?: boolean }
   | { type: 'nextTranslation'; setId: string }
   | { type: 'resolveProofread'; id: string }
+  | { type: 'setKeywords'; setId: string; keywords: KeyWord[][] }
+  | { type: 'addExerciseWord'; word: KeyWord; sentence: string }
   | { type: 'resetAll' };
 
 function emptyLesson(): LessonProgress {
@@ -339,6 +342,27 @@ function reducer(state: LearnerState, action: Action): LearnerState {
     case 'resolveProofread': {
       const resolved = state.proofread?.resolved ?? [];
       return resolved.includes(action.id) ? state : { ...state, proofread: { resolved: [...resolved, action.id] } };
+    }
+    case 'setKeywords':
+      return updateSet(state, action.setId, (s) => ({ ...s, keywords: action.keywords }));
+    case 'addExerciseWord': {
+      const { word } = action;
+      const key = word.lexiconKey ?? word.es;
+      const prev = state.words[key];
+      const status: WordStatus = prev && prev.status !== 'new' ? prev.status : 'learning';
+      const words = {
+        ...state.words,
+        [key]: { ...withStatus(prev, 'default', status, now), source: prev?.source ?? ('exercise' as const) },
+      };
+      if (word.lexiconKey) return { ...state, words };
+      return {
+        ...state,
+        words,
+        userWords: {
+          ...state.userWords,
+          [key]: { es: word.es, gloss: word.gloss, pos: word.pos, sentence: action.sentence, createdAt: now },
+        },
+      };
     }
     case 'resetAll':
       return createDemoState();

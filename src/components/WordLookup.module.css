@@ -1,0 +1,87 @@
+.word {
+  padding: 0 0.05em;
+  border: 0;
+  border-radius: 3px;
+  background: var(--new);
+  color: inherit;
+  font: inherit;
+  text-decoration: underline dotted var(--new-ink);
+  text-underline-offset: 0.2em;
+  cursor: pointer;
+}
+.word:hover {
+  box-shadow: 0 0 0 2px var(--new);
+}
+.word:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 1px;
+}
+.dialog {
+  width: min(360px, calc(100vw - 2rem));
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--font-ui);
+  box-shadow: 0 12px 40px rgb(0 0 0 / 0.25);
+}
+.dialog::backdrop {
+  background: rgb(0 0 0 / 0.4);
+}
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding: 1rem 1.2rem 1.2rem;
+}
+.head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+.english {
+  margin: 0;
+  color: var(--muted);
+}
+.close {
+  padding: 0 0.3rem;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.es {
+  margin: 0;
+  font-family: var(--font-read);
+  font-size: 1.8rem;
+}
+.meta {
+  margin: 0;
+}
+.pos {
+  margin-right: 0.3rem;
+  padding: 0 0.4rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+.note {
+  margin: 0 0 0.3rem;
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+.saved {
+  margin: 0;
+  font-weight: 600;
+  color: var(--good);
+}
+
+/* Added during this sentence: still tappable, no longer highlighted */
+.added {
+  background: transparent;
+}

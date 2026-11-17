@@ -407,6 +407,7 @@ async function POST(request) {
   try {
     if (body.mode === "translation") return await checkTranslation(key, body);
     if (body.mode === "prompts") return await writePrompts(key, body);
+    if (body.mode === "keywords") return await findKeywords(key, body);
     return await checkReading(key, body);
   } catch (e) {
     if (e instanceof Response) return e;
@@ -558,6 +559,58 @@ Write ${count} new prompts.`,
   );
   const prompts = (Array.isArray(input?.prompts) ? input.prompts : []).filter((p) => typeof p === "string" && /^Write about /.test(p) && p.length <= 140).filter((p) => !avoid.includes(p) && !topic.prompts.includes(p)).slice(0, count);
   return json({ prompts });
+}
+var KEYWORDS_TOOL = {
+  name: "report_keywords",
+  description: "Report the key words of each sentence with their Spanish dictionary form.",
+  input_schema: {
+    type: "object",
+    properties: {
+      sentences: {
+        type: "array",
+        items: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              text: { type: "string" },
+              es: { type: "string" },
+              pos: { type: "string", enum: ["noun", "verb", "adjective", "adverb"] },
+              gloss: { type: "string" }
+            },
+            required: ["text", "es", "pos", "gloss"]
+          }
+        }
+      }
+    },
+    required: ["sentences"]
+  }
+};
+async function findKeywords(key, body) {
+  const sentences = (body.sentences ?? []).slice(0, 5).map((s) => String(s).trim().slice(0, 240));
+  if (!sentences.length || sentences.some((s) => !s)) return json({ error: "Send sentences." }, 400);
+  const input = await callClaude(
+    key,
+    `A learner of Castilian Spanish wrote these English sentences about their own life and is about to translate them. For each sentence, list its key words: nouns, main verbs, adjectives and adverbs that carry meaning. Skip names, numbers, pronouns, articles, prepositions, auxiliaries ("was" in "was going", "will", "would") and very common words like "very", "not", "also".
+For each key word:
+- text: the word exactly as written in the sentence (a phrasal verb like "set up" or "pick up" counts as one word)
+- es: the Spanish dictionary form for the meaning it has in this sentence: the infinitive for verbs (never conjugated), the singular for nouns without an article, the masculine singular for adjectives. Castilian usage (m\xF3vil, ordenador, coche).
+- pos: noun, verb, adjective or adverb
+- gloss: its English meaning in this sentence, at most 5 words ("to go", "mountain", "messy")
+Return one list per sentence, in order.`,
+    sentences.map((s, i) => `<sentence n="${i + 1}">${s.replace(/</g, "\u2039")}</sentence>`).join("\n"),
+    KEYWORDS_TOOL,
+    250 + 220 * sentences.length
+  );
+  const keywords = sentences.map(
+    (s, i) => (input?.sentences?.[i] ?? []).filter((k) => k && typeof k.text === "string" && typeof k.es === "string" && k.es.trim()).filter((k) => s.toLocaleLowerCase("en").includes(k.text.toLocaleLowerCase("en").trim())).filter((k) => ["noun", "verb", "adjective", "adverb"].includes(k.pos)).slice(0, 8).map((k) => ({
+      text: k.text.trim().slice(0, 40),
+      es: k.es.trim().toLocaleLowerCase("es").slice(0, 40),
+      pos: k.pos,
+      gloss: String(k.gloss ?? "").slice(0, 60)
+    }))
+  );
+  return json({ keywords });
 }
 export {
   CHECK_VERSION,

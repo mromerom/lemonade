@@ -185,6 +185,8 @@ export interface WordRecord {
   status: WordStatus;
   /** Status of each other meaning, by sense id ("puestos:job" can be learning while "puestos" is known) */
   senseStatus?: Record<string, WordStatus>;
+  /** Where the learner added it; missing means a reading */
+  source?: WordSource;
   /** Senses of this term the learner has looked up, across all readings */
   senses?: string[];
   lookups: number;
@@ -254,6 +256,31 @@ export interface TranslationAttempt {
   at: number;
 }
 
+export type WordSource = 'reading' | 'exercise';
+
+/** A key word in a learner's English sentence, with its Spanish dictionary form. */
+export interface KeyWord {
+  /** As written in the English sentence */
+  text: string;
+  /** Spanish dictionary form: infinitive, singular noun, masculine singular adjective */
+  es: string;
+  pos: 'noun' | 'verb' | 'adjective' | 'adverb';
+  /** English meaning in this sentence */
+  gloss: string;
+  /** The lexicon entry with this dictionary form, when there is one */
+  lexiconKey?: string;
+}
+
+/** A word the learner added from their own writing that isn't in the lexicon. */
+export interface UserWord {
+  es: string;
+  gloss: string;
+  pos: KeyWord['pos'];
+  /** The English sentence it came from */
+  sentence: string;
+  createdAt: number;
+}
+
 export interface WritingItem {
   prompt: string;
   english: string;
@@ -273,6 +300,8 @@ export interface WritingSet {
   queue: number[];
   /** Index into queue of the current turn */
   pos: number;
+  /** Key words per item, found once when translating starts */
+  keywords?: KeyWord[][];
   completedAt?: number;
 }
 
@@ -333,5 +362,7 @@ export interface LearnerState {
   /** Phrases the learner grouped themselves, keyed like words (lowercase text) */
   userPhrases?: Record<string, UserPhrase>;
   writing?: WritingState;
+  /** Words added from the learner's own writing that aren't in the lexicon */
+  userWords?: Record<string, UserWord>;
   proofread?: ProofreadState;
 }

@@ -17,7 +17,7 @@ import {
   type LevelBand,
 } from '../lib/wordBank';
 import { useDismiss } from '../lib/useDismiss';
-import type { PartOfSpeech, WordStatus } from '../types';
+import type { PartOfSpeech, WordSource, WordStatus } from '../types';
 import styles from './WordBank.module.css';
 
 type Direction = 'es-en' | 'en-es';
@@ -49,6 +49,7 @@ export default function WordBank() {
   const [band, setBand] = useState<LevelBand | 'all'>('all');
   const [missedOnly, setMissedOnly] = useState(false);
   const [unknownOnly, setUnknownOnly] = useState(false);
+  const [source, setSource] = useState<WordSource | 'all'>('all');
   const [types, setTypes] = useState<Set<PartOfSpeech>>(new Set());
   const [query, setQuery] = useState('');
   // Old links may name a form ("voy"); open its dictionary form ("ir").
@@ -73,6 +74,7 @@ export default function WordBank() {
         (band === 'all' || e.bands.includes(band)) &&
         (!missedOnly || e.missed) &&
         (!unknownOnly || e.status !== 'known') &&
+        (source === 'all' || e.sources.includes(source)) &&
         (types.size === 0 || e.pos.some((p) => types.has(p))) &&
         (!q ||
           [e.es, e.en, ...e.forms].some((t) => t.toLocaleLowerCase().includes(q))),
@@ -84,9 +86,10 @@ export default function WordBank() {
     return list.sort((a, b) => (sort === 'newest' ? b.addedAt - a.addedAt : a.addedAt - b.addedAt));
     // front depends on direction, which is listed.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [all, band, missedOnly, unknownOnly, types, query, sort, direction]);
+  }, [all, band, missedOnly, unknownOnly, source, types, query, sort, direction]);
 
-  const filtered = band !== 'all' || missedOnly || unknownOnly || types.size > 0 || query.trim() !== '';
+  const filtered =
+    band !== 'all' || missedOnly || unknownOnly || source !== 'all' || types.size > 0 || query.trim() !== '';
   const selected =
     all.find((e) => e.key === selectedParam) ??
     (selectedParam ? all.find((e) => e.key === groupKeyOf(selectedParam)) : undefined) ??
@@ -105,6 +108,7 @@ export default function WordBank() {
     setBand('all');
     setMissedOnly(false);
     setUnknownOnly(false);
+    setSource('all');
     setTypes(new Set());
     setQuery('');
   }
@@ -177,6 +181,26 @@ export default function WordBank() {
                 onClick={() => setBand(b)}
               >
                 {b === 'all' ? 'All' : LEVEL_BAND_LABEL[b]}
+              </button>
+            ))}
+          </div>
+          <div className={styles.filterGroup} role="group" aria-label="Added in">
+            <span className={styles.filterLabel}>Added in</span>
+            {(
+              [
+                ['all', 'All'],
+                ['reading', 'Readings'],
+                ['exercise', 'Exercises'],
+              ] as const
+            ).map(([value, label]) => (
+              <button
+                key={value}
+                type="button"
+                className={styles.chip}
+                aria-pressed={source === value}
+                onClick={() => setSource(value)}
+              >
+                {label}
               </button>
             ))}
           </div>
@@ -401,6 +425,10 @@ function MeaningBody({
               </li>
             ))}
           </ul>
+        ) : entry.userWord ? (
+          <p className={styles.sentence} lang="en">
+            In your writing: “{entry.userWord.sentence}”
+          </p>
         ) : (
           <p className={styles.noContext}>Not in a reading yet.</p>
         )}

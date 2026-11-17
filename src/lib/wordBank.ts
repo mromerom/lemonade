@@ -1,6 +1,6 @@
 import { lexicon } from '../content';
 import { texts } from '../data/texts';
-import { FORM_PERSONS, TENSES, type LearnerState, type PartOfSpeech, type Sense, type Target, type Text, type VerbForm, type WordStatus } from '../types';
+import { FORM_PERSONS, TENSES, type WordSource, type LearnerState, type PartOfSpeech, type Sense, type Target, type Text, type VerbForm, type WordStatus } from '../types';
 import { gradeTarget } from './gradeTarget';
 import { parseMarkup, plainText, type Segment } from './markup';
 import { tokenize } from './tokenize';
@@ -49,6 +49,10 @@ export interface BankEntry {
   missed: boolean;
   /** Grouped by the learner with shift-click */
   userPhrase: boolean;
+  /** Added from the learner's own writing, not in the lexicon */
+  userWord?: { sentence: string };
+  /** Where it was added */
+  source: WordSource;
 }
 
 // ---------- Index of where each term appears (built once) ----------
@@ -274,14 +278,16 @@ export function wordBank(state: LearnerState): BankEntry[] {
     ...Object.keys(state.words).filter((k) => isSaved(state, k)),
     ...missed,
     ...Object.keys(state.userPhrases ?? {}),
+    ...Object.keys(state.userWords ?? {}),
   ]);
 
   const entries: BankEntry[] = [];
   for (const key of keys) {
     const entry = lexicon[key];
     const userPhrase = state.userPhrases?.[key];
+    const userWord = entry ? undefined : state.userWords?.[key];
     // Skip names, and words an author has since removed from the lexicon.
-    if (entry?.name || (!entry && !userPhrase)) continue;
+    if (entry?.name || (!entry && !userPhrase && !userWord)) continue;
     const record = state.words[key];
     const levels = [...new Set(contextsFor(key, 99).map((c) => c.level))].sort();
     const senses = entry?.senses ?? [];
@@ -289,15 +295,21 @@ export function wordBank(state: LearnerState): BankEntry[] {
     entries.push({
       key,
       es: userPhrase?.text ?? key,
-      en: userPhrase?.gloss || senses[0]?.gloss || '—',
+      en: userPhrase?.gloss || userWord?.gloss || senses[0]?.gloss || '—',
       senses,
-      pos: userPhrase ? ['phrase'] : [...new Set(senses.map((s) => s.pos).filter((p): p is PartOfSpeech => !!p))],
+      pos: userPhrase
+        ? ['phrase']
+        : userWord
+          ? [userWord.pos]
+          : [...new Set(senses.map((s) => s.pos).filter((p): p is PartOfSpeech => !!p))],
       status: statuses.length && statuses.every((s) => s === 'known') ? 'known' : 'learning',
-      addedAt: record?.addedAt ?? userPhrase?.createdAt ?? record?.updatedAt ?? 0,
+      addedAt: record?.addedAt ?? userPhrase?.createdAt ?? userWord?.createdAt ?? record?.updatedAt ?? 0,
       levels,
       bands: [...new Set(levels.map(levelBand))],
       missed: missed.has(key),
       userPhrase: Boolean(userPhrase),
+      userWord: userWord ? { sentence: userWord.sentence } : undefined,
+      source: record?.source ?? (userWord ? 'exercise' : 'reading'),
     });
   }
   return entries;
@@ -334,6 +346,10 @@ export interface BankGroup {
   bands: LevelBand[];
   missed: boolean;
   userPhrase: boolean;
+  /** Added from the learner's own writing (not in the lexicon): the sentence it came from */
+  userWord?: { sentence: string };
+  /** Where its forms were added: readings, exercises, or both */
+  sources: WordSource[];
 }
 
 /** The word bank grouped by dictionary form. */
@@ -348,11 +364,12 @@ export function bankGroups(state: LearnerState): BankGroup[] {
   const groups: BankGroup[] = [];
   for (const [key, entries] of byGroup) {
     const head = lexicon[key];
-    if (entries[0].userPhrase) {
+    if (entries[0].userPhrase || entries[0].userWord) {
       const e = entries[0];
       const form: BankForm = { key: e.key, en: e.en, status: e.status, missed: e.missed };
       groups.push({
         ...e,
+        sources: [e.source],
         verb: false,
         forms: [e.key],
         meanings: [{ id: 'default', gloss: e.en, forms: [form], status: e.status, known: e.status === 'known' ? 1 : 0 }],
@@ -424,6 +441,7 @@ export function bankGroups(state: LearnerState): BankGroup[] {
       levels,
       bands: [...new Set(levels.map(levelBand))],
       missed: entries.some((e) => e.missed),
+      sources: [...new Set(entries.map((e) => e.source))],
       userPhrase: false,
     });
   }

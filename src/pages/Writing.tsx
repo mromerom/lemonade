@@ -1,8 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import BackLink from '../components/BackLink';
 import { FocusList, IssueList } from '../components/Feedback';
 import { HintList } from '../components/Hints';
+import { EnglishWithLookups } from '../components/WordLookup';
+import { hasSaved, keywordsForSet } from '../lib/keywords';
 import { givesAway } from '../lib/hints';
 import TestingBar, { TestButton } from '../components/TestingBar';
 import { sampleFor, sampleForEnglish } from '../dev/writingSamples';
@@ -265,7 +267,7 @@ function FirstTryHints({ check }: { check: TranslationCheck }) {
 }
 
 function TranslateStage({ set }: { set: WritingSet }) {
-  const { dispatch } = useLearner();
+  const { state, dispatch } = useLearner();
   const [draft, setDraft] = useState('');
   const [checking, setChecking] = useState(false);
   const index = set.queue[set.pos];
@@ -275,6 +277,14 @@ function TranslateStage({ set }: { set: WritingSet }) {
   const retries = set.queue.length - set.items.length;
   // Testing tools: translations for the sample English sentences.
   const sample = sampleForEnglish(item.english);
+
+  // Key words to look up, found once for the whole set.
+  const asked = useRef(false);
+  useEffect(() => {
+    if (set.keywords || asked.current) return;
+    asked.current = true;
+    void keywordsForSet(set).then((keywords) => dispatch({ type: 'setKeywords', setId: set.id, keywords }));
+  }, [set, dispatch]);
 
   async function runCheck(spanish: string) {
     setChecking(true);
@@ -321,9 +331,12 @@ function TranslateStage({ set }: { set: WritingSet }) {
 
       <div className={styles.translateCard}>
         <p className={styles.promptSmall}>{item.prompt}</p>
-        <p className={styles.english} lang="en">
-          {item.english}
+        <p className={styles.english}>
+          <EnglishWithLookups key={`${set.id}:${index}:${Boolean(set.keywords)}`} sentence={item.english} keywords={set.keywords?.[index]} />
         </p>
+        {set.keywords?.[index]?.some((k) => !hasSaved(state, k)) ? (
+          <p className={styles.lookupHint}>Highlighted words aren’t in your word bank yet: tap one to look it up.</p>
+        ) : null}
 
         {retry && item.attempts[0]?.check && (
           <div className={styles.lastTime}>
