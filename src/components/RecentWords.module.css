@@ -32,14 +32,13 @@
   color: var(--text);
   text-decoration: none;
 }
+/* Same as the exercise tiles: a plain card, outlined in yellow on hover */
 .chip:hover {
-  border-color: var(--text);
+  border-color: var(--accent-strong);
 }
-.learning {
-  box-shadow: inset 0 3px 0 var(--accent);
-}
-.known {
-  box-shadow: inset 0 3px 0 var(--border);
+.chip:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
 }
 .es {
   overflow: hidden;

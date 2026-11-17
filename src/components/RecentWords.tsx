@@ -17,7 +17,7 @@ export default function RecentWords() {
       <ol className={styles.row}>
         {recent.map((e) => (
           <li key={e.key}>
-            <Link to={`/words?w=${encodeURIComponent(e.userPhrase ? e.key : groupKeyOf(e.key))}`} className={`${styles.chip} ${styles[e.status]}`}>
+            <Link to={`/words?w=${encodeURIComponent(e.userPhrase ? e.key : groupKeyOf(e.key))}`} className={styles.chip}>
               <span className={styles.es} lang="es">
                 {e.es}
               </span>

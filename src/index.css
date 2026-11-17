@@ -92,6 +92,17 @@
 }
 
 html,
+/* Anything clickable shows the hand, everywhere. Browsers give buttons the
+   arrow by default, so moving across a page flicked between the two. */
+a[href],
+button:not(:disabled),
+[role='button'],
+summary,
+label:has(> input[type='radio']),
+label:has(> input[type='checkbox']) {
+  cursor: pointer;
+}
+
 /* Links in running text: text color with an accent underline, not browser blue. */
 a {
   color: inherit;
